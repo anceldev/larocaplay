@@ -63,3 +63,4 @@ fastlane/test_output
 
 #Project private files
 */Config.plist
+*confidential.yml

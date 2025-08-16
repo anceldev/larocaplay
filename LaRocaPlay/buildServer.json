@@ -12,8 +12,8 @@
 	"argv": [
 		"/opt/homebrew/bin/xcode-build-server"
 	],
-	"workspace": "/Users/anceldev/iOSProjects/LaRocaPlay/LaRocaPlay.xcodeproj/project.xcworkspace",
-	"build_root": "/Users/anceldev/Library/Developer/Xcode/DerivedData/LaRocaPlay-fcnnyzajnvaaqggpckspvchrmwrd",
+	"workspace": "/Users/anceldev/Projects/mobile/larocaplay/LaRocaPlay/LaRocaPlay.xcodeproj/project.xcworkspace",
+	"build_root": "/Users/anceldev/Library/Developer/Xcode/DerivedData/LaRocaPlay-btqnznsovvjcizaouiundrlrarrv",
 	"scheme": "LaRocaPlay",
 	"kind": "xcode"
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppRouter
 
 struct TopBar: View {
     var body: some View {

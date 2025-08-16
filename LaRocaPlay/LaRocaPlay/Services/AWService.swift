@@ -22,12 +22,12 @@ enum AWCollections: String {
 }
 
 final class AWClient {
-    let client: Client
+    let client: Appwrite.Client
     let database: Databases
     let storage: Appwrite.Storage
     
     private init() {
-        self.client = Client()
+        self.client = Appwrite.Client()
             .setEndpoint(AWCongig.endpoint.rawValue)
             .setProject(AWCongig.projectId.rawValue)
         self.database = Databases(client)

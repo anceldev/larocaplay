@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct LaRocaPlayApp: App {
     @State private var service = AWService()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

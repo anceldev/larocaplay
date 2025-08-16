@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = B4747F422E4BA1B200F6ACE5 /* AppRouter */; };
 		B48845FC2E461E52006DB382 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FB2E461E52006DB382 /* Auth */; };
 		B48845FE2E461E52006DB382 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FD2E461E52006DB382 /* Functions */; };
 		B48846002E461E52006DB382 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FF2E461E52006DB382 /* PostgREST */; };
 		B48846022E461E52006DB382 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = B48846012E461E52006DB382 /* Realtime */; };
 		B48846042E461E52006DB382 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = B48846032E461E52006DB382 /* Storage */; };
 		B48846062E461E52006DB382 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = B48846052E461E52006DB382 /* Supabase */; };
+		B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */ = {isa = PBXBuildFile; productRef = B49DA99D2E50A88800B0E571 /* ConfidentialKit */; };
 		B4A75FDD2E3D2BD5005568C4 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = B4A75FDC2E3D2BD5005568C4 /* Appwrite */; };
 /* End PBXBuildFile section */
 
@@ -33,9 +35,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */,
 				B48846062E461E52006DB382 /* Supabase in Frameworks */,
 				B48846042E461E52006DB382 /* Storage in Frameworks */,
 				B48846002E461E52006DB382 /* PostgREST in Frameworks */,
+				B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */,
 				B48845FE2E461E52006DB382 /* Functions in Frameworks */,
 				B48845FC2E461E52006DB382 /* Auth in Frameworks */,
 				B48846022E461E52006DB382 /* Realtime in Frameworks */,
@@ -76,6 +80,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B49DA9A02E50A8B800B0E571 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B4A75FB92E3D27D0005568C4 /* LaRocaPlay */,
@@ -89,6 +94,8 @@
 				B48846012E461E52006DB382 /* Realtime */,
 				B48846032E461E52006DB382 /* Storage */,
 				B48846052E461E52006DB382 /* Supabase */,
+				B4747F422E4BA1B200F6ACE5 /* AppRouter */,
+				B49DA99D2E50A88800B0E571 /* ConfidentialKit */,
 			);
 			productName = LaRocaPlay;
 			productReference = B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */;
@@ -121,6 +128,9 @@
 			packageReferences = (
 				B4A75FDB2E3D2BD5005568C4 /* XCRemoteSwiftPackageReference "sdk-for-apple" */,
 				B48845DD2E461DAF006DB382 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */,
+				B49DA9942E50A40300B0E571 /* XCRemoteSwiftPackageReference "swift-confidential-plugin" */,
+				B49DA99C2E50A88800B0E571 /* XCRemoteSwiftPackageReference "swift-confidential" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B4A75FB82E3D27D0005568C4 /* Products */;
@@ -151,6 +161,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B49DA9A02E50A8B800B0E571 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = B49DA99F2E50A8B800B0E571 /* Confidential */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B4A75FC02E3D27D1005568C4 /* Debug */ = {
@@ -356,12 +373,36 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Dimillian/AppRouter.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
 		B48845DD2E461DAF006DB382 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.5.1;
+			};
+		};
+		B49DA9942E50A40300B0E571 /* XCRemoteSwiftPackageReference "swift-confidential-plugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/securevale/swift-confidential-plugin.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
+			};
+		};
+		B49DA99C2E50A88800B0E571 /* XCRemoteSwiftPackageReference "swift-confidential" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/securevale/swift-confidential.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
 			};
 		};
 		B4A75FDB2E3D2BD5005568C4 /* XCRemoteSwiftPackageReference "sdk-for-apple" */ = {
@@ -375,6 +416,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B4747F422E4BA1B200F6ACE5 /* AppRouter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */;
+			productName = AppRouter;
+		};
 		B48845FB2E461E52006DB382 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B48845DD2E461DAF006DB382 /* XCRemoteSwiftPackageReference "supabase-swift" */;
@@ -404,6 +450,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B48845DD2E461DAF006DB382 /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		B49DA99D2E50A88800B0E571 /* ConfidentialKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B49DA99C2E50A88800B0E571 /* XCRemoteSwiftPackageReference "swift-confidential" */;
+			productName = ConfidentialKit;
+		};
+		B49DA99F2E50A8B800B0E571 /* Confidential */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B49DA9942E50A40300B0E571 /* XCRemoteSwiftPackageReference "swift-confidential-plugin" */;
+			productName = "plugin:Confidential";
 		};
 		B4A75FDC2E3D2BD5005568C4 /* Appwrite */ = {
 			isa = XCSwiftPackageProductDependency;

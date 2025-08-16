@@ -7,26 +7,38 @@
 
 import SwiftUI
 
+enum FetchFlow {
+    case loading
+    case completed
+    case notFound
+    case error
+}
+
 struct PreachScreen: View {
-    var preach: Preach
+    var id: String
+    @State private var fetchFlow: FetchFlow = .loading
+    @State private var preach: Preach?
     var body: some View {
         VStack {
-            VStack {
-                VimeoPlayerView(url: preach.video)
-            }
-            .frame(maxWidth: .infinity)
-            .aspectRatio(16/9, contentMode: .fit)
-            VStack {
-                HStack {
-                    Text(preach.title)
-                    if let serie = preach.serie {
-                        Text(serie)
-                    }
+            Group {
+                switch fetchFlow {
+                case .loading:
+                    Text("Cargando")
+                case .completed:
+                    PreachView(preach: preach!)
+                case .notFound:
+                    Text("No se pudo encontrar la predica")
+                case .error:
+                    Text("Ha habido un error al intentar obtener la predica seleccionado, por favor vuelve a intentarlo")
                 }
-                Text(preach.preacher)
-                Text(preach.date, style: .date)
             }
-            Spacer()
         }
+        .onAppear {
+            preach = fetchPreach()
+        }
+    }
+    private func fetchPreach() -> Preach? {
+        // Primero compruebo que ya se haya hecho fetch de esa predica
+        return nil
     }
 }

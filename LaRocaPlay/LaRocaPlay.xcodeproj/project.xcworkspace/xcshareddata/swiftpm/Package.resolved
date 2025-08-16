@@ -1,6 +1,15 @@
 {
-  "originHash" : "8d052b89c4eb333bb9ff5b4143b7042e739e96971634d3b7962af60e52007ea7",
+  "originHash" : "8d218faed370529a9b188aed1b72ee7c4a638049403395e6aee90fc429bb0645",
   "pins" : [
+    {
+      "identity" : "approuter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Dimillian/AppRouter.git",
+      "state" : {
+        "revision" : "72f63f4312a231ab2706234b9e99c4b71651f38c",
+        "version" : "1.0.2"
+      }
+    },
     {
       "identity" : "async-http-client",
       "kind" : "remoteSourceControl",
@@ -101,6 +110,24 @@
       }
     },
     {
+      "identity" : "swift-confidential",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/securevale/swift-confidential.git",
+      "state" : {
+        "revision" : "7f571ab0df5b0ffd4b26b92b9dd8f21d6b3a6ca8",
+        "version" : "0.4.1"
+      }
+    },
+    {
+      "identity" : "swift-confidential-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/securevale/swift-confidential-plugin.git",
+      "state" : {
+        "revision" : "9bf4fb3c87a769e13557aa1b564d7c66d74423b4",
+        "version" : "0.4.1"
+      }
+    },
+    {
       "identity" : "swift-crypto",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
@@ -197,6 +224,15 @@
       "state" : {
         "revision" : "e7187309187695115033536e8fc9b2eb87fd956d",
         "version" : "2.8.0"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "f99ae8aa18f0cf0d53481901f88a0991dc3bd4a2",
+        "version" : "601.0.1"
       }
     },
     {
