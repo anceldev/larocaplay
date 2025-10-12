@@ -7,9 +7,17 @@
 
 import AppRouter
 import SwiftUI
+@_exported import Inject
+
+typealias AppRouter = Router<AppTab, Destination, Sheet>
 
 struct ContentView: View {
-    @State private var router = Router<AppTab, Destination, Sheet>(initialTab: .home)
+    @State private var router = AppRouter(initialTab: .home)
+    @Environment(AuthService.self) var authService
+    @Environment(PreachesRepository.self) var repository
+    @State var account: User?
+    
+    @ObserveInjection var forceRedraw
     
     var body: some View {
         VStack {
@@ -22,7 +30,11 @@ struct ContentView: View {
                             case .home:
                                 HomeView()
                             case .preaches:
-                                PreachesView()
+                                PreachesView(account: $account, preaches: repository.preaches)
+                            case .training:
+                                DiscipleshipListScreen(role: account?.role ?? .member)
+                            case .karaoke:
+                                MusicScreen()
                             case .store:
                                 StoreView()
                             }
@@ -32,49 +44,78 @@ struct ContentView: View {
                         }
                     }
                     .tabItem {
-                        Label(tab.rawValue.capitalized, systemImage: tab.icon)
+                        Label(tab.label.capitalized, image: tab.icon)
+                            .font(.system(size: 40))
                     }
                     .tag(tab)
                 }
+                
             }
             .tint(Color.customRed)
             .sheet(item: $router.presentedSheet) { sheet in
                 sheetView(for: sheet)
             }
         }
-        .background(.dirtyWhite)
+        .onAppear(perform: {
+            self.account = authService.user
+        })
+        .background(.customBlack)
+        .environment(router)
+        #if DEBUG
+        .enableInjection()
+        #endif
     }
     @ViewBuilder
     private func topBar() -> some View {
-        HStack {
-            Button {
-                router.presentSheet(.settings)
-            } label: {
-                Image(systemName: "gear")
-                    .foregroundStyle(.customRed)
+        VStack {
+            HStack {
+                Button {
+                    router.presentSheet(.settings)
+                } label: {
+                    Image("gear-2")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 28)
+                        .foregroundStyle(.customRed)
+                        
+                }
+                Spacer()
+                Image(.topbarLogo)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 40)
+                Spacer()
+                Button {
+                    router.presentSheet(.auth)
+                } label: {
+                    Image("user")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 28)
+                        .foregroundStyle(.customRed)
+                }
+                
             }
-            Spacer()
-            Text("Larocaplay")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(.customBlack)
-            Spacer()
-            Button {
-                router.presentSheet(.profile)
-            } label: {
-                Image(systemName: "person")
-                    .foregroundStyle(.customRed)
+            .frame(height: 38)
+            HStack(spacing: 4) {
+                Text("Bienvenido,")
+                    .foregroundStyle(.dirtyWhite)
+                Text("\(account?.email ?? "invitado")")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
             }
-
+            .font(.system(size: 12))
         }
-        .frame(height: 40)
         .padding(.horizontal)
     }
     
     @ViewBuilder
     private func destinationView(for destination: Destination) -> some View {
         switch destination {
-        case .preach(let id):
-            Text("Preach view \(id)")
+        case .preach(let item):
+            PreachScreen(preach: item)
+        case .preacher(let preacher):
+            PreacherScreen(preacher: preacher)
         case .list:
             Text("List view")
         case .account(let userId):
@@ -83,6 +124,12 @@ struct ContentView: View {
             Text("User details view: \(id)")
         case .postDetail(let id):
             Text("Post details view: \(id)")
+        case .congresses:
+            CongressesScreen()
+        case .series:
+            SeriesScreen()
+        case .serie(let serieId):
+            SerieScreen(serieId: serieId)
         }
     }
     
@@ -90,11 +137,13 @@ struct ContentView: View {
     private func sheetView(for sheet: Sheet) -> some View {
         switch sheet {
         case .settings:
-            Text("Settings view")
+            SettingsView()
         case .profile:
             Text("Profile view")
         case .compose:
             Text("Compose view")
+        case .auth:
+            AuthenticatedView(account: $account)
         }
     }
 }
@@ -103,4 +152,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environment(AWService())
+        .environment(AuthService())
+        .environment(PreachesRepository())
 }

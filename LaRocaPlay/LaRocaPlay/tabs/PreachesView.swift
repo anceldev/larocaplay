@@ -7,47 +7,65 @@
 
 import SwiftUI
 import AVKit
+import AppRouter
 
 struct PreachesView: View {
-//    @Environment(AWService.self) var awService
-//    @State var error: Error?
-//    @State var preaches: [Preach] = []
-//    @State private var player = AVPlayer(url: URL(string: "https://player.vimeo.com/video/1105734458")!)
-//    
-//    private func loadPreaches() {
-//        Task {
-//            do {
-//                self.preaches = try await awService.getPreaches()
-//            } catch {
-//                self.error = error
-//            }
-//        }
-//    }
+    @Environment(PreachesRepository.self) var repository
+    @Environment(AppRouter.self) var router
+    @Binding var account: User?
+    @State private var preaches: [Preach]
+    @State private var errorMessage: String?
+    
+    init(account: Binding<User?>, preaches: [Preach]) {
+        self._account = account
+        self._preaches = .init(initialValue: preaches)
+    }
     
     var body: some View {
-        Text("Preaches view")
-//        NavigationStack {
-//            VStack {
-//                Text("PreachesView")
-//                ScrollView(.vertical) {
-//                    ForEach(preaches) { preach in
-//                        NavigationLink(value: preach) {
-//                            VStack {
-//                                AsyncImage(url: preach.thumb)
-//                                    .aspectRatio(16/9, contentMode: .fit)
-//                                Text(preach.title)
-//                                Text(preach.preacher)
-//                            }
-//                        }
-//                    }
-//                }
-//                .navigationDestination(for: Preach.self) { 
-//                    PreachScreen(preach: $0)
-//                }
-//            }
-//            .onAppear {
-//                loadPreaches()
-//            }
-//        }
+        VStack(alignment: .center) {
+            Text("Lista de predicas")
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(.customBlack)
+            VStack(alignment: .center) {
+                Spacer()
+                if preaches.isEmpty {
+                    Text("No hay contenido de prédicas para mostrar.")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.customBlack)
+                        .opacity(0.5)
+                }
+                else {
+                    ScrollView(.vertical) {
+                        ItemsList(preaches: repository.preaches)
+                    }
+                    .scrollIndicators(.hidden)
+                }
+                Spacer()
+            }
+//            .padding(.horizontal, 24)
+            if !repository.isFull && !repository.preaches.isEmpty {
+                Button {
+                    fetchPreaches()
+                } label: {
+                    Text("Cargar más")
+                }
+            }
+        }
+        .padding()
+        .enableInjection()
+    }
+    
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
+    private func fetchPreaches() {
+        Task {
+            do {
+                let newPreaches = try await repository.getPreaches()
+                self.preaches.append(contentsOf: newPreaches)
+            } catch {
+                self.errorMessage = error.localizedDescription
+            }
+        }
     }
 }

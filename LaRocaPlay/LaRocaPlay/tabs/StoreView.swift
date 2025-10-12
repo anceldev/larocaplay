@@ -10,7 +10,12 @@ import SwiftUI
 struct StoreView: View {
     var body: some View {
         Text("StoreView")
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {

@@ -10,56 +10,68 @@ import WebKit
 import UIKit
 
 
-struct VimeoPlayerView: UIViewRepresentable {
-//    let videoID: String
-//    let hash: String? // For private videos
-    let url: URL
+struct VimeoPlayer: UIViewRepresentable {
+    let videoURL: String
     
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
-        webView.navigationDelegate = context.coordinator
+        webView.configuration.allowsInlineMediaPlayback = true
+        webView.configuration.mediaTypesRequiringUserActionForPlayback = []
+        
+        // Configuración adicional para mejor experiencia
+        webView.scrollView.isScrollEnabled = false
+        webView.isOpaque = false
+        webView.backgroundColor = UIColor.clear
+        
         return webView
     }
     
     func updateUIView(_ webView: WKWebView, context: Context) {
-//        let urlString: String
-//        if let hash = hash {
-//            urlString = "https://player.vimeo.com/video/\(videoID)?h=\(hash)"
-//        } else {
-//            urlString = "https://player.vimeo.com/video/\(videoID)"
-//        }
-        
-//        if let url = URL(string: urlString) {
-        print(url)
-            let request = URLRequest(url: url)
-            webView.load(request)
-//        }
+        guard let url = URL(string: videoURL) else { return }
+        let request = URLRequest(url: url)
+        webView.load(request)
     }
-//    func updateUIView(_ webView: WKWebView, context: Context) {
-//        let urlString: String
-//        if let hash = hash {
-//            urlString = "https://player.vimeo.com/video/\(videoID)?h=\(hash)"
-//        } else {
-//            urlString = "https://player.vimeo.com/video/\(videoID)"
-//        }
-//        
-//        if let url = URL(string: urlString) {
-//            let request = URLRequest(url: url)
-//            webView.load(request)
-//        }
-//    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
+}
+
+struct VimeoEmbedPlayer: UIViewRepresentable {
+    let embedHTML: String
+    init(videoURL: String) {
+        self.embedHTML = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { margin: 0; padding: 0; background: black; }
+            iframe { width: 100%; height: 100vh; border: none; }
+        </style>
+    </head>
+    <body>
+        <iframe src="\(videoURL)?badge=0&autopause=0&player_id=0&app_id=58479" 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin" 
+                title="Honra y recompensa 12 - pastor Miguel 03.08.2025">
+        </iframe>
+    </body>
+    </html>
+    """
     }
     
-    class Coordinator: NSObject, WKNavigationDelegate {
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            print("Vimeo player loaded")
-        }
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.configuration.allowsInlineMediaPlayback = true
+        webView.configuration.mediaTypesRequiringUserActionForPlayback = []
+        webView.scrollView.isScrollEnabled = false
+        webView.isOpaque = false
+        webView.backgroundColor = UIColor.clear
         
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            print("Failed to load Vimeo player: \(error)")
-        }
+        return webView
+    }
+    
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        webView.loadHTMLString(embedHTML, baseURL: nil)
     }
 }

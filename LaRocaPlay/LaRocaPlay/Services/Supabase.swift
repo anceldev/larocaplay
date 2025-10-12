@@ -15,8 +15,11 @@ final class SBCLient {
     var supabase: SupabaseClient
     private init() {
         // Initialize with nil, will be set up later
-        let anonKey = "\(Secrets.$supabaseanonkey)"
-        let projectUrl = "\(Secrets.$supabaseprojecturl)"
+        let anonKey = "\(Secrets.$supabaselocalkey)"
+        let projectUrl = "\(Secrets.$supabaselocalurl)"
+        
+//        let anonKey = "\(Secrets.$supabaseanonkey)"
+//        let projectUrl = "\(Secrets.$supabaseprojecturl)"
         supabase = .init(
             supabaseURL: URL(string: projectUrl)!,
             supabaseKey: anonKey

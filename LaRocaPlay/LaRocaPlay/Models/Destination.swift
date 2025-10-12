@@ -6,14 +6,21 @@
 //
 
 import AppRouter
+import SwiftUI
 
 enum Destination: DestinationType {
-    case preach(id: String)
+    case preach(preach: Preach)
+    case preacher(preacher: Preacher)
     case list
     case account(userId: String)
     case userDetail(id: String)     // Different from generic detail
     case postDetail(id: String)     // Different from generic detail
-
+    case congresses
+    case series
+    case serie(id: Int)
+    //    case auth(user: User)
+    //    case auth(user: User?)
+    
     static func from(path: String, fullPath: [String], parameters: [String : String]) -> Destination? {
         guard let currenIndex = fullPath.firstIndex(of: path) else {
             return nil
@@ -27,10 +34,10 @@ enum Destination: DestinationType {
         case ("posts", "preach"):
             let id = parameters["id"] ?? "unknown"
             return .postDetail(id: id)
-        // Standard routing
+            // Standard routing
         case (_, "preach"):
             let id = parameters["id"] ?? "default"
-            return .preach(id: id)
+            return .preach(preach: PreviewData.preaches[0])
         case (_, "list"):
             return .list
         case (_, "account"):
@@ -49,6 +56,7 @@ enum Sheet: SheetType {
     case settings
     case profile
     case compose
-    
+    case auth
     var id: Int { hashValue }
+    
 }

@@ -22,12 +22,18 @@ struct TopBar: View {
             Button {
                 print("Go to profile to auth")
             } label: {
-                Image(systemName: "person")
+//                Image(systemName: "person")
+                Image("user")
             }
 
         }
         .padding(.horizontal)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {

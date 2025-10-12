@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B44248D32E7325350061FA5E /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = B44248D22E7325350061FA5E /* Inject */; };
 		B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = B4747F422E4BA1B200F6ACE5 /* AppRouter */; };
 		B48845FC2E461E52006DB382 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FB2E461E52006DB382 /* Auth */; };
 		B48845FE2E461E52006DB382 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FD2E461E52006DB382 /* Functions */; };
@@ -40,6 +41,7 @@
 				B48846042E461E52006DB382 /* Storage in Frameworks */,
 				B48846002E461E52006DB382 /* PostgREST in Frameworks */,
 				B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */,
+				B44248D32E7325350061FA5E /* Inject in Frameworks */,
 				B48845FE2E461E52006DB382 /* Functions in Frameworks */,
 				B48845FC2E461E52006DB382 /* Auth in Frameworks */,
 				B48846022E461E52006DB382 /* Realtime in Frameworks */,
@@ -96,6 +98,7 @@
 				B48846052E461E52006DB382 /* Supabase */,
 				B4747F422E4BA1B200F6ACE5 /* AppRouter */,
 				B49DA99D2E50A88800B0E571 /* ConfidentialKit */,
+				B44248D22E7325350061FA5E /* Inject */,
 			);
 			productName = LaRocaPlay;
 			productReference = B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */;
@@ -131,6 +134,7 @@
 				B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */,
 				B49DA9942E50A40300B0E571 /* XCRemoteSwiftPackageReference "swift-confidential-plugin" */,
 				B49DA99C2E50A88800B0E571 /* XCRemoteSwiftPackageReference "swift-confidential" */,
+				B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B4A75FB82E3D27D0005568C4 /* Products */;
@@ -206,6 +210,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 5VZ6Q8DGLP;
+				EMIT_FRONTEND_COMMAND_LINES = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -312,6 +317,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.anceldev.LaRocaPlay;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -373,6 +382,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
 		B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Dimillian/AppRouter.git";
@@ -416,6 +433,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B44248D22E7325350061FA5E /* Inject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */;
+			productName = Inject;
+		};
 		B4747F422E4BA1B200F6ACE5 /* AppRouter */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */;
