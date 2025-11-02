@@ -15,17 +15,28 @@ struct PreachesView: View {
     @Binding var account: User?
     @State private var preaches: [Preach]
     @State private var errorMessage: String?
+    @State private var searchQuery = ""
     
     init(account: Binding<User?>, preaches: [Preach]) {
         self._account = account
         self._preaches = .init(initialValue: preaches)
+    }
+    var filteredPreaches: [Preach] {
+        if searchQuery.isEmpty {
+            return repository.preaches
+        }
+        return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
     }
     
     var body: some View {
         VStack(alignment: .center) {
             Text("Lista de predicas")
                 .font(.system(size: 24, weight: .medium))
-                .foregroundStyle(.customBlack)
+//                .foregroundStyle(.customBlack)
+            TextField("Buscar...", text: $searchQuery)
+                .textFieldStyle(.customTextFieldStyle)
+                .foregroundStyle(searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .white : .dirtyWhite)
+                .padding(.bottom, 14)
             VStack(alignment: .center) {
                 Spacer()
                 if preaches.isEmpty {
@@ -36,7 +47,8 @@ struct PreachesView: View {
                 }
                 else {
                     ScrollView(.vertical) {
-                        ItemsList(preaches: repository.preaches)
+//                        ItemsList(preaches: repository.preaches)
+                        ItemsList(preaches: filteredPreaches)
                     }
                     .scrollIndicators(.hidden)
                 }

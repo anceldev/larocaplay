@@ -17,23 +17,21 @@ struct HomeView: View {
         }
         return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
     }
+    
     var body: some View {
         VStack {
             ScrollView(.vertical) {
-                // TODO: Añadir última predica subida y resument del fin de semana, si lo hubiese
-                VStack {
-                    Image(.thumbPreview)
-                        .resizable()
-                        .aspectRatio(16/9, contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
-                VStack(spacing: 16) {
-                    
-                    
+                VStack(spacing: 32) {
+                    // TODO: Añadir última predica subida y resument del fin de semana, si lo hubiese
+                    VStack {
+                        Image(.thumbPreview)
+                            .resizable()
+                            .aspectRatio(16/9, contentMode: .fit)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                    }
                     // TODO: últimas 4 predicas añadidas.
                     VStack {
                         Text("Últimas predicaciones")
-//                            .foregroundStyle(.customBlack)
                             .foregroundStyle(.dirtyWhite)
                             .font(.system(size: 18, weight: .medium))
                         TextField("Buscar...", text: $searchQuery)
@@ -42,12 +40,14 @@ struct HomeView: View {
                         
                         ItemsList(preaches: preaches) // For debug
                     }
-                    SeriesCard()
-                    
-                    // TODO: Boton que lleva al directo de la celebración
-                    StreamingCard()
-                    // TODO: Enlace a congresos que se han realizado (Aquí se puede añadir varios videos a un congreso específico, como el fin de semana de la visión por ejemplo).
-                    EventsCard()
+                    VStack(spacing: 32) {
+                        SeriesCard()
+                        
+                        // TODO: Boton que lleva al directo de la celebración
+                        StreamingCard()
+                        // TODO: Enlace a congresos que se han realizado (Aquí se puede añadir varios videos a un congreso específico, como el fin de semana de la visión por ejemplo).
+                        EventsCard()
+                    }
                 }
                 
             }

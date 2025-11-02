@@ -46,6 +46,7 @@ struct ContentView: View {
                     .tabItem {
                         Label(tab.label.capitalized, image: tab.icon)
                             .font(.system(size: 40))
+                            .labelStyle(.iconOnly)
                     }
                     .tag(tab)
                 }

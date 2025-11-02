@@ -28,7 +28,12 @@ struct ValidatorViewModifier: ViewModifier {
                      .font(.caption)
              }
          }
+         .enableInjection()
      }
+
+     #if DEBUG
+     @ObserveInjection var forceRedraw
+     #endif
      
      private func validate() {
          errorMessage = validationRule(value)

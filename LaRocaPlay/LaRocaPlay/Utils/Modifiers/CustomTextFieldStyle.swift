@@ -17,12 +17,12 @@ struct CustomTextFieldStyle: TextFieldStyle {
             .frame(minHeight: 56)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
-            .foregroundStyle(.white)
+//            .foregroundStyle(.white)
             .tint(.white)
             .clipShape(Capsule())
             .overlay {
                 Capsule()
-                    .stroke(.white, lineWidth: 1)
+                    .strokeBorder(.white, lineWidth: 1)
             }
     }
 }
