@@ -13,10 +13,12 @@ import Supabase
 final class PreachesRepository {
     let client = SBCLient.shared.supabase
     var preaches = [Preach]()
+    var externalLinks = [ExternalLink]()
+    
     private var itemLimit = 5
 //    var preaches: [Preach]
     var indexfrom: Int = 0
-    var indexTo: Int = 5
+    var indexTo: Int = 4
     var isInitialized = false
     var isFull = false
     
@@ -26,6 +28,7 @@ final class PreachesRepository {
             do {
                 let newPreaches = try await getPreaches()
                 self.preaches.append(contentsOf: newPreaches)
+                self.externalLinks = try await getExternalLinks()
                 self.isInitialized = true
             } catch {
                 print("No preached founded")
@@ -33,41 +36,28 @@ final class PreachesRepository {
         }
     }
     
+    func getExternalLinks() async throws -> [ExternalLink]{
+        let links: [ExternalLink] = try await client
+            .from("external_links")
+            .select()
+            .execute()
+            .value
+        return links
+    }
+    
     
     func getPreaches() async throws -> [Preach] {
         do {
-//            let new = try await client
-//                .from("preaches")
-//                .select("""
-//                    id,
-//                    title,
-//                    description,
-//                    preacher_id(id, name, role),
-//                    date,
-//                    video,
-//                    serie_id(id, name, description, thumb_id)
-//                    thumb_id,
-//                    congress_id(id, name, from, to, description, thumb_id)
-//                    """)
-//                .lte("date", value: Date())
-//                .order("date", ascending: false)
-//                .range(from: indexfrom, to: indexTo)
-//                .execute()
-            
-//            print(try JSONSerialization.jsonObject(with: new.data))
-            
             let newPreaches: [Preach] = try await client
-                .from("preaches")
+                .from("preach")
                 .select("""
                     id,
                     title,
-                    description,
-                    preacher_id(id, name, role),
+                    description,                    
                     date,
-                    video,
-                    serie_id(id, created_at, name, description, thumb_id)
+                    video_url,
                     thumb_id,
-                    congress_id(id, name, from, to, description, thumb_id)
+                    preacher_id(id, name)
                     """)
                 .lte("date", value: Date())
                 .order("date", ascending: false)

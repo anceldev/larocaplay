@@ -6,35 +6,32 @@
 //
 
 import SwiftUI
-
-enum AuthFlow {
-    case unauthenticated
-    case authenticating
-    case authenticated
-}
+import RevenueCat
+import ConfidentialKit
 
 struct AuthenticatedView: View {
     
     @Environment(AuthService.self) var auth
     @Binding var account: User?
-    @State private var flow: AuthFlow
+    @State private var authState: AuthState
     @State private var errorMessage: String?
     
     init(account: Binding<User?>) {
         self._account = account
-        self.flow = account.wrappedValue == nil ? .unauthenticated : .authenticated
+        self.authState = account.wrappedValue == nil ? .unauthenticated : .authenticated
     }
     
     var body: some View {
         Group {
-            switch flow {
+            switch authState {
             case .unauthenticated:
-                AuthenticationView(account: $account, flow: $flow)
-                    .environment(auth)
+//                AuthenticationView(account: $account, authState: $authState)
+//                    .environment(auth)
+                Text("Unauthenticaed")
             case .authenticating:
                 ProgressView()
             case .authenticated:
-                AccountView(account: $account, flow: $flow)
+                AccountView(account: $account, authState: $authState)
                     .environment(auth)
             }
         }
@@ -44,7 +41,10 @@ struct AuthenticatedView: View {
 //        }
         .onChange(of: account, { oldValue, newValue in
             if newValue != nil {
-                flow = .authenticated
+                authState = .authenticated
+                    Purchases.logLevel = .debug
+//                Purchases.configure(withAPIKey: Secrets.$testStore, )
+                Purchases.configure(withAPIKey: Secrets.$testStore, appUserID: newValue?.email)
             }
         })
         .enableInjection()
@@ -58,12 +58,13 @@ struct AuthenticatedView: View {
     private func checkAuthStatus() {
         Task {
             do {
-                flow = .authenticating
-                self.account = try await auth.getSession()
-                flow = .authenticated
+                authState = .authenticating
+//                self.account = try await auth.getSession()
+                try await auth.getSession()
+                authState = .authenticated
             } catch {
                 self.errorMessage = error.localizedDescription
-                self.flow = .unauthenticated
+                self.authState = .unauthenticated
             }
         }
     }

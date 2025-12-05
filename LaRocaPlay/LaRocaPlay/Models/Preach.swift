@@ -7,39 +7,51 @@
 
 import Foundation
 
-struct Preach: Codable, Identifiable, Hashable {
-    let id: Int
-    let title: String
-    let description: String?
-    let preacher: Preacher?
-    let date: Date
-    let video: String
-    let serie: Serie?
-    let thumbdId: String?
-    let congress: Congress?
+protocol PreachProtocol: Identifiable, Codable {
+    var id: Int { get set }
+    var title: String { get set }
+    var description: String? { get set }
+    var date: Date { get set }
+    var preacher: Preacher { get set }
+    var videoUrl: String { get set }
+    var thumbId: String? { get set }
+}
+
+struct Preach: PreachProtocol, Hashable {
+    var id: Int
+    var title: String
+    var description: String?
+    var date: Date
+    var preacher: Preacher
+    var videoUrl: String
+    var thumbId: String?
+    
+    var serie: PreachCollection?
+    var collection: PreachCollection?
+    var discipleship: PreachCollection?
     
     enum CodingKeys: String, CodingKey {
-        case id, title, description, video, date
-//        case serie = "serie_id"
-        case preacher = "preacher_id"
-        case serie = "serie_id"
-
+        case id, title, description, date
+        case videoUrl = "video_url"
 //        case preacher = "preacher_id"
+        case preacher = "preacher"
+        case serie = "serie_id"
         case thumbId = "thumb_id"
-        case congress = "congress_id"
-//        case preacher, date, video, serie, thumb
+        case collection = "collection_id"
+        case discipleship = "discipleship_id"
     }
     
-    init(id: Int, title: String, description: String? = nil, date: Date = .now, preacher: Preacher? = nil, video: String, serie: Serie? = nil, thumbId: String? = nil, congress: Congress? = nil) {
+    init(id: Int, title: String, description: String? = nil, date: Date = .now, preacher: Preacher, videoUrl: String, serie: PreachCollection? = nil, thumbId: String? = nil, collection: PreachCollection? = nil, discipleship: PreachCollection? = nil) {
         self.id = id
         self.title = title
         self.description = description
         self.date = date
         self.preacher = preacher
-        self.video = video
+        self.videoUrl = videoUrl
+        self.thumbId = thumbId
         self.serie = serie
-        self.thumbdId = thumbId
-        self.congress = congress
+        self.collection = collection
+        self.discipleship = discipleship
     }
     
     init(from decoder: any Decoder) throws {
@@ -47,20 +59,19 @@ struct Preach: Codable, Identifiable, Hashable {
         self.id = try container.decode(Int.self, forKey: .id)
         self.title = try container.decode(String.self, forKey: .title)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
-        self.preacher = try container.decodeIfPresent(Preacher.self, forKey: .preacher)
-        // Space for date
-//        self.date = try container.decode(Date.self, forKey: .date)
+        self.preacher = try container.decode(Preacher.self, forKey: .preacher)
+
         let stringDate = try container.decode(String.self, forKey: .date)
-//        self.date = Date(from: D)
         guard let date = DateFormatter.supabaseDate.date(from: stringDate) else {
             throw DecodingError.dataCorruptedError(forKey: .date, in: container, debugDescription: "Wrong date format")
         }
         self.date = date
         
-        self.video = try container.decode(String.self, forKey: .video)
-        self.serie = try container.decodeIfPresent(Serie.self, forKey: .serie)
-        self.thumbdId = try container.decodeIfPresent(String.self, forKey: .thumbId)
-        self.congress = try container.decodeIfPresent(Congress.self, forKey: .congress)
+        self.videoUrl = try container.decode(String.self, forKey: .videoUrl)
+        self.serie = try container.decodeIfPresent(PreachCollection.self, forKey: .serie)
+        self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
+        self.collection = try container.decodeIfPresent(PreachCollection.self, forKey: .collection)
+        self.discipleship = try container.decodeIfPresent(PreachCollection.self, forKey: .discipleship)
     }
     func encode(to encoder: any Encoder) throws {
         
@@ -84,3 +95,4 @@ extension DateFormatter {
            return formatter
        }()
 }
+

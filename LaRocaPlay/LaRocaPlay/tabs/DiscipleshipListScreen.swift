@@ -11,32 +11,53 @@ import SwiftUI
 
 struct DiscipleshipListScreen: View {
     @Environment(AppRouter.self) var router
+    @Environment(AuthService.self) var auth
+    @Environment(CollectionRepository.self) var collectionsRepository
     
-    let role: UserRole
+//    let role: UserRole
+    @State private var errorMessage: String? = ""
+    
     var body: some View {
-        ScrollView(.vertical) {
-            VStack {
-                Button {
-                    
-                } label: {
-                    DiscipleshipCard(title: "Discipulado 1", image: Image(.preview2))
+        VStack(spacing: 0) {
+            TopBarScreen(title: "Capacitaciones")
+            ScrollView(.vertical) {
+                VStack(spacing: 24) {
+                    ForEach(collectionsRepository.series.filter({ $0.collectionType.id == 3 })) { discipleship in
+                        Button {
+                            router.navigateTo(.collection(id: discipleship.id, cols: 1))
+                        } label: {
+                            DiscipleshipCard(title: discipleship.title, image: Image(.preview2))
+                        }
+                    }
                 }
-                    
-                DiscipleshipCard(title: "Discipulado 2", image: Image(.preview2))
-                if role != .member {
-                    TrainingCard()
-                }
+                .padding(.bottom)
             }
         }
         .scrollIndicators(.hidden)
         .padding(.horizontal)
+        .background(.customBlack)
+        .onAppear(perform: {
+            getCollections()
+        })
         .enableInjection()
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
+    private func getCollections() {
+        if collectionsRepository.series.isEmpty {
+            Task {
+                do {
+                    try await collectionsRepository.getCollections()
+                } catch {
+                    print(error)
+                    self.errorMessage = "No se han podido recuperar las capacitaciones"
+                }
+            }
+        }
+    }
 }
 
 #Preview {
-    DiscipleshipListScreen(role: .member)
+    DiscipleshipListScreen()
 }

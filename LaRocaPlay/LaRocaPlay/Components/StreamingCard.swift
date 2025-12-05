@@ -8,24 +8,37 @@
 import SwiftUI
 
 struct StreamingCard: View {
+    let streamingUrl: String
+    @State private var isVisible: Bool = true
     var body: some View {
-        VStack {
-            Link(destination: URL(string: "https://www.youtube.com/@CentroCristianoLaRoca")!) {
-                ZStack {
-                    Image(.bgStreaming)
-                        .resizable()
-                        .scaledToFill()
-                        .blur(radius: 3)
+        ZStack {
+            Image(.bannerStreaming)
+                .resizable()
+                .scaledToFit()
+            VStack {
+                Image(.halfDottedCirclePlay)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 40)
+                    .foregroundStyle(.dirtyWhite)
+                
+                Link(destination: URL(string: "https://www.youtube.com/@CentroCristianoLaRoca")!) {
                     VStack {
-                        Text("Directo celebración")
+                        Text("Ver emisión en directo")
+                            .opacity(isVisible ? 1.0 : 0.0)
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
+                                    isVisible = false
+                                }
+                            }
                     }
                     .foregroundStyle(.white)
-                    .font(.system(size: 24, weight: .semibold))
+                    .font(.system(size: 18, weight: .bold))
                     .shadow(color: .black,radius: 5)
                 }
+                .padding(.bottom, 16)
             }
         }
-        .frame(height: 140)
         .frame(maxWidth: .infinity)
         .background(.gray)
         .clipShape(RoundedRectangle(cornerRadius: 20))

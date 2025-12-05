@@ -17,26 +17,21 @@ struct ItemsList: View {
     init(preaches: [Preach], cols: Int = 2) {
         self.preaches = preaches
         self.cols = cols
-        print(preaches)
     }
     
     var columns: [GridItem] {
         Array(repeating: GridItem(.flexible()), count: cols)
     }
     var body: some View {
-//        ScrollView(.vertical) {
         LazyVGrid(columns: columns, spacing: 20) {
-                
-                ForEach(preaches) { item in
-                    Button {
-                        router.navigateTo(.preach(preach: item))
-                    } label: {
-                        PreachGridItem(item)
-                    }
+            ForEach(preaches) { item in
+                Button {
+                    router.navigateTo(.preach(preach: item))
+                } label: {
+                    PreachGridItem(item, aspect: cols == 2 ? 4/3 : 16/9)
                 }
             }
-//        }
-//        .scrollIndicators(.hidden)
+        }
         .enableInjection()
     }
 #if DEBUG

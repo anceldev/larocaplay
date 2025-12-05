@@ -13,6 +13,7 @@ import ConfidentialKit
 @Observable
 final class SBCLient {
     var supabase: SupabaseClient
+    
     private init() {
         // Initialize with nil, will be set up later
         let anonKey = "\(Secrets.$supabaselocalkey)"
@@ -24,6 +25,7 @@ final class SBCLient {
             supabaseURL: URL(string: projectUrl)!,
             supabaseKey: anonKey
         )
+        
     }
 }
 

@@ -10,15 +10,16 @@ import Observation
 import Supabase
 
 @Observable
-final class MusicRepository {
+final class MusicVideoRepository {
     let client = SBCLient.shared.supabase
-    var music: [MusicItem] = []
+//    var music: [MusicItem] = []
+    var songs = [MusicVideo]()
     
     @MainActor
     init() {
         Task {
             do {
-                try await getPlaylist()
+                try await getSongs()
             } catch {
                 print("No music founded")
                 throw error
@@ -26,11 +27,14 @@ final class MusicRepository {
         }
     }
     
-    func getPlaylist() async throws {
-        let list: [MusicItem] = try await client
-            .from("music_list")
+    func getSongs() async throws {
+        let list: [MusicVideo] = try await client
+            .from("music_video")
+            .select()
+            .order("created_at", ascending: false)
             .execute()
             .value
-        self.music = list
+        print(list)
+        self.songs = list
     }
 }

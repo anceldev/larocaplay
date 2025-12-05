@@ -6,23 +6,56 @@
 //
 
 import SwiftUI
+import RevenueCat
+import RevenueCatUI
+import ConfidentialKit
 
 
 @main
 struct LaRocaPlayApp: App {
     @State private var service = AWService()
     @State private var authService = AuthService()
+    
     @State var repository = PreachesRepository()
-    @State private var seriesRepository = SeriesRepository()
+    @State private var collections = CollectionRepository()
+    @State private var celebration = CelebrationRepository()
+    @State private var musicVideoRepository = MusicVideoRepository()
+    
+    //    @State private var appState: AppState = UserDefaults.standard.appState
+    @State private var hideOnboarding: Bool = UserDefaults.standard.bool(forKey: "hideOnboarding")
+    
+    init() {
+        Purchases.logLevel = .debug
+        Purchases.configure(withAPIKey: Secrets.$testStore)
+    }
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(service)
-                .environment(authService)
-                .environment(repository)
-                .environment(seriesRepository)
-                .preferredColorScheme(.dark)
+            VStack {
+                if hideOnboarding {
+                    switch authService.authState {
+                    case .unauthenticated:
+                        AuthenticationView()
+                            .environment(authService)
+                    case .authenticating:
+                        ProgressView()
+                            .tint(.customRed)
+                    case .authenticated:
+                        MainScreen()
+                            .environment(service)
+                            .environment(authService)
+                            .environment(repository)
+                            .environment(collections)
+                            .environment(celebration)
+                            .environment(musicVideoRepository)
+                            .preferredColorScheme(.dark)
+                    }
+                    
+                } else {
+                    OnboardingScreen(hideOnboarding: $hideOnboarding)
+                }
+            }
+            .preferredColorScheme(.dark)
         }
     }
 }
@@ -39,29 +72,29 @@ struct LaRocaPlayApp: App {
 import Combine
 
 private var loadInjectionOnce: () = {
-        guard objc_getClass("InjectionClient") == nil else {
-            return
-        }
-        #if os(macOS) || targetEnvironment(macCatalyst)
-        let bundleName = "macOSInjection.bundle"
-        #elseif os(tvOS)
-        let bundleName = "tvOSInjection.bundle"
-        #elseif os(visionOS)
-        let bundleName = "xrOSInjection.bundle"
-        #elseif targetEnvironment(simulator)
-        let bundleName = "iOSInjection.bundle"
-        #else
-        let bundleName = "maciOSInjection.bundle"
-        #endif
-        let bundlePath = "/Applications/InjectionIII.app/Contents/Resources/"+bundleName
-        guard let bundle = Bundle(path: bundlePath), bundle.load() else {
-            return print("""
+    guard objc_getClass("InjectionClient") == nil else {
+        return
+    }
+#if os(macOS) || targetEnvironment(macCatalyst)
+    let bundleName = "macOSInjection.bundle"
+#elseif os(tvOS)
+    let bundleName = "tvOSInjection.bundle"
+#elseif os(visionOS)
+    let bundleName = "xrOSInjection.bundle"
+#elseif targetEnvironment(simulator)
+    let bundleName = "iOSInjection.bundle"
+#else
+    let bundleName = "maciOSInjection.bundle"
+#endif
+    let bundlePath = "/Applications/InjectionIII.app/Contents/Resources/"+bundleName
+    guard let bundle = Bundle(path: bundlePath), bundle.load() else {
+        return print("""
                 ⚠️ Could not load injection bundle from \(bundlePath). \
                 Have you downloaded the InjectionIII.app from either \
                 https://github.com/johnno1962/InjectionIII/releases \
                 or the Mac App Store?
                 """)
-        }
+    }
 }()
 
 public let injectionObserver = InjectionObserver()
@@ -73,8 +106,8 @@ public class InjectionObserver: ObservableObject {
     init() {
         _ = loadInjectionOnce // .enableInjection() optional Xcode 16+
         cancellable = NotificationCenter.default.publisher(for:
-            Notification.Name("INJECTION_BUNDLE_NOTIFICATION"))
-            .sink { [weak self] change in
+                                                            Notification.Name("INJECTION_BUNDLE_NOTIFICATION"))
+        .sink { [weak self] change in
             self?.injectionNumber += 1
             self?.publisher.send()
         }

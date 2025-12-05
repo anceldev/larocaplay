@@ -6,43 +6,72 @@
 //
 
 import SwiftUI
+import RevenueCat
+import RevenueCatUI
 
 struct AccountView: View {
     @Environment(AuthService.self) var auth
+    @Environment(CollectionRepository.self) var collectionsRepository
     @Binding var account: User?
-    @Binding var flow: AuthFlow
-    @State private var errorMessage: String?
+    @Binding var authState: AuthState
+    @State private var errorMessage: String? = nil
+    @State private var showSubscriptionSheet = false
     
+    var subscriptionStatus: Bool {
+        auth.customerInfo?.entitlements["pro"]?.isActive ?? false
+    }
+
     var body: some View {
         VStack {
-            // TODO: Vista de perfil, con nombre de usuario y email. Editar perfil, Cambiar contraseña y cerrar sesión.
-            // TODO: Nivel de suscripción y poder modificarlo
-            if let account {
-                Text("Usuario autenticado")
-                Text("Usuario: \(account.email)")
-                    .fontWeight(.medium)
-                VStack {
-                    HStack(spacing: 0) {
-                        Text("Bienvenido")
-                            .fontWeight(.light)
-                        Text(", \(account.email)")
-                            .fontWeight(.medium)
+            ScrollView(.vertical) {
+                VStack(spacing: 16) {
+                    // TODO: Vista de perfil, con nombre de usuario y email. Editar perfil, Cambiar contraseña y cerrar sesión.
+                    // TODO: Nivel de suscripción y poder modificarlo
+                    if let account {
+                        VStack(spacing: 8) {
+                            HStack(spacing: 0) {
+                                Text("Bienvenido")
+                                    .font(.system(size: 20, weight: .semibold))
+                            }
+                            .font(.system(size: 12))
+                            AccountCard(user: account)
+                        }
+
+                        VStack(spacing: 10) {
+                            Text("Sesión")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.system(size: 16))
+                                .fontWeight(.semibold)
+                            VStack(spacing: 16) {
+                                
+                                Button {
+                                    signout()
+                                } label: {
+                                    HStack {
+                                        Image(.arrowDoorOut3)
+                                            .foregroundStyle(.customRed)
+                                        Text("Cerrar sesión")
+                                            .foregroundStyle(.customRed).opacity(0.65)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                            .padding()
+                            .background(.black.opacity(0.45))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                        }
                     }
-                    .font(.system(size: 12))
+                    Spacer()
+                }
+                .padding()
+                .foregroundStyle(.dirtyWhite)
+                .enableInjection()
+                .sheet(isPresented: $showSubscriptionSheet) {
+                    PaywallView()
                 }
             }
-            Spacer()
-            Button {
-                signout()
-            } label: {
-                Text("Cerrar sesión")
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.customRed)
+            .scrollIndicators(.hidden)
         }
-        .padding()
-        .foregroundStyle(.dirtyWhite)
-        .enableInjection()
     }
 
     #if DEBUG
@@ -54,7 +83,12 @@ struct AccountView: View {
             do {
                 try await auth.signout()
                 account = nil
-                flow = .unauthenticated
+                authState = .unauthenticated
+                self.collectionsRepository.series.removeAll()
+                let customerInfo = try await Purchases.shared.logOut()
+//                try await auth.getCustomerInfor()
+                try await auth.getSuscriptionStatus()
+                print(customerInfo)
             } catch {
                 print(error.localizedDescription)
                 errorMessage = error.localizedDescription
@@ -64,6 +98,7 @@ struct AccountView: View {
 }
 
 #Preview {
-    AccountView(account: .constant(PreviewData.user), flow: .constant(.authenticated))
+    AccountView(account: .constant(PreviewData.user), authState: .constant(.authenticated))
         .environment(AuthService())
+        .background(.customBlack)
 }

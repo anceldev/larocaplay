@@ -1,0 +1,107 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "F4ECEAB0",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6755063153",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "5VZ6Q8DGLP",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 784302561.82052302,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21827562",
+      "localizations" : [
+
+      ],
+      "name" : "La Roca Play Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "44.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6755063049",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Consigue el mejor precio con tu suscripción anual",
+              "displayName" : "Anual",
+              "locale" : "es_ES"
+            }
+          ],
+          "productID" : "rc_4999_1y_1w0",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Annual €49.99, 1-week free",
+          "subscriptionGroupID" : "21827562",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "3.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6755063328",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Suscríbete de manera mensual",
+              "displayName" : "Mensual",
+              "locale" : "es_ES"
+            }
+          ],
+          "productID" : "rc_499_1m_1w0",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly €4.99, 1-week free",
+          "subscriptionGroupID" : "21827562",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

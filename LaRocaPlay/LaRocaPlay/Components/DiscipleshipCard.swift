@@ -14,8 +14,8 @@ struct DiscipleshipCard: View {
     
     var body: some View {
         VStack {
-            Button {
-            } label: {
+//            Button {
+//            } label: {
                 ZStack {
 //                    Image(
                     Image(.defaultDiscipleship)
@@ -25,7 +25,7 @@ struct DiscipleshipCard: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-            }
+//            }
         }
         .frame(height: 200)
         .frame(maxWidth: .infinity)

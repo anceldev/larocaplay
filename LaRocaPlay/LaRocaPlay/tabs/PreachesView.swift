@@ -12,13 +12,13 @@ import AppRouter
 struct PreachesView: View {
     @Environment(PreachesRepository.self) var repository
     @Environment(AppRouter.self) var router
-    @Binding var account: User?
+    
     @State private var preaches: [Preach]
+    
     @State private var errorMessage: String?
     @State private var searchQuery = ""
     
-    init(account: Binding<User?>, preaches: [Preach]) {
-        self._account = account
+    init(preaches: [Preach]) {
         self._preaches = .init(initialValue: preaches)
     }
     var filteredPreaches: [Preach] {
@@ -64,6 +64,7 @@ struct PreachesView: View {
             }
         }
         .padding()
+        .background(.customBlack)
         .enableInjection()
     }
     

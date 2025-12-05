@@ -6,19 +6,19 @@
 //
 
 import SwiftUI
+import Supabase
+import RevenueCat
 
 enum AuthMode {
     case login
     case signup
+    case resetPassword
 }
 
 struct AuthenticationView: View {
     
     @Environment(AuthService.self) var auth
-    
-    @Binding var account: User?
-    @Binding var flow: AuthFlow
-    
+
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
@@ -48,17 +48,18 @@ struct AuthenticationView: View {
                         isLoading: $isLoading,
                         action: authAction
                     )
+                case .resetPassword:
+                    Text("Reset password Screen")
                 }
             }
             VStack(spacing: 24) {
                 if let errorMessage {
                     Text(errorMessage)
                         .foregroundStyle(.orange)
-                        .font(.system(size: 13))
+                        .font(.system(size: 12))
                 }
                 
                 VStack(spacing: 16) {
-                    
                     VStack {
                         Text(authMode == .login ? "¿Todavía no tienes una cuenta?" : "")
                             .fontWeight(.light)
@@ -78,7 +79,9 @@ struct AuthenticationView: View {
                 }
             }
         }
+        .frame(maxHeight: .infinity)
         .padding()
+        .background(.customBlack)
         .enableInjection()
     }
 
@@ -91,13 +94,33 @@ struct AuthenticationView: View {
             do {
                 isLoading = true
                 if authMode == .login {
-                    self.account = try await auth.signIn(email: email, password: password)
-                    flow = .authenticated
+                    try await auth.signIn(email: email, password: password)
+//                    if let user = auth.user {
+//                        let rcInfo = try await Purchases.shared.logIn(user.id.uuidString)
+//                        print(rcInfo.customerInfo)
+//                        print(rcInfo.created)
+//                    }
+                    
                 } else {
-                    self.account = try await auth.signUp(email: email, password: password)
-                    flow = .authenticated
+                    try await auth.signUp(email: email, password: password)
+//                    if let user = auth.user {
+//                        let rcInfo = try await Purchases.shared.logIn(user.id.uuidString)
+//                        print(rcInfo.customerInfo)
+//                        print(rcInfo.created)
+//                    }
+                }
+            } catch(let error as Supabase.AuthError) {
+                print(error)
+                switch error.errorCode {
+                case .invalidCredentials:
+                    self.errorMessage = "Correo electrónico o contraseña inválidos"
+                case .userAlreadyExists:
+                    self.errorMessage = "Ya existe una cuenta con esa dirección de correo"
+                default:
+                    self.errorMessage = "Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde."
                 }
             } catch {
+                print(error)
                 print(error.localizedDescription)
                 self.errorMessage = error.localizedDescription
             }
@@ -107,7 +130,7 @@ struct AuthenticationView: View {
 }
 
 #Preview {
-    AuthenticationView(account: .constant(nil), flow: .constant(.unauthenticated))
+    AuthenticationView()
         .environment(AuthService())
         .background(.customBlack)
 }

@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		B44248D32E7325350061FA5E /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = B44248D22E7325350061FA5E /* Inject */; };
 		B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = B4747F422E4BA1B200F6ACE5 /* AppRouter */; };
+		B484D3C62EBEA99C00911E17 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = B484D3C52EBEA99C00911E17 /* RevenueCat */; };
+		B484D3C82EBEA99C00911E17 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = B484D3C72EBEA99C00911E17 /* RevenueCatUI */; };
+		B484D3CD2EBEA9D500911E17 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B484D3CC2EBEA9D500911E17 /* StoreKit.framework */; };
 		B48845FC2E461E52006DB382 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FB2E461E52006DB382 /* Auth */; };
 		B48845FE2E461E52006DB382 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FD2E461E52006DB382 /* Functions */; };
 		B48846002E461E52006DB382 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = B48845FF2E461E52006DB382 /* PostgREST */; };
@@ -20,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B484D3CC2EBEA9D500911E17 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaRocaPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -40,11 +44,14 @@
 				B48846062E461E52006DB382 /* Supabase in Frameworks */,
 				B48846042E461E52006DB382 /* Storage in Frameworks */,
 				B48846002E461E52006DB382 /* PostgREST in Frameworks */,
+				B484D3C62EBEA99C00911E17 /* RevenueCat in Frameworks */,
 				B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */,
 				B44248D32E7325350061FA5E /* Inject in Frameworks */,
 				B48845FE2E461E52006DB382 /* Functions in Frameworks */,
+				B484D3C82EBEA99C00911E17 /* RevenueCatUI in Frameworks */,
 				B48845FC2E461E52006DB382 /* Auth in Frameworks */,
 				B48846022E461E52006DB382 /* Realtime in Frameworks */,
+				B484D3CD2EBEA9D500911E17 /* StoreKit.framework in Frameworks */,
 				B4A75FDD2E3D2BD5005568C4 /* Appwrite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -52,10 +59,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B484D3CB2EBEA9D500911E17 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B484D3CC2EBEA9D500911E17 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B4A75FAE2E3D27CF005568C4 = {
 			isa = PBXGroup;
 			children = (
 				B4A75FB92E3D27D0005568C4 /* LaRocaPlay */,
+				B484D3CB2EBEA9D500911E17 /* Frameworks */,
 				B4A75FB82E3D27D0005568C4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -99,6 +115,8 @@
 				B4747F422E4BA1B200F6ACE5 /* AppRouter */,
 				B49DA99D2E50A88800B0E571 /* ConfidentialKit */,
 				B44248D22E7325350061FA5E /* Inject */,
+				B484D3C52EBEA99C00911E17 /* RevenueCat */,
+				B484D3C72EBEA99C00911E17 /* RevenueCatUI */,
 			);
 			productName = LaRocaPlay;
 			productReference = B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */;
@@ -112,7 +130,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					B4A75FB62E3D27D0005568C4 = {
 						CreatedOnToolsVersion = 16.4;
@@ -135,6 +153,7 @@
 				B49DA9942E50A40300B0E571 /* XCRemoteSwiftPackageReference "swift-confidential-plugin" */,
 				B49DA99C2E50A88800B0E571 /* XCRemoteSwiftPackageReference "swift-confidential" */,
 				B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */,
+				B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B4A75FB82E3D27D0005568C4 /* Products */;
@@ -234,6 +253,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -291,6 +311,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -398,6 +419,14 @@
 				minimumVersion = 1.0.2;
 			};
 		};
+		B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.47.0;
+			};
+		};
 		B48845DD2E461DAF006DB382 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase/supabase-swift.git";
@@ -442,6 +471,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */;
 			productName = AppRouter;
+		};
+		B484D3C52EBEA99C00911E17 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
+		B484D3C72EBEA99C00911E17 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
 		};
 		B48845FB2E461E52006DB382 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;

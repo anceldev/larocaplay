@@ -7,45 +7,47 @@
 
 import SwiftUI
 
+
 struct PreachGridItem: View {
     let preach: Preach
+    let aspect: CGFloat
     
-    init(_ preach: Preach) {
+    init(_ preach: Preach, aspect: CGFloat = 4/3) {
         self.preach = preach
+        self.aspect = aspect
     }
     var body: some View {
         VStack(spacing: 8) {
-//            VStack {
-//                Color.gray
-                Image(.thumbPreview)
-                    .resizable()
-//                    .scaledToFit()
-//            }
-            .aspectRatio(4/3, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            //            VStack {
+            //                Color.gray
+            Image(.thumbPreview)
+                .resizable()
+            //                    .scaledToFit()
+            //            }
+                .aspectRatio(aspect, contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
             VStack(alignment: .leading, spacing: 4) {
                 Text(preach.title)
-//                    .foregroundStyle(.customBlack)
+                //                    .foregroundStyle(.customBlack)
                     .foregroundStyle(.white)
-                    .font(.system(size: 16, weight: .medium, design: .default))
+                    .font(.system(size: 14, weight: .medium, design: .default))
                     .frame(maxWidth: .infinity, maxHeight: 20, alignment: .leading)
                     .multilineTextAlignment(.leading)
                 VStack(alignment: .leading) {
-                    if let preacher = preach.preacher {
-                        HStack(spacing: 4) {
-                            Text(preacher.role ?? "")
-                            Text(preacher.name)
-                        }
-                        .font(.system(size: 12, weight: .semibold))
-//                        .foregroundStyle(.customBlack.opacity(0.8))
-                        .foregroundStyle(.dirtyWhite)
+                    HStack(spacing: 4) {
+                        Text(preach.preacher.role.name)
+                        Text(preach.preacher.name)
                     }
+                    .font(.system(size: 12, weight: .semibold))
+                    //                        .foregroundStyle(.customBlack.opacity(0.8))
+                    .foregroundStyle(.dirtyWhite)
+                    
                     Text(preach.date, style: .date)
                         .font(.system(size: 10))
-//                        .foregroundStyle(.customBlack.opacity(0.7))
+                    //                        .foregroundStyle(.customBlack.opacity(0.7))
                         .foregroundStyle(.dirtyWhite)
                 }
-                    
+                
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 8)

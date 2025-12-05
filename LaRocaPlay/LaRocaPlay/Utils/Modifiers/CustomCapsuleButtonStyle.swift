@@ -15,7 +15,6 @@ struct CustomCapsuleButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .padding(.vertical)
             .foregroundStyle(.white)
-//            .frame(height: 32)
             .background(bgColor)
             .clipShape(.capsule)
     }

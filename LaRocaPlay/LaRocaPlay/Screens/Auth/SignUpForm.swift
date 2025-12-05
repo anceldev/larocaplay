@@ -7,6 +7,33 @@
 
 import SwiftUI
 
+enum SignUpError: LocalizedError {
+    case passwordsDoNotMatch
+    case invalidMail
+    case invalidPassword
+    case emptyEmail
+    case emptyPasswords
+    case unknownError
+    
+    var errorDescription: String? {
+        switch self {
+        case .passwordsDoNotMatch:
+            return "Las contraseñas no coinciden."
+        case .invalidMail:
+            return "Correo electrónico inválido."
+        case .invalidPassword:
+            return "Contraseña inválida. Asegurate que tenga al menos 8 caracteres, una mayúscula, una minúscula, un dígito y un carácter especial"
+        case .emptyEmail:
+            return "Debes introducir un correo electrónico."
+        case .emptyPasswords:
+            return "Debes introducir una contraseña y confirmarla."
+        case .unknownError:
+            return "Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde."
+        }
+    }
+}
+
+
 struct SignUpForm: View {
     private enum FocusedField {
         case email, password, confirmPassword
@@ -18,6 +45,9 @@ struct SignUpForm: View {
     @Binding var password: String
     @Binding var confirmPassword: String
     @Binding var isLoading: Bool
+    
+    @State private var errorMessage: String? = nil
+    
     let action: () async -> Void
     
     var body: some View {
@@ -95,10 +125,18 @@ struct SignUpForm: View {
                             }
                     }
                 }
-                Button {
-                    Task {
-                        await action()
+                if let errorMessage {
+                    withAnimation(.easeIn) {
+                        
+                        Text(errorMessage)
+                            .foregroundStyle(.orange)
+                            .multilineTextAlignment(.center)
+                            .font(.system(size: 14))
                     }
+                }
+                Button {
+                    signUpAction()
+                    
                 } label: {
                     if isLoading {
                         ProgressView()
@@ -114,6 +152,56 @@ struct SignUpForm: View {
         .padding()
         .enableInjection()
     }
+    
+    private func signUpAction() {
+        Task {
+            do {
+                try checkEmailField()
+                try checkPasswordsField()
+                await action()
+            } catch (let error as SignUpError) {
+                self.errorMessage = error.errorDescription
+            } catch {
+                print(error.localizedDescription)
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+    
+    private func checkEmailField() throws {
+        if email.isEmpty {
+            throw SignUpError.emptyEmail
+        }
+        if !isValidEmail(email) {
+            throw SignUpError.invalidMail
+        }
+    }
+    
+    private func checkPasswordsField() throws {
+        if password.isEmpty || confirmPassword.isEmpty {
+            throw SignUpError.emptyPasswords
+        }
+        if password == confirmPassword {
+            if isValidPassword(password) { return }
+            throw SignUpError.invalidPassword
+        } else {
+            throw SignUpError.passwordsDoNotMatch
+        }
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let regex = #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
+        
+        let predicate = NSPredicate(format: "SELF MATCHES[c] %@", regex)
+        return predicate.evaluate(with: email)
+    }
+    
+    private func isValidPassword(_ password: String) -> Bool {
+        // Al menos 8 caracteres, una mayúscula, una minúscula, un dígito y un carácter especial
+        let regex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$&*.,?+-]).{8,}$"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
+        return predicate.evaluate(with: password)
+    }
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
@@ -123,7 +211,6 @@ struct SignUpForm: View {
     @Previewable @State var email = ""
     @Previewable @State var password = ""
     @Previewable @State var confirmPassword = ""
-    
     
     SignUpForm(email: $email, password: $password, confirmPassword: $confirmPassword, isLoading: .constant(false), action: {})
         .background(.customBlack)

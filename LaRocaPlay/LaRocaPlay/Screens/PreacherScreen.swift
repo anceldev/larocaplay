@@ -21,7 +21,7 @@ struct PreacherScreen: View {
                 .shadow(color: .gray, radius: 5)
             // TODO: Hacer bien el diseño de esta vista
             Text(preacher.name)
-            Text(preacher.role ?? "")
+            Text(preacher.role.name)
             Spacer()
         }
         .navigationBarBackButtonHidden()

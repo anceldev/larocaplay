@@ -7,21 +7,31 @@
 
 import SwiftUI
 
-struct SeriesCard: View {
+struct CollectionCard: View {
     @Environment(AppRouter.self) var router
+    
+    var collection: PreachCollection
     
     var body: some View {
         VStack {
             Button {
-                router.navigateTo(.series)
+//                router.navigateTo(.series)
+                router.navigateTo(.collection(id: collection.id, cols: 1))
             } label: {
                 ZStack {
                     Image(.bgSeries)
                         .resizable()
                         .scaledToFill()
-                        .blur(radius: 3)
-                    VStack {
-                        Text("Series")
+                        .blur(radius: 2)
+                    VStack(spacing: 16) {
+                        Text(collection.title)
+                            .font(.system(size: 24, weight: .bold))
+                        if let description = collection.description {
+                            Text(description)
+                                .font(.system(size: 12, weight: .medium))
+                                .padding(.horizontal, 32)
+                                .multilineTextAlignment(.center)
+                        }
                     }
                     .foregroundStyle(.white)
                     .font(.system(size: 24, weight: .semibold))
@@ -31,7 +41,7 @@ struct SeriesCard: View {
         }
         .frame(maxWidth: .infinity)
 //        .frame(minHeight: 200)
-        .frame(maxHeight: 120)
+        .frame(maxHeight: 180)
         .background(.indigo)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .enableInjection()
@@ -41,8 +51,8 @@ struct SeriesCard: View {
     @ObserveInjection var forceRedraw
 #endif
 }
-
-#Preview {
-    SeriesCard()
-}
+//
+//#Preview {
+//    CollectionCard()
+//}
 

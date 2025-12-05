@@ -8,26 +8,45 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(AppRouter.self) var router
     @Environment(PreachesRepository.self) var repository
+    @Environment(CelebrationRepository.self) var celebration
+    
     @State private var searchQuery: String = ""
     
+//    var preaches: [Preach] {
+//        if searchQuery.isEmpty {
+//            return repository.preaches
+//        }
+//        return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+//    }
     var preaches: [Preach] {
         if searchQuery.isEmpty {
-            return repository.preaches
+            return celebration.preaches
         }
-        return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+        return celebration.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+    }
+    
+    var streamingUrl: String? {
+        guard let link = repository.externalLinks.first (where:{ $0.key == "youtube" }) else {
+            return nil
+        }
+        return link.enabled ? link.link : nil
     }
     
     var body: some View {
         VStack {
             ScrollView(.vertical) {
                 VStack(spacing: 32) {
-                    // TODO: Añadir última predica subida y resument del fin de semana, si lo hubiese
-                    VStack {
-                        Image(.thumbPreview)
-                            .resizable()
-                            .aspectRatio(16/9, contentMode: .fit)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                    if let streamingUrl {
+                        StreamingCard(streamingUrl: streamingUrl)
+                    }
+                    if preaches.count > 0 {
+                        Button {
+                            router.navigateTo(.preach(preach: preaches[0]))
+                        } label: {
+                            PreachGridItem(preaches[0], aspect: 16/9)
+                        }
                     }
                     // TODO: últimas 4 predicas añadidas.
                     VStack {
@@ -38,13 +57,15 @@ struct HomeView: View {
                             .textFieldStyle(.customTextFieldStyle)
                             .padding(.bottom, 14)
                         
-                        ItemsList(preaches: preaches) // For debug
+                        ItemsList(preaches: Array(preaches.dropFirst())) // For debug
                     }
                     VStack(spacing: 32) {
-                        SeriesCard()
-                        
-                        // TODO: Boton que lleva al directo de la celebración
-                        StreamingCard()
+//                        SeriesCard()
+                        Button {
+                            router.navigateTo(.series)
+                        } label: {
+                            Text("Series")
+                        }
                         // TODO: Enlace a congresos que se han realizado (Aquí se puede añadir varios videos a un congreso específico, como el fin de semana de la visión por ejemplo).
                         EventsCard()
                     }
