@@ -19,11 +19,22 @@ struct CollectionScreen: View {
     }
     
     var body: some View {
-        VStack {
-            TopBarScreen(title: (collection != nil ? collection!.title : ""), true)
+        VStack(spacing: 10) {
+            VStack(spacing: 14) {
+                HeaderView(storageCollection: .collections(collection?.thumbId))
+                VStack(spacing: 8) {
+                    Text(collection?.title ?? "")
+                        .font(.system(size: 24, weight: .bold, design: .default))
+                    Text(collection?.description ?? "")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(.dirtyWhite)
+                        .padding(.horizontal, 24)
+                        .multilineTextAlignment(.center)
+                }
+            }
             PreachCollectionScreen(collectionId: collectionId)
+                .padding(.horizontal)
         }
-        .padding(.horizontal)
         .background(.customBlack)
         .enableInjection()
     }

@@ -11,7 +11,8 @@ import RevenueCatUI
 
 struct SettingsView: View {
     @Environment(AuthService.self) var auth
-    @Binding var account: User?
+//    @Binding var account: User?
+    @Binding var account: Profile?
     @State var flow: AuthState
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
@@ -20,7 +21,7 @@ struct SettingsView: View {
         auth.customerInfo?.entitlements["pro"]?.isActive ?? false
     }
     
-    init(account: Binding<User?>) {
+    init(account: Binding<Profile?>) {
         self._account = account
         self.flow = account.wrappedValue == nil ? .unauthenticated : .authenticated
     }
@@ -31,7 +32,7 @@ struct SettingsView: View {
                 VStack(spacing: 24) {
                     // TODO: Vista de perfil, con nombre de usuario y email. Editar perfil, Cambiar contraseña y cerrar sesión.
                     // TODO: Nivel de suscripción y poder modificarlo
-                    if let account {
+                    if let account = auth.user {
                         VStack(spacing: 12) {
                             HStack(spacing: 0) {
                                 Text("Bienvenido")
@@ -159,8 +160,11 @@ struct SettingsView: View {
     private func getCustomerInfor() {
         Task {
             do {
+                guard let userId = auth.user?.id else {
+                    return
+                }
 //                try await auth.getCustomerInfor()
-                try await auth.getSuscriptionStatus()
+                try await auth.getSuscriptionStatus(userId: userId.uuidString)
             } catch {
                 print(error.localizedDescription)
                 errorMessage = error.localizedDescription
@@ -187,8 +191,8 @@ struct SettingsView: View {
     }
 }
 
-#Preview {
-    SettingsView(account: .constant(PreviewData.user))
-        .environment(AuthService())
-        .background(.customBlack)
-}
+//#Preview {
+//    SettingsView(account: .constant(PreviewData.user))
+//        .environment(AuthService())
+//        .background(.customBlack)
+//}

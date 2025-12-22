@@ -14,10 +14,7 @@ struct DiscipleshipCard: View {
     
     var body: some View {
         VStack {
-//            Button {
-//            } label: {
                 ZStack {
-//                    Image(
                     Image(.defaultDiscipleship)
                         .resizable()
                     Text(title)
@@ -25,7 +22,6 @@ struct DiscipleshipCard: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-//            }
         }
         .frame(height: 200)
         .frame(maxWidth: .infinity)
@@ -35,7 +31,3 @@ struct DiscipleshipCard: View {
     @ObserveInjection var forceRedraw
 #endif
 }
-//
-//#Preview {
-//    DiscipleshipCard()
-//}

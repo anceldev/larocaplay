@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct AccountCard: View {
-    let user: User
+//    let user: User
+    let user: Profile
     
     var body: some View {
         VStack(spacing: 12) {
@@ -20,7 +21,7 @@ struct AccountCard: View {
                 .background(.white.opacity(0.3))
                 .clipShape(.circle)
             VStack(alignment: .center, spacing: 6) {
-                Text(user.name)
+                Text(user.displayName ?? "NO-NAME")
                     .font(.system(size: 20))
                 Text(user.email)
                     .font(.system(size: 17))

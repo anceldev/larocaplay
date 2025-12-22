@@ -33,11 +33,15 @@ struct AccountScreen: View {
                                 .fontWeight(.semibold)
                                 .padding(.leading, 6)
                             VStack(spacing: 16) {
-                                HStack {
-                                    Image(.user)
-                                    Text("Información personal")
+                                Button {
+                                    router.navigateTo(.userDetail)
+                                } label : {
+                                    HStack {
+                                        Image(.user)
+                                        Text("Información de perfil")
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
                                 HStack {
                                     Image(.star)
                                     Text("Suscripción")
@@ -55,12 +59,6 @@ struct AccountScreen: View {
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
-//                                HStack {
-//                                    Image(.bell)
-//                                    Text("Notificaciones")
-//                                    Spacer(minLength: 0)
-//                                }
-//                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             .padding()
                             .background(.black.opacity(0.45))
@@ -122,7 +120,9 @@ struct AccountScreen: View {
                             VStack(spacing: 16) {
                                 
                                 Button {
-                                    signout()
+                                    withAnimation(.easeOut) {
+                                        signout()
+                                    }
                                 } label: {
                                     HStack {
                                         Image(.arrowDoorOut3)
@@ -170,8 +170,7 @@ struct AccountScreen: View {
         Task {
             do {
                 try await auth.signout()
-//                let customerInfo = try await Purchases.shared.logOut()
-//                router.popToRoot()
+                router.popToRoot()
             } catch {
                 print(error.localizedDescription)
                 errorMessage = error.localizedDescription
@@ -181,7 +180,10 @@ struct AccountScreen: View {
     private func getCustomerInfo() {
         Task {
             do {
-                try await auth.getSuscriptionStatus()
+                guard let userId = auth.user?.id else {
+                    return
+                }
+                try await auth.getSuscriptionStatus(userId: userId.uuidString)
                 collections.series.removeAll()
             } catch {
                 print(error.localizedDescription)

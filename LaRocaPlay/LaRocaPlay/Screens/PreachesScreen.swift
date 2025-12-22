@@ -9,11 +9,14 @@ import SwiftUI
 
 struct PreachesScreen: View {
     @Environment(CelebrationRepository.self) var celebration
+    @Environment(AppRouter.self) var router
     @State private var searchQuery = ""
+    @State private var listView: ListView = .list
     
     let collectionId: Int
     @State private var cols: Int = 1
     @State private var errorMessage: String? = nil
+    
     var preaches: [Preach] {
         if searchQuery.isEmpty {
             return celebration.preaches
@@ -24,55 +27,55 @@ struct PreachesScreen: View {
     var body: some View {
         VStack(spacing: 16) {
             TopBarScreen(title: "Predicaciones")
-            VStack(spacing: 8) {
-                Text("Últimas predicaciones")
-                    .foregroundStyle(.dirtyWhite)
-                    .font(.system(size: 14, weight: .medium))
-                
-                HStack(spacing: 16) {
-                    TextField("Buscar...", text: $searchQuery)
-                        .textFieldStyle(.customTextFieldStyle)
-                    VStack {
-                        Button {
-                            withAnimation(.easeIn) {
-                                self.cols = cols == 1 ? 2 : 1
-                            }
-                        } label: {
-                            Image(.gridCirclePlus)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 28)
-                                .foregroundStyle(self.cols == 1 ? .dirtyWhite : .customRed)
+            VStack {
+                VStack {
+                    Text("Última celebración")
+                        .font(.system(size: 14, weight: .semibold))
+                    Button {
+                        withAnimation(.easeIn) {
+                            router.navigateTo(.preach(preach: preaches[0]))
                         }
-                        .padding(8)
-                        .clipShape(.circle)
-                        .overlay {
-                            Circle().stroke(self.cols == 1 ? .dirtyWhite : .customRed, lineWidth: 1)
-                        }
+                    } label: {
+                        PreachGridItem(preaches[0], aspect: 16/9)
+                            .frame(maxWidth: .infinity)
                     }
-                    .padding(.trailing, 8)
-                    
+                    .border(.yellow, width: 1)
+                    .border(.pink, width: 1)
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxHeight: 56, alignment: .center)
+                .frame(maxWidth: .infinity)
+                .border(.green, width: 1)
+                VStack(spacing: 8) {
+                    Text("Últimas predicaciones")
+                        .foregroundStyle(.dirtyWhite)
+                        .font(.system(size: 14, weight: .medium))
+                    
+                    HStack(spacing: 16) {
+                        TextField("Buscar...", text: $searchQuery)
+                            .textFieldStyle(.customTextFieldStyle)
+                        ListViewButton(listView: $listView)
+                    }
+                    .frame(maxHeight: 56, alignment: .center)
+                }
             }
             VStack(spacing: 0) {
-                    VStack {
-                        ScrollView(.vertical) {
-                            VStack {
-                                ItemsList(preaches: preaches, cols: cols) // For debug
-                            }
-                            Button {
-                                withAnimation(.easeIn) {
-                                    loadMore()
-                                }
-                            } label: {
-                                Text("Cargar más")
-                            }
-                            .disabled(celebration.isFull)
-                            .opacity(celebration.isFull ? 0 : 1).animation(.easeInOut, value: celebration.isFull)
+                VStack {
+                    ScrollView(.vertical) {
+                        VStack {
+                            ItemsList(preaches: Array(preaches.dropFirst()), cols: cols, listView: listView) // For debug
                         }
-                        .scrollIndicators(.hidden)
+                        Button {
+                            withAnimation(.easeIn) {
+                                loadMore()
+                            }
+                        } label: {
+                            Text("Cargar más")
+                        }
+                        .disabled(celebration.isFull)
+                        .opacity(celebration.isFull ? 0 : 1).animation(.easeInOut, value: celebration.isFull)
                     }
+                    .scrollIndicators(.hidden)
+                }
             }
             if let errorMessage {
                 Text(errorMessage)

@@ -8,27 +8,41 @@
 import SwiftUI
 import AppRouter
 
+enum ListView {
+    case single
+    case grid
+    case list
+}
+
 struct ItemsList: View {
     
     @Environment(AppRouter.self) var router
     let preaches: [Preach]
     let cols: Int
     
-    init(preaches: [Preach], cols: Int = 2) {
+    var listView: ListView
+    
+    init(preaches: [Preach], cols: Int = 2, listView: ListView) {
         self.preaches = preaches
-        self.cols = cols
+//        self.cols = cols
+        self.listView = listView
+        self.cols = self.listView == .grid ? 2 : 1
+        
     }
     
     var columns: [GridItem] {
         Array(repeating: GridItem(.flexible()), count: cols)
     }
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 20) {
-            ForEach(preaches) { item in
-                Button {
-                    router.navigateTo(.preach(preach: item))
-                } label: {
-                    PreachGridItem(item, aspect: cols == 2 ? 4/3 : 16/9)
+        VStack {
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(preaches) { item in
+                    Button {
+                        router.navigateTo(.preach(preach: item))
+                    } label: {
+                        PreachGridItem(item, listView: listView)
+                    }
+                    .frame(maxHeight: .infinity, alignment: .top)
                 }
             }
         }

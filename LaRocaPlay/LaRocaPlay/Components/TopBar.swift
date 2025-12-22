@@ -9,23 +9,40 @@ import SwiftUI
 import AppRouter
 
 struct TopBar: View {
+    @Environment(AuthService.self) var auth
+    @Environment(AppRouter.self) var router
     var body: some View {
-        HStack {
-            Button {
-                print("Go to notifications")
-            } label: {
-                Image(systemName: "bell")
+        VStack {
+            ZStack {
+                HStack {
+                    Spacer()
+                    Image(.topbarLogo)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 40)
+                    Spacer()
+                }
+                HStack {
+                    Spacer()
+                    Button {
+                        router.navigateTo(.account(userId: auth.user?.id.uuidString ?? "NIL"))
+                    } label: {
+                        Image(.user)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 28)
+                            .foregroundStyle(.customRed)
+                    }
+                }
             }
-            Spacer()
-            Text("Title")
-            Spacer()
-            Button {
-                print("Go to profile to auth")
-            } label: {
-//                Image(systemName: "person")
-                Image("user")
+            .frame(height: 38)
+            HStack(spacing: 4) {
+                Text("Bienvenido, ")
+                Text("\(auth.user?.email ?? "invitado")")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
             }
-
+            .font(.system(size: 12))
         }
         .padding(.horizontal)
         .enableInjection()

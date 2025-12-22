@@ -31,8 +31,9 @@ struct PreachView: View {
             ScrollView(.vertical) {
                 VStack {
                     if auth.isPremium {
-                        VimeoEmbedPlayer(videoURL: preach.videoUrl)
-                            .aspectRatio(16/9, contentMode: .fit)
+//                        VimeoVideoPlayer(for: preach.videoUrl)
+//                        VimeoEmbedPlayer(videoURL: preach.videoUrl)
+//                            .aspectRatio(16/9, contentMode: .fit)
                     } else {
                         ZStack {
                             Color.black
@@ -107,7 +108,10 @@ struct PreachView: View {
     private func getCustomerInfo() {
         Task {
             do {
-                try await auth.getSuscriptionStatus()
+                guard let userId = auth.user?.id else {
+                    return
+                }
+                try await auth.getSuscriptionStatus(userId: userId.uuidString)
                 collections.series.removeAll()
             } catch {
                 print(error.localizedDescription)

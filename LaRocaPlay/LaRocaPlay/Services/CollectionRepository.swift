@@ -8,6 +8,35 @@
 import Foundation
 import Observation
 import Supabase
+import SwiftUI
+
+enum StorageCollections {
+    case preachers(String?)
+    case collections(String?)
+    case preaches(String?)
+    
+    var associatedValue: String? {
+        switch self {
+        case .preachers(let preacherThumb):
+            return preacherThumb
+        case .collections(let collectionThumb):
+            return collectionThumb
+        case .preaches(let preachThumb):
+            return preachThumb
+        }
+    }
+    
+    var path: String {
+        switch self {
+        case .preachers(let thumbId):
+            "preachers/\(thumbId!)"
+        case .collections(let thumbId):
+            "collections/\(thumbId!)"
+        case .preaches(let thumbId):
+            "preaches/\(thumbId!)"
+        }
+    }
+}
 
 @Observable
 final class CollectionRepository {
@@ -37,6 +66,7 @@ final class CollectionRepository {
                     thumb_id,
                     collection_type_id(id, name),
                     is_public,
+                    is_home_screen,
                     created_at
                     """)
                 .neq("id", value: 1)
@@ -50,6 +80,50 @@ final class CollectionRepository {
             throw error
         }
     }
+    
+    func getThumb(collection: StorageCollections) async throws -> UIImage? {
+        do {
+
+            guard let key = collection.associatedValue else { return nil }
+            guard let image = try await ImageCacheManager.shared.getImage(forKey: key) else {
+                let data = try await client.storage
+                    .from("app")
+                    .download(path: collection.path)
+                guard let uiImage = UIImage(data: data) else {
+                    return nil
+                }
+                try await ImageCacheManager.shared.saveImage(uiImage, forKey: key)
+                return uiImage
+            }
+            return image
+        } catch {
+            print(error)
+            throw error
+        }
+    }
+
+
+    func getCollectionThumb(forKey key: String?) async throws -> UIImage? {
+        do {
+            guard let key else { return nil }
+            guard let image = try await ImageCacheManager.shared.getImage(forKey: key) else {
+                let data = try await client.storage
+                    .from("app")
+                    .download(path: "collections/\(key)")
+                guard let uiImage = UIImage(data: data) else {
+                    return nil
+                }
+                try await ImageCacheManager.shared.saveImage(uiImage, forKey: key)
+                return uiImage
+            }
+            return image
+        } catch {
+            print(error)
+            throw error
+        }
+    }
+    
+    
     func getSeriePreachesFromTo(serieId: Int, from: Int, to: Int) async throws {
         let indexSerie = series.firstIndex { $0.id == serieId }
         guard let indexSerie else { return }
@@ -64,6 +138,7 @@ final class CollectionRepository {
                         title,
                         description,
                         date,
+                        thumb_id,
                         video_url,
                         preacher:preacher_id(
                             id,
@@ -89,6 +164,7 @@ final class CollectionRepository {
         if series[indexSerie].preaches.count > 0 {
             return
         } else {
+            
             let preaches:[PreachCollectionWrapper] = try await client
                 .from("preach_collection_membership")
                 .select("""
@@ -97,6 +173,7 @@ final class CollectionRepository {
                         title,
                         description,
                         date,
+                        thumb_id,
                         video_url,
                         preacher:preacher_id(
                             id,

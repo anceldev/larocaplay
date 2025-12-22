@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Supabase
 import SwiftUI
 
 @MainActor
@@ -21,6 +22,26 @@ class ImageCacheManager {
             self.diskCache = try DiskCacheImage()
         } catch {
             fatalError("Cache in disk cannot be initialized: \(error.localizedDescription)")
+        }
+    }
+    
+    func getThumbnail(path: StorageCollections) async throws -> UIImage? {
+        do {
+            guard let key = path.associatedValue else { return nil }
+            guard let localImage = try await ImageCacheManager.shared.getImage(forKey: key) else {
+                let imageData = try await SBCLient.shared.supabase.storage
+                    .from("app")
+                    .download(path: path.path)
+                guard let uiImage = UIImage(data: imageData) else {
+                    return nil
+                }
+                try await self.saveImage(uiImage, forKey: key)
+                return uiImage
+            }
+            return localImage
+        } catch {
+            print(error)
+            throw error
         }
     }
     

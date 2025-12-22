@@ -16,70 +16,69 @@ enum AuthState {
     case authenticated
 }
 
+enum AuthError: LocalizedError {
+    case noUserFound
+    case noCustomerInfo
+    var errorDescription: String? {
+        switch self {
+        case .noUserFound:
+            "No hay datos del usuario"
+        case .noCustomerInfo:
+            "No hay datos como cliente"
+        }
+
+    }
+}
+
 @Observable
 final class AuthService {
     let client = SBCLient.shared.supabase
-    var user: User?
+//    var user: User?
+    var user: Profile?
     var customerInfo: CustomerInfo?
-    var authState: AuthState = .unauthenticated
+//    var authState: AuthState = .unauthenticated
+    var authState: AuthState = .authenticating
     var isPremium = false
     var currentProduct: RevenueCat.StoreProduct?
-    
+    var errorMessage: String? = nil
     init(){
         Task {
-            try await getSession()
+            await getSession()
         }
     }
     
-    func getSession() async throws {
+    func getSession() async {
         do {
             let session = try await client.auth.session
-            self.user = try await getUSer(id: session.user.id)
-//            let a = try await Purchases.shared.logIn(self.user!.id.uuidString)
-            try await getSuscriptionStatus()
+//            self.user = try await getUSer(id: session.user.id)
+            self.user = try await getProfile(for: session.user.id)
+            guard let userId = self.user?.id else {
+                try await signout()
+                throw AuthError.noUserFound
+            }
+            try await getSuscriptionStatus(userId: userId.uuidString)
             self.authState = .authenticated
-            
-            print(customerInfo)
         } catch {
             print(error)
             print(error.localizedDescription)
-            throw error
+            self.authState = .unauthenticated
+            self.errorMessage = "Error intentando obtener la sesión"
         }
     }
-    func getSuscriptionStatus() async throws {
+    func getSuscriptionStatus(userId: String) async throws {
         do {
-            let (customerInfo, _) = try await Purchases.shared.logIn(self.user!.id.uuidString)
+            let (customerInfo, _) = try await Purchases.shared.logIn(userId)
             self.customerInfo = customerInfo
             guard let entitlement = customerInfo.entitlements["pro"] else {
                 return
             }
             self.isPremium = entitlement.isActive
             self.currentProduct = await Purchases.shared.products([entitlement.productIdentifier]).first
-//            self.currentProduct = try await getProductInfo(productId: entitlement.productIdentifier)
-//            let productIdentifier = entitlement.productIdentifier
-            //            self.isPremium = customerInfo.entitlements["pro"]?.isActive ?? false
-            print(self.customerInfo)
-            print(self.currentProduct)
-            print(self.currentProduct?.subscriptionPeriod?.unit.rawValue)
         } catch {
             print(error)
             throw error
         }
     }
-    
-//    private func getProductInfo(productId: String) async throws -> StoreProduct? {
-//        let product = await Purchases.shared.products([productId])
-//        return product.first
-////        if isPremium {
-////            if let entitlements = customerInfo?.entitlements["pro"] {
-////                let productIdentifier = entitlements.productIdentifier
-////                self.currentProduct = await Purchases.shared.products([productIdentifier]).first
-////                print(self.currentProduct)
-////            }
-////        }
-//    }
-    
-//    func signIn(email: String, password: String) async throws -> User? {
     
     func signIn(email: String, password: String) async throws {
         do {
@@ -87,10 +86,13 @@ final class AuthService {
                 email: email,
                 password: password
             )
-            self.user = try await getUSer(id: session.user.id)
-            try await getSuscriptionStatus()
+            self.user = try await getProfile(for: session.user.id)
+            guard let userId = self.user?.id else {
+                try await signout()
+                throw AuthError.noUserFound
+            }
+            try await getSuscriptionStatus(userId: userId.uuidString)
             self.authState = .authenticated
-//            return self.user
             
         } catch {
             print(error)
@@ -99,15 +101,18 @@ final class AuthService {
         }
     }
     
-//    func signUp(email: String, password: String) async throws -> User? {
     func signUp(email: String, password: String) async throws {
         do {
             let session = try await client.auth.signUp(
                 email: email,
                 password: password
             )
-            self.user = try await getUSer(id: session.user.id)
-            try await getSuscriptionStatus()
+            self.user = try await getProfile(for: session.user.id)
+            guard let userId = self.user?.id else {
+                try await signout()
+                throw AuthError.noUserFound
+            }
+            try await getSuscriptionStatus(userId: userId.uuidString)
             self.authState = .authenticated
         } catch {
             print(error)
@@ -116,15 +121,16 @@ final class AuthService {
         }
     }
     
-    func getUSer(id: UUID) async throws -> User {
-        let user: User = try await client
-            .from("users")
-            .select("id, name, email, role")
-            .eq("id", value: id)
+    func getProfile(for userId: UUID) async throws -> Profile {
+        let profile: Profile = try await client
+            .from("profiles")
+            .select("user_id, display_name, email, avatar_id, locale, profile_role")
+            .eq("user_id", value: userId)
             .single()
             .execute()
             .value
-        return user
+
+        return profile
     }
     
     private func resetValues() {
@@ -135,13 +141,29 @@ final class AuthService {
         self.currentProduct = nil
     }
     
+    func resetPassword(_ email: String) async throws {
+        try await client.auth.resetPasswordForEmail(
+            email,
+            redirectTo: URL(string: "http://localhost:3000/auth/update-password")
+        )
+    }
+    
+    func supabaseAutherror(error: Supabase.AuthError) -> String {
+        switch error.errorCode {
+        case .invalidCredentials:
+            return "Correo electrónico o contraseña inválidos"
+        case .userAlreadyExists, .emailExists:
+            return "Ya existe una cuenta con esa dirección de correo"
+        default:
+            return "Error en el servicio de autenticación"
+        }
+    }
+    
     func signout() async throws {
         do {
             try await client.auth.signOut()
             self.customerInfo = try await Purchases.shared.logOut()
             resetValues()
-//            self.user = nil
-//            self.authState = .unauthenticated
         } catch {
             print(error.localizedDescription)
             throw error

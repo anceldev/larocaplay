@@ -6,35 +6,10 @@
 //
 
 import SwiftUI
-
-enum SignUpError: LocalizedError {
-    case passwordsDoNotMatch
-    case invalidMail
-    case invalidPassword
-    case emptyEmail
-    case emptyPasswords
-    case unknownError
-    
-    var errorDescription: String? {
-        switch self {
-        case .passwordsDoNotMatch:
-            return "Las contraseñas no coinciden."
-        case .invalidMail:
-            return "Correo electrónico inválido."
-        case .invalidPassword:
-            return "Contraseña inválida. Asegurate que tenga al menos 8 caracteres, una mayúscula, una minúscula, un dígito y un carácter especial"
-        case .emptyEmail:
-            return "Debes introducir un correo electrónico."
-        case .emptyPasswords:
-            return "Debes introducir una contraseña y confirmarla."
-        case .unknownError:
-            return "Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde."
-        }
-    }
-}
-
+import Supabase
 
 struct SignUpForm: View {
+    @Environment(AuthService.self) var auth
     private enum FocusedField {
         case email, password, confirmPassword
     }
@@ -48,14 +23,35 @@ struct SignUpForm: View {
     
     @State private var errorMessage: String? = nil
     
-    let action: () async -> Void
+//    let action: () async -> Void
     
     var body: some View {
         VStack(spacing: 32) {
-            Text("Registrarse")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundStyle(.white)
-            
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("Bienvenido a")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(.dirtyWhite)
+                        .multilineTextAlignment(.center)
+                    Text("La Roca Play")
+                        .font(.system(size: 32, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                }
+                HStack(spacing: 4) {
+                    Text("Crea tu cuenta para empezar.")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.dirtyWhite)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+            }
+
+//            
+//            Text("Registrarse")
+//                .font(.system(size: 24, weight: .medium))
+//                .foregroundStyle(.white)
+//            
             VStack(spacing: 24) {
                 VStack(spacing: 16) {
                     VStack(alignment: .leading) {
@@ -104,7 +100,7 @@ struct SignUpForm: View {
                     }
                     VStack(alignment: .leading) {
                         HStack(spacing: 0) {
-                            Text("Repetir contraseña")
+                            Text("Confirmar contraseña")
                                 .foregroundStyle(.white)
                             Text("*")
                                 .foregroundStyle(.customRed)
@@ -136,7 +132,6 @@ struct SignUpForm: View {
                 }
                 Button {
                     signUpAction()
-                    
                 } label: {
                     if isLoading {
                         ProgressView()
@@ -155,52 +150,31 @@ struct SignUpForm: View {
     
     private func signUpAction() {
         Task {
+            self.isLoading = true
+            self.errorMessage = nil
             do {
-                try checkEmailField()
+                try Validations.shared.isValidEmail(self.email)
                 try checkPasswordsField()
-                await action()
+                try await auth.signUp(email: self.email, password: self.password)
+
             } catch (let error as SignUpError) {
                 self.errorMessage = error.errorDescription
+            } catch (let error as Supabase.AuthError) {
+                self.errorMessage = auth.supabaseAutherror(error: error)
             } catch {
                 print(error.localizedDescription)
                 self.errorMessage = error.localizedDescription
             }
-        }
-    }
-    
-    private func checkEmailField() throws {
-        if email.isEmpty {
-            throw SignUpError.emptyEmail
-        }
-        if !isValidEmail(email) {
-            throw SignUpError.invalidMail
+            self.isLoading = false
         }
     }
     
     private func checkPasswordsField() throws {
-        if password.isEmpty || confirmPassword.isEmpty {
-            throw SignUpError.emptyPasswords
+        if self.password == self.confirmPassword {
+            try Validations.shared.isValidPassword(self.password)
+            return
         }
-        if password == confirmPassword {
-            if isValidPassword(password) { return }
-            throw SignUpError.invalidPassword
-        } else {
-            throw SignUpError.passwordsDoNotMatch
-        }
-    }
-    
-    private func isValidEmail(_ email: String) -> Bool {
-        let regex = #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
-        
-        let predicate = NSPredicate(format: "SELF MATCHES[c] %@", regex)
-        return predicate.evaluate(with: email)
-    }
-    
-    private func isValidPassword(_ password: String) -> Bool {
-        // Al menos 8 caracteres, una mayúscula, una minúscula, un dígito y un carácter especial
-        let regex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$&*.,?+-]).{8,}$"
-        let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
-        return predicate.evaluate(with: password)
+        throw SignUpError.passwordsDoNotMatch
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
@@ -212,6 +186,12 @@ struct SignUpForm: View {
     @Previewable @State var password = ""
     @Previewable @State var confirmPassword = ""
     
-    SignUpForm(email: $email, password: $password, confirmPassword: $confirmPassword, isLoading: .constant(false), action: {})
-        .background(.customBlack)
+    SignUpForm(
+        email: $email,
+        password: $password,
+        confirmPassword: $confirmPassword,
+        isLoading: .constant(false),
+    )
+    .background(.customBlack)
+    .environment(AuthService())
 }

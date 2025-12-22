@@ -13,7 +13,6 @@ import ConfidentialKit
 
 @main
 struct LaRocaPlayApp: App {
-    @State private var service = AWService()
     @State private var authService = AuthService()
     
     @State var repository = PreachesRepository()
@@ -42,7 +41,6 @@ struct LaRocaPlayApp: App {
                             .tint(.customRed)
                     case .authenticated:
                         MainScreen()
-                            .environment(service)
                             .environment(authService)
                             .environment(repository)
                             .environment(collections)

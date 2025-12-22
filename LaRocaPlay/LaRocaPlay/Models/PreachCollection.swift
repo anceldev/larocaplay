@@ -14,6 +14,7 @@ struct PreachCollection: Codable, Identifiable, Hashable {
     var thumbId: String?
     var collectionType: PreachCollectionType
     var isPublic: Bool
+    var isHomeScreen: Bool
     var createdAt: Date?
     var updatedAt: Date?
     var endedAt: Date?
@@ -24,18 +25,20 @@ struct PreachCollection: Codable, Identifiable, Hashable {
         case id, title, description
         case thumbId = "thumb_id"
         case isPublic = "is_public"
+        case isHomeScreen = "is_home_screen"
         case collectionType = "collection_type_id"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case endedAt = "ended_at"
     }
     
-    init(id: Int, title: String, description: String? = nil, thumbId: String? = nil, isPublic: Bool, collectionType: PreachCollectionType, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, preaches: [Preach] = []) {
+    init(id: Int, title: String, description: String? = nil, thumbId: String? = nil, isPublic: Bool, isHomeScreen: Bool = false, collectionType: PreachCollectionType, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, preaches: [Preach] = []) {
         self.id = id
         self.title = title
         self.description = description
         self.thumbId = thumbId
         self.isPublic = isPublic
+        self.isHomeScreen = isHomeScreen
         self.collectionType = collectionType
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -50,6 +53,7 @@ struct PreachCollection: Codable, Identifiable, Hashable {
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
         self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
         self.isPublic = try container.decode(Bool.self, forKey: .isPublic)
+        self.isHomeScreen = try container.decode(Bool.self, forKey: .isHomeScreen)
         self.collectionType = try container.decode(PreachCollectionType.self, forKey: .collectionType)
         self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
         self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)

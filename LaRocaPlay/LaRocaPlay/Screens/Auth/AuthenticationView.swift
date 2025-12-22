@@ -28,9 +28,6 @@ struct AuthenticationView: View {
     
     var body: some View {
         VStack {
-            Text("Todavía no has inicado sesión")
-                .foregroundStyle(.dirtyWhite)
-            
             Group {
                 switch authMode {
                 case .login:
@@ -38,18 +35,20 @@ struct AuthenticationView: View {
                         email: $email,
                         password: $password,
                         isLoading: $isLoading,
-                        action: authAction
+                        authMode: $authMode
                     )
                 case .signup:
                     SignUpForm(
                         email: $email,
                         password: $password,
                         confirmPassword: $confirmPassword,
-                        isLoading: $isLoading,
-                        action: authAction
+                        isLoading: $isLoading
                     )
                 case .resetPassword:
-                    Text("Reset password Screen")
+                    ResetPasswordScreen(
+                        authMode: $authMode,
+                        isLoading: $isLoading
+                    )
                 }
             }
             VStack(spacing: 24) {
@@ -88,45 +87,6 @@ struct AuthenticationView: View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    private func authAction() {
-        // TODO: Añadir validación de campos antes de ejecutar la acción
-        Task {
-            do {
-                isLoading = true
-                if authMode == .login {
-                    try await auth.signIn(email: email, password: password)
-//                    if let user = auth.user {
-//                        let rcInfo = try await Purchases.shared.logIn(user.id.uuidString)
-//                        print(rcInfo.customerInfo)
-//                        print(rcInfo.created)
-//                    }
-                    
-                } else {
-                    try await auth.signUp(email: email, password: password)
-//                    if let user = auth.user {
-//                        let rcInfo = try await Purchases.shared.logIn(user.id.uuidString)
-//                        print(rcInfo.customerInfo)
-//                        print(rcInfo.created)
-//                    }
-                }
-            } catch(let error as Supabase.AuthError) {
-                print(error)
-                switch error.errorCode {
-                case .invalidCredentials:
-                    self.errorMessage = "Correo electrónico o contraseña inválidos"
-                case .userAlreadyExists:
-                    self.errorMessage = "Ya existe una cuenta con esa dirección de correo"
-                default:
-                    self.errorMessage = "Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde."
-                }
-            } catch {
-                print(error)
-                print(error.localizedDescription)
-                self.errorMessage = error.localizedDescription
-            }
-            isLoading = false
-        }
-    }
 }
 
 #Preview {

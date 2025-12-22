@@ -1,0 +1,898 @@
+{
+    "uri": "/videos/1146688207",
+    "name": "Justicia 14 - pastora Kim 14.12.2025",
+    "description": null,
+    "type": "video",
+    "link": "https://vimeo.com/1146688207",
+    "player_embed_url": "https://player.vimeo.com/video/1146688207?h=c0831d0520",
+    "duration": 2403,
+    "width": 1280,
+    "language": "es",
+    "height": 720,
+    "embed": {
+        "html": "<iframe src=\"https://player.vimeo.com/video/1146688207?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=503905\" width=\"1280\" height=\"720\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" title=\"Justicia 14 - pastora Kim 14.12.2025\"></iframe>",
+        "badges": {
+            "hdr": false,
+            "live": {
+                "streaming": false,
+                "archived": false
+            },
+            "staff_pick": {
+                "normal": false,
+                "best_of_the_month": false,
+                "best_of_the_year": false,
+                "premiere": false
+            },
+            "vod": false,
+            "weekend_challenge": false
+        },
+        "interactive": false,
+        "buttons": {
+            "watchlater": true,
+            "share": true,
+            "embed": true,
+            "hd": false,
+            "fullscreen": true,
+            "scaling": true,
+            "like": true
+        },
+        "logos": {
+            "vimeo": true,
+            "custom": {
+                "active": false,
+                "url": null,
+                "link": null,
+                "use_link": false,
+                "sticky": false
+            }
+        },
+        "play_button": {
+            "position": "auto"
+        },
+        "title": {
+            "name": "show",
+            "owner": "show",
+            "portrait": "show"
+        },
+        "end_screen": [],
+        "playbar": true,
+        "quality_selector": null,
+        "pip": true,
+        "autopip": true,
+        "volume": true,
+        "color": "00adef",
+        "colors": {
+            "color_one": "000000",
+            "color_two": "00adef",
+            "color_three": "ffffff",
+            "color_four": "000000"
+        },
+        "event_schedule": true,
+        "has_cards": false,
+        "outro_type": "videos",
+        "show_timezone": false,
+        "cards": [],
+        "airplay": true,
+        "audio_tracks": true,
+        "chapters": true,
+        "chromecast": true,
+        "closed_captions": true,
+        "transcript": true,
+        "skipping_forward": true,
+        "ask_ai": false,
+        "uri": null,
+        "email_capture_form": [],
+        "speed": true
+    },
+    "created_time": "2025-12-15T19:16:14+00:00",
+    "modified_time": "2025-12-16T09:22:13+00:00",
+    "release_time": "2025-12-15T19:16:14+00:00",
+    "content_rating": [
+        "unrated"
+    ],
+    "content_rating_class": "unrated",
+    "rating_mod_locked": false,
+    "license": null,
+    "privacy": {
+        "view": "disable",
+        "embed": "whitelist",
+        "download": false,
+        "add": false,
+        "comments": "nobody"
+    },
+    "pictures": {
+        "uri": "/videos/1146688207/pictures/2096213777",
+        "active": true,
+        "type": "custom",
+        "base_link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d?region=us",
+        "sizes": [
+            {
+                "width": 100,
+                "height": 75,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_100x75?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_100x75%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            },
+            {
+                "width": 200,
+                "height": 150,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_200x150?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_200x150%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            },
+            {
+                "width": 295,
+                "height": 166,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_295x166?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_295x166%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            },
+            {
+                "width": 640,
+                "height": 360,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_640x360?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_640x360%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            },
+            {
+                "width": 960,
+                "height": 540,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_960x540?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_960x540%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            },
+            {
+                "width": 1280,
+                "height": 720,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_1280x720?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_1280x720%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            },
+            {
+                "width": 1920,
+                "height": 1080,
+                "link": "https://i.vimeocdn.com/video/2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_1920x1080?&r=pad&region=us",
+                "link_with_play_button": "https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2096213777-2592e9aebec99728fe208d363000bdb2e2215c4b79bf90dcbf7718125749cda2-d_1920x1080%3F%26region%3Dus&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+            }
+        ],
+        "resource_key": "e2194ad67ef85c94dc4ccbf8fdcecfcf0c6a6d22",
+        "default_picture": false
+    },
+    "tags": [],
+    "stats": {
+        "plays": 3
+    },
+    "categories": [],
+    "uploader": {
+        "pictures": {
+            "uri": "/users/185953523/pictures/98322783",
+            "active": true,
+            "type": "custom",
+            "base_link": "https://i.vimeocdn.com/portrait/98322783?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us",
+            "sizes": [
+                {
+                    "width": 30,
+                    "height": 30,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_30x30?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 72,
+                    "height": 72,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_72x72?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 75,
+                    "height": 75,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_75x75?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 100,
+                    "height": 100,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_100x100?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 144,
+                    "height": 144,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_144x144?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 216,
+                    "height": 216,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_216x216?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 288,
+                    "height": 288,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_288x288?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 300,
+                    "height": 300,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_300x300?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 360,
+                    "height": 360,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_360x360?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                }
+            ],
+            "resource_key": "5090b9673b2fe9571c5cfe7817d2ba29cca10957",
+            "default_picture": false
+        }
+    },
+    "metadata": {
+        "connections": {
+            "comments": {
+                "uri": "/videos/1146688207/comments",
+                "options": [
+                    "GET",
+                    "POST"
+                ],
+                "total": 0
+            },
+            "credits": {
+                "uri": "/videos/1146688207/credits",
+                "options": [
+                    "GET",
+                    "POST"
+                ],
+                "total": 0
+            },
+            "likes": {
+                "uri": "/videos/1146688207/likes",
+                "options": [
+                    "GET"
+                ],
+                "total": 0
+            },
+            "pictures": {
+                "uri": "/videos/1146688207/pictures",
+                "options": [
+                    "GET",
+                    "POST"
+                ],
+                "total": 1
+            },
+            "texttracks": {
+                "uri": "/videos/1146688207/texttracks",
+                "options": [
+                    "GET",
+                    "POST"
+                ],
+                "total": 1
+            },
+            "related": null,
+            "recommendations": {
+                "uri": "/videos/1146688207/recommendations",
+                "options": [
+                    "GET"
+                ],
+                "resource_signature": "358a5d795235cf6dafd65131e2cec2105b354c52769dc91b68127565750a026e_1765880394"
+            },
+            "albums": {
+                "uri": "/videos/1146688207/albums",
+                "options": [
+                    "GET",
+                    "PATCH"
+                ],
+                "total": 0
+            },
+            "available_albums": {
+                "uri": "/videos/1146688207/available_albums",
+                "options": [
+                    "GET"
+                ],
+                "total": 0
+            },
+            "versions": {
+                "uri": "/videos/1146688207/versions",
+                "options": [
+                    "GET"
+                ],
+                "total": 1,
+                "current_uri": "/videos/1146688207/versions/1145985471",
+                "resource_key": "1ee5661915c041261b98e9ca549e098765603cf9",
+                "create_storyboard_id": "",
+                "latest_incomplete_version": null
+            }
+        },
+        "interactions": {
+            "report": {
+                "uri": "/videos/1146688207/report",
+                "options": [
+                    "POST"
+                ],
+                "reason": [
+                    "pornographic",
+                    "harassment",
+                    "ripoff",
+                    "incorrect rating",
+                    "spam",
+                    "causes harm",
+                    "csam",
+                    "voting misinformation"
+                ]
+            },
+            "view_team_members": {
+                "uri": "/videos/1146688207/teammembers",
+                "options": [
+                    "GET"
+                ]
+            },
+            "edit": {
+                "uri": "/videos/1146688207",
+                "options": [
+                    "PATCH"
+                ],
+                "blocked_fields": []
+            },
+            "edit_content_rating": {
+                "uri": "/videos/1146688207",
+                "options": [
+                    "PATCH"
+                ],
+                "content_rating": [
+                    "language",
+                    "drugs",
+                    "violence",
+                    "nudity",
+                    "advertisement",
+                    "safe",
+                    "unrated"
+                ]
+            },
+            "edit_privacy": {
+                "uri": "/videos/1146688207",
+                "options": [
+                    "PATCH"
+                ],
+                "content_type": "application/vnd.vimeo.video",
+                "properties": [
+                    {
+                        "name": "privacy.view",
+                        "required": true,
+                        "options": [
+                            "anybody",
+                            "nobody",
+                            "team",
+                            "password",
+                            "disable",
+                            "unlisted"
+                        ]
+                    }
+                ]
+            },
+            "delete": {
+                "uri": "/videos/1146688207",
+                "options": [
+                    "DELETE"
+                ]
+            },
+            "can_update_privacy_to_public": {
+                "uri": "/videos/1146688207",
+                "options": [
+                    "PATCH"
+                ]
+            },
+            "invite": {
+                "uri": "/users/185953523/team_user_clip_access_grants",
+                "options": [
+                    "GET",
+                    "POST"
+                ]
+            },
+            "trim": {
+                "uri": "/videos/1146688207/cliptrim",
+                "options": [
+                    "GET",
+                    "POST"
+                ]
+            },
+            "validate": {
+                "uri": "/videos/1146688207/validate",
+                "options": [
+                    "PUT"
+                ]
+            }
+        },
+        "is_vimeo_create": false,
+        "is_screen_record": false
+    },
+    "manage_link": "/manage/videos/1146688207",
+    "user": {
+        "uri": "/users/185953523",
+        "name": "Centro Cristiano La Roca",
+        "link": "https://vimeo.com/user185953523",
+        "capabilities": {
+            "hasLiveSubscription": false
+        },
+        "location": "Valladolid, Spain",
+        "gender": "",
+        "bio": null,
+        "short_bio": "Centro Cristiano La Roca",
+        "created_time": "2022-10-02T08:37:50+00:00",
+        "pictures": {
+            "uri": "/users/185953523/pictures/98322783",
+            "active": true,
+            "type": "custom",
+            "base_link": "https://i.vimeocdn.com/portrait/98322783?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us",
+            "sizes": [
+                {
+                    "width": 30,
+                    "height": 30,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_30x30?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 72,
+                    "height": 72,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_72x72?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 75,
+                    "height": 75,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_75x75?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 100,
+                    "height": 100,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_100x100?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 144,
+                    "height": 144,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_144x144?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 216,
+                    "height": 216,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_216x216?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 288,
+                    "height": 288,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_288x288?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 300,
+                    "height": 300,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_300x300?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                },
+                {
+                    "width": 360,
+                    "height": 360,
+                    "link": "https://i.vimeocdn.com/portrait/98322783_360x360?sig=588120b7dcea2ed2467dffb46e3e1e31ed2230a865d38dd5b7a3567d938750c9&v=1&region=us"
+                }
+            ],
+            "resource_key": "5090b9673b2fe9571c5cfe7817d2ba29cca10957",
+            "default_picture": false
+        },
+        "websites": [
+            {
+                "uri": "/users/185953523/links/8749819",
+                "name": null,
+                "link": "https://larocacyl.com",
+                "type": "link",
+                "description": null
+            }
+        ],
+        "metadata": {
+            "connections": {
+                "albums": {
+                    "uri": "/users/185953523/albums",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "appearances": {
+                    "uri": "/users/185953523/appearances",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "categories": {
+                    "uri": "/users/185953523/categories",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "channels": {
+                    "uri": "/users/185953523/channels",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "feed": {
+                    "uri": "/users/185953523/feed",
+                    "options": [
+                        "GET"
+                    ]
+                },
+                "followers": {
+                    "uri": "/users/185953523/followers",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 7
+                },
+                "following": {
+                    "uri": "/users/185953523/following",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "groups": {
+                    "uri": "/users/185953523/groups",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "likes": {
+                    "uri": "/users/185953523/likes",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "membership": {
+                    "uri": "/users/185953523/membership/",
+                    "options": [
+                        "PATCH"
+                    ]
+                },
+                "moderated_channels": {
+                    "uri": "/users/185953523/channels?filter=moderated",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "portfolios": {
+                    "uri": "/users/185953523/portfolios",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "videos": {
+                    "uri": "/users/185953523/videos",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 231
+                },
+                "watchlater": {
+                    "uri": "/users/185953523/watchlater",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "shared": {
+                    "uri": "/users/185953523/shared/videos",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "pictures": {
+                    "uri": "/users/185953523/pictures",
+                    "options": [
+                        "GET",
+                        "POST"
+                    ],
+                    "total": 2
+                },
+                "watched_videos": {
+                    "uri": "/me/watched/videos",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                },
+                "folders_root": {
+                    "uri": "/users/185953523/folders/root",
+                    "options": [
+                        "GET"
+                    ]
+                },
+                "folders": {
+                    "uri": "/users/185953523/folders",
+                    "options": [
+                        "GET",
+                        "POST"
+                    ],
+                    "total": 18
+                },
+                "teams": {
+                    "uri": "/users/185953523/teams",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 1
+                },
+                "permission_policies": {
+                    "uri": "/users/185953523/permission_policies",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 13
+                },
+                "block": {
+                    "uri": "/me/block",
+                    "options": [
+                        "GET"
+                    ],
+                    "total": 0
+                }
+            }
+        },
+        "location_details": {
+            "formatted_address": "Valladolid, Spain",
+            "latitude": 41.6522522,
+            "longitude": -4.7245321,
+            "city": "Valladolid",
+            "state": "Castile and León",
+            "neighborhood": null,
+            "sub_locality": null,
+            "state_iso_code": "CL",
+            "country": "Spain",
+            "country_iso_code": "ES"
+        },
+        "skills": [],
+        "available_for_hire": false,
+        "can_work_remotely": false,
+        "preferences": {
+            "videos": {
+                "rating": [
+                    "unrated"
+                ],
+                "autocc_display_enabled_by_default": true,
+                "license": null,
+                "hide_stats": false,
+                "privacy": {
+                    "view": "unlisted",
+                    "comments": "anybody",
+                    "embed": "public",
+                    "download": true,
+                    "add": true,
+                    "allow_share_link": true
+                }
+            },
+            "webinar_registrant_lower_watermark_banner_dismissed": []
+        },
+        "content_filter": [
+            "language",
+            "drugs",
+            "violence",
+            "nudity",
+            "safe",
+            "unrated"
+        ],
+        "resource_key": "b5bef3b5f7ff7928ad86fa462bfe309d36da545a",
+        "account": "standard"
+    },
+    "last_user_action_event_date": "2025-12-15T19:33:29+00:00",
+    "parent_folder": null,
+    "review_page": {
+        "active": true,
+        "link": "https://vimeo.com/user185953523/review/1146688207/3d4ef07802",
+        "is_shareable": true
+    },
+    "files": [
+        {
+            "quality": "hd",
+            "rendition": "720p",
+            "type": "video/mp4",
+            "width": 1280,
+            "height": 720,
+            "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/rendition/720p/file.mp4%20%28720p%29.mp4?loc=external&oauth2_token_id=1805001744&signature=ce10ac048ad0dbb3db88ac5b4d4f24f70daec85120ad8d8c33077488d22b8608",
+            "created_time": "2025-12-15T19:33:02+00:00",
+            "fps": 24,
+            "size": 839964321,
+            "md5": null,
+            "public_name": "720p",
+            "size_short": "801.05MB"
+        },
+        {
+            "quality": "sd",
+            "rendition": "540p",
+            "type": "video/mp4",
+            "width": 960,
+            "height": 540,
+            "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/rendition/540p/file.mp4%20%28540p%29.mp4?loc=external&oauth2_token_id=1805001744&signature=dbe9172d0cd045253f0af6520bb05b5b4188a0b5203333d4932db63d313b6b0a",
+            "created_time": "2025-12-15T19:32:57+00:00",
+            "fps": 24,
+            "size": 465966522,
+            "md5": null,
+            "public_name": "540p",
+            "size_short": "444.38MB"
+        },
+        {
+            "quality": "sd",
+            "rendition": "360p",
+            "type": "video/mp4",
+            "width": 640,
+            "height": 360,
+            "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/rendition/360p/file.mp4%20%28360p%29.mp4?loc=external&oauth2_token_id=1805001744&signature=a0b09dbd0576a0917a25594ec53879bb2b9b5b09f97603536f4c54ef4d665dad",
+            "created_time": "2025-12-15T19:31:19+00:00",
+            "fps": 24,
+            "size": 254847091,
+            "md5": null,
+            "public_name": "360p",
+            "size_short": "243.04MB"
+        },
+        {
+            "quality": "sd",
+            "rendition": "240p",
+            "type": "video/mp4",
+            "width": 426,
+            "height": 240,
+            "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/rendition/240p/file.mp4%20%28240p%29.mp4?loc=external&oauth2_token_id=1805001744&signature=6053b56b446ca48fe420a6afdf411864cd5891eb09115c057c5b5d573a134d54",
+            "created_time": "2025-12-15T19:31:38+00:00",
+            "fps": 24,
+            "size": 145578749,
+            "md5": null,
+            "public_name": "240p",
+            "size_short": "138.83MB"
+        },
+        {
+            "quality": "hls",
+            "rendition": "adaptive",
+            "type": "video/mp4",
+            "link": "https://player.vimeo.com/external/1146688207.m3u8?s=d0623cd44ea6b84eb3daa2f9770fada202421d7c&oauth2_token_id=1805001744",
+            "created_time": "2025-12-15T19:33:02+00:00",
+            "fps": 24,
+            "size": 839964321,
+            "md5": null,
+            "public_name": "720p",
+            "size_short": "801.05MB"
+        }
+    ],
+    "download": [
+        {
+            "quality": "hd",
+            "rendition": "720p",
+            "type": "video/mp4",
+            "width": 1280,
+            "height": 720,
+            "expires": "2025-12-17T10:16:54+00:00",
+            "link": "https://player.vimeo.com/progressive_redirect/download/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/9eaed837-90ae984d/justicia_14_-_pastora_kim_14.12.2025%20%28720p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=29fa48bc3e5c27c4a15866eb70b5231ada0b449f5804bf2b1fea9c5f74685c3f&user_id=185953523",
+            "created_time": "2025-12-15T19:33:02+00:00",
+            "fps": 24,
+            "size": 839964321,
+            "md5": null,
+            "public_name": "720p",
+            "size_short": "801.05MB"
+        },
+        {
+            "quality": "sd",
+            "rendition": "540p",
+            "type": "video/mp4",
+            "width": 960,
+            "height": 540,
+            "expires": "2025-12-17T10:16:54+00:00",
+            "link": "https://player.vimeo.com/progressive_redirect/download/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/0fadecd3-90ae984d/justicia_14_-_pastora_kim_14.12.2025%20%28540p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=7fa966499af8d291f97904a70d2d614a2b2822ae095377adebf991056105aa4a&user_id=185953523",
+            "created_time": "2025-12-15T19:32:57+00:00",
+            "fps": 24,
+            "size": 465966522,
+            "md5": null,
+            "public_name": "540p",
+            "size_short": "444.38MB"
+        },
+        {
+            "quality": "sd",
+            "rendition": "360p",
+            "type": "video/mp4",
+            "width": 640,
+            "height": 360,
+            "expires": "2025-12-17T10:16:54+00:00",
+            "link": "https://player.vimeo.com/progressive_redirect/download/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/4e4d489c-90ae984d/justicia_14_-_pastora_kim_14.12.2025%20%28360p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=36ff207e14e2559c015e7e8478124f8ddb1e2aaff72a3fad06c0f91bef19d0a4&user_id=185953523",
+            "created_time": "2025-12-15T19:31:19+00:00",
+            "fps": 24,
+            "size": 254847091,
+            "md5": null,
+            "public_name": "360p",
+            "size_short": "243.04MB"
+        },
+        {
+            "quality": "sd",
+            "rendition": "240p",
+            "type": "video/mp4",
+            "width": 426,
+            "height": 240,
+            "expires": "2025-12-17T10:16:54+00:00",
+            "link": "https://player.vimeo.com/progressive_redirect/download/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/e8303fa8-90ae984d/justicia_14_-_pastora_kim_14.12.2025%20%28240p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=2bcdfe8cf083c18b329bdcfedd0aa3190a3b564d3ae0bb1100c97f7b0f92dd3a&user_id=185953523",
+            "created_time": "2025-12-15T19:31:38+00:00",
+            "fps": 24,
+            "size": 145578749,
+            "md5": null,
+            "public_name": "240p",
+            "size_short": "138.83MB"
+        }
+    ],
+    "app": {
+        "name": "Vimeo Site",
+        "uri": "/apps/58479"
+    },
+    "play": {
+        "progressive": [
+            {
+                "type": "video/mp4",
+                "codec": "H264",
+                "width": 1280,
+                "height": 720,
+                "link_expiration_time": "2025-12-17T10:16:54+00:00",
+                "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/9eaed837-90ae984d/file.mp4%20%28720p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=a272feb4deb7022d19fd71a313efbc590faff7ca76fd77c3fa9fddbba6796e56&user_id=185953523",
+                "created_time": "2025-12-15T19:33:02+00:00",
+                "fps": 24,
+                "size": 839964321,
+                "md5": null,
+                "rendition": "720p"
+            },
+            {
+                "type": "video/mp4",
+                "codec": "H264",
+                "width": 960,
+                "height": 540,
+                "link_expiration_time": "2025-12-17T10:16:54+00:00",
+                "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/0fadecd3-90ae984d/file.mp4%20%28540p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=b113271d7d63b65cace42bd00e753416cf8f967980655850ff1c6e4b22861881&user_id=185953523",
+                "created_time": "2025-12-15T19:32:57+00:00",
+                "fps": 24,
+                "size": 465966522,
+                "md5": null,
+                "rendition": "540p"
+            },
+            {
+                "type": "video/mp4",
+                "codec": "H264",
+                "width": 640,
+                "height": 360,
+                "link_expiration_time": "2025-12-17T10:16:54+00:00",
+                "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/4e4d489c-90ae984d/file.mp4%20%28360p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=e67e0d52d00b26a22496efa1f730e154172bdc1ffcba83764aac38591eed914c&user_id=185953523",
+                "created_time": "2025-12-15T19:31:19+00:00",
+                "fps": 24,
+                "size": 254847091,
+                "md5": null,
+                "rendition": "360p"
+            },
+            {
+                "type": "video/mp4",
+                "codec": "H264",
+                "width": 426,
+                "height": 240,
+                "link_expiration_time": "2025-12-17T10:16:54+00:00",
+                "link": "https://player.vimeo.com/progressive_redirect/playback/1146688207/container/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/e8303fa8-90ae984d/file.mp4%20%28240p%29.mp4?expires=1765966614&loc=external&oauth2_token_id=1805001744&signature=0cd30144477b5bd3e419b8f86aea89610ffcf189e8fa86d165eb5e7a87e1e99d&user_id=185953523",
+                "created_time": "2025-12-15T19:31:38+00:00",
+                "fps": 24,
+                "size": 145578749,
+                "md5": null,
+                "rendition": "240p"
+            }
+        ],
+        "hls": {
+            "link_expiration_time": "2025-12-17T10:14:54+00:00",
+            "link": "https://player.vimeo.com/play/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/hls.m3u8?s=1146688207_1765966494_9e61b3052d2a0d8f6c779f076290f65d&context=Vimeo%5CController%5CApi%5CResources%5CVideoController.&oauth2_token_id=1805001744"
+        },
+        "dash": {
+            "link_expiration_time": "2025-12-17T10:14:54+00:00",
+            "link": "https://player.vimeo.com/play/f1c08c70-3e29-452c-9b0b-6ee2ebb5e16f/dash.mpd?s=1146688207_1765966494_9e61b3052d2a0d8f6c779f076290f65d&context=Vimeo%5CController%5CApi%5CResources%5CVideoController.&oauth2_token_id=1805001744"
+        },
+        "status": "playable"
+    },
+    "status": "available",
+    "resource_key": "370a5ecf43a68d65ba1d875f77873563b4663d05",
+    "upload": {
+        "status": "complete",
+        "link": null,
+        "upload_link": null,
+        "form": null,
+        "approach": null,
+        "size": null,
+        "redirect_url": null
+    },
+    "transcode": {
+        "status": "complete"
+    },
+    "is_playable": true,
+    "has_audio": true
+}

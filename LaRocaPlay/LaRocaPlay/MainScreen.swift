@@ -18,13 +18,12 @@ struct MainScreen: View {
 
     
     @State private var router = AppRouter(initialTab: .home)
-    @State var account: User?
+    @State var account: Profile?
     
     @ObserveInjection var forceRedraw
     
     var body: some View {
         VStack {
-            topBar()
             TabView(selection: $router.selectedTab) {
                 ForEach(AppTab.allCases) { tab in
                     NavigationStack(path: $router[tab]) {
@@ -33,7 +32,6 @@ struct MainScreen: View {
                             case .home:
                                 HomeView()
                             case .preaches:
-//                                PreachCollectionScreen(collectionId: 1, cols: 2)
                                 PreachesScreen(collectionId: 1)
                             case .training:
                                 DiscipleshipListScreen()
@@ -64,43 +62,6 @@ struct MainScreen: View {
         .enableInjection()
         #endif
     }
-    @ViewBuilder
-    private func topBar() -> some View {
-        VStack {
-            ZStack {
-                HStack {
-                    Spacer()
-                    Image(.topbarLogo)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 40)
-                    Spacer()
-                }
-                HStack {
-                    Spacer()
-                    Button {
-                        router.navigateTo(.account(userId: auth.user?.id.uuidString ?? "NIL"))
-                    } label: {
-                        Image("user")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 28)
-                            .foregroundStyle(.customRed)
-                    }
-                }
-            }
-            .frame(height: 38)
-            HStack(spacing: 4) {
-                Text("Bienvenido,")
-                    .foregroundStyle(.dirtyWhite)
-                Text("\(auth.user?.email ?? "invitado")")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-            }
-            .font(.system(size: 12))
-        }
-        .padding(.horizontal)
-    }
     
     @ViewBuilder
     private func destinationView(for destination: Destination) -> some View {
@@ -114,8 +75,9 @@ struct MainScreen: View {
         case .account(let userId):
             AccountScreen()
                 .navigationBarBackButtonHidden()
-        case .userDetail(let id):
-            Text("User details view: \(id)")
+        case .userDetail:
+            ProfileScreen()
+                .navigationBarBackButtonHidden()
         case .postDetail(let id):
             Text("Post details view: \(id)")
         case .congresses:

@@ -27,7 +27,7 @@ struct AccountView: View {
                 VStack(spacing: 16) {
                     // TODO: Vista de perfil, con nombre de usuario y email. Editar perfil, Cambiar contraseña y cerrar sesión.
                     // TODO: Nivel de suscripción y poder modificarlo
-                    if let account {
+                    if let account = auth.user {
                         VStack(spacing: 8) {
                             HStack(spacing: 0) {
                                 Text("Bienvenido")
@@ -87,8 +87,8 @@ struct AccountView: View {
                 self.collectionsRepository.series.removeAll()
                 let customerInfo = try await Purchases.shared.logOut()
 //                try await auth.getCustomerInfor()
-                try await auth.getSuscriptionStatus()
-                print(customerInfo)
+//                try await auth.getSuscriptionStatus()
+//                print(customerInfo)
             } catch {
                 print(error.localizedDescription)
                 errorMessage = error.localizedDescription
