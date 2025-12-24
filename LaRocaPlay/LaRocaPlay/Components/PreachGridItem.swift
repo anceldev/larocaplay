@@ -9,11 +9,11 @@ import SwiftUI
 
 
 struct PreachGridItem: View {
-    let preach: Preach
+    let preach: PreachDTO
     let listView: ListView
     let aspect: CGFloat
     
-    init(_ preach: Preach, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading) {
+    init(_ preach: PreachDTO, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading) {
         self.preach = preach
         self.listView = listView
         self.aspect = aspect

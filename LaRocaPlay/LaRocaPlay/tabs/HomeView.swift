@@ -21,7 +21,7 @@ struct HomeView: View {
 //        }
 //        return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
 //    }
-    var preaches: [Preach] {
+    var preaches: [PreachDTO] {
         if searchQuery.isEmpty {
             return celebration.preaches
         }

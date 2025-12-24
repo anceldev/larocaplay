@@ -10,7 +10,7 @@ import SwiftUI
 
 struct PreacherScreen: View {
     @Environment(AppRouter.self) var router
-    let preacher: Preacher
+    let preacher: PreacherDTO
      var body: some View {
         VStack {
             Image(.previewPreacher)

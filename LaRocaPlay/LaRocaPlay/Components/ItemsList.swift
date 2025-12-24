@@ -17,12 +17,12 @@ enum ListView {
 struct ItemsList: View {
     
     @Environment(AppRouter.self) var router
-    let preaches: [Preach]
+    let preaches: [PreachDTO]
     let cols: Int
     
     var listView: ListView
     
-    init(preaches: [Preach], cols: Int = 2, listView: ListView) {
+    init(preaches: [PreachDTO], cols: Int = 2, listView: ListView) {
         self.preaches = preaches
 //        self.cols = cols
         self.listView = listView

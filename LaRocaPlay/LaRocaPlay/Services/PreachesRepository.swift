@@ -12,7 +12,7 @@ import Supabase
 @Observable
 final class PreachesRepository {
     let client = SBCLient.shared.supabase
-    var preaches = [Preach]()
+    var preaches = [PreachDTO]()
     var externalLinks = [ExternalLink]()
     
     private var itemLimit = 5
@@ -46,9 +46,9 @@ final class PreachesRepository {
     }
     
     
-    func getPreaches() async throws -> [Preach] {
+    func getPreaches() async throws -> [PreachDTO] {
         do {
-            let newPreaches: [Preach] = try await client
+            let newPreaches: [PreachDTO] = try await client
                 .from("preach")
                 .select("""
                     id,

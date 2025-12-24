@@ -17,7 +17,7 @@ struct PreachScreen: View {
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
 
-    var preach: Preach
+    var preach: PreachDTO
     
     let spanishDateFormatter: DateFormatter = {
         let formatter = DateFormatter()

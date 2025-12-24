@@ -15,7 +15,7 @@ struct SerieScreen: View {
 //    var serie: Serie {
 //        seriesRepository.series.first { $0.id == serieId }!
 //    }
-    @State var lessons: [Preach] = []
+    @State var lessons: [PreachDTO] = []
     
     var body: some View {
         VStack {

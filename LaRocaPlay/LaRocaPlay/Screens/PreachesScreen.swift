@@ -17,7 +17,7 @@ struct PreachesScreen: View {
     @State private var cols: Int = 1
     @State private var errorMessage: String? = nil
     
-    var preaches: [Preach] {
+    var preaches: [PreachDTO] {
         if searchQuery.isEmpty {
             return celebration.preaches
         }

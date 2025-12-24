@@ -12,7 +12,7 @@ import Supabase
 @Observable
 final class CelebrationRepository {
     let client = SBCLient.shared.supabase
-    var preaches = [Preach]()
+    var preaches = [PreachDTO]()
     var indexFrom = 0
     var indexTo = 4
     var isInitialized = false

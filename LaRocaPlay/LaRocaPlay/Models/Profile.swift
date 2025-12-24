@@ -16,7 +16,15 @@ struct Profile: Codable, Identifiable {
     var avatarId: String?
     var locale: String?
     var profileRole: ProfileRole
+    var subscription: [RCSubscription]?
     
+    var activeSubscription: RCSubscription? {
+        guard let subscription else {
+            return nil
+        }
+        return subscription.first(where: { $0.isActive })
+    }
+
     enum CodingKeys: String, CodingKey {
         case email, locale
         case userId = "user_id"
@@ -24,6 +32,7 @@ struct Profile: Codable, Identifiable {
         case avatarUrl = "avatar_url"
         case avatarId = "avatar_id"
         case profileRole = "profile_role"
+        case subscription
     }
     
     init(from decoder: any Decoder) throws {
@@ -36,6 +45,8 @@ struct Profile: Codable, Identifiable {
         self.avatarUrl = try container.decodeIfPresent(String.self, forKey: .avatarUrl)
         self.avatarId = try container.decodeIfPresent(String.self, forKey: .avatarId)
         self.profileRole = try container.decode(ProfileRole.self, forKey: .profileRole)
+        self.subscription = try container.decodeIfPresent([RCSubscription].self, forKey: .subscription)
+//        self.subscription = nil
     }
 }
 

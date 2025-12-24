@@ -44,7 +44,7 @@ final class AWService {
     
     let database = AWClient.shared.database
     
-    func getPreaches() async throws -> [Preach] {
+    func getPreaches() async throws -> [PreachDTO] {
         do {
             let docs = try await database.listDocuments(
                 databaseId: AWCongig.db.rawValue,
@@ -57,12 +57,12 @@ final class AWService {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             
-            let documentList: [Preach] = try docs.documents.compactMap { doc in
+            let documentList: [PreachDTO] = try docs.documents.compactMap { doc in
 //                let documentData = try convertToData(doc.data)
                 let dict = doc.data.mapValues { $0.value }
                 let documentData = try JSONSerialization.data(withJSONObject: dict)
             
-                let model = try decoder.decode(Preach.self, from: documentData)
+                let model = try decoder.decode(PreachDTO.self, from: documentData)
                 return model
             }
             return documentList

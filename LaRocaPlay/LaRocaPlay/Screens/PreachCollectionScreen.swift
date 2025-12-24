@@ -11,7 +11,7 @@ import SwiftUI
 enum LoadingState: Equatable {
     case loading
     case empty
-    case loaded([Preach])
+    case loaded([PreachDTO])
     case error(String)
 }
 
@@ -30,7 +30,7 @@ struct PreachCollectionScreen: View {
         self._collectionId = State(initialValue: collectionId)
     }
     
-    var preaches: [Preach] {
+    var preaches: [PreachDTO] {
         guard let preaches = collections.series.first (where: { $0.id == collectionId })?.preaches else {
             return []
         }

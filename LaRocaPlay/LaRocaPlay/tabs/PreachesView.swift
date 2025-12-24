@@ -13,15 +13,15 @@ struct PreachesView: View {
     @Environment(PreachesRepository.self) var repository
     @Environment(AppRouter.self) var router
     
-    @State private var preaches: [Preach]
+    @State private var preaches: [PreachDTO]
     
     @State private var errorMessage: String?
     @State private var searchQuery = ""
     
-    init(preaches: [Preach]) {
+    init(preaches: [PreachDTO]) {
         self._preaches = .init(initialValue: preaches)
     }
-    var filteredPreaches: [Preach] {
+    var filteredPreaches: [PreachDTO] {
         if searchQuery.isEmpty {
             return repository.preaches
         }

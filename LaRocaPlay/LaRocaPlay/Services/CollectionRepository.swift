@@ -192,7 +192,7 @@ final class CollectionRepository {
         }
     }
     
-    func getLessons(serieId: Int) async throws -> [Preach] {
+    func getLessons(serieId: Int) async throws -> [PreachDTO] {
         return []
     }
 }

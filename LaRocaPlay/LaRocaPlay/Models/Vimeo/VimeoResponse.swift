@@ -100,6 +100,7 @@ struct VimeoVideoResponse: Codable {
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        
         self.link = try container.decode(String.self, forKey: .link)
         self.videoId = try container.decode(String.self, forKey: .videoId)
 //        self.linkExpirationTime = try container.decode(Date.self, forKey: .linkExpirationTime)

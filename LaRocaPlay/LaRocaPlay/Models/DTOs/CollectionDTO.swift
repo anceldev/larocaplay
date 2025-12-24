@@ -1,13 +1,13 @@
 //
-//  PreachCollection.swift
+//  CollectionDTO.swift
 //  LaRocaPlay
 //
-//  Created by Ancel Dev account on 19/8/25.
+//  Created by Ancel Dev account on 24/12/25.
 //
 
 import Foundation
 
-struct PreachCollection: Codable, Identifiable, Hashable {
+struct CollectionDTO: Codable, Identifiable, Hashable {
     var id: Int
     var title: String
     var description: String?
@@ -60,23 +60,28 @@ struct PreachCollection: Codable, Identifiable, Hashable {
         self.endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
         self.preaches = []
     }
-}
-
-struct PreachCollectionType: Identifiable, Codable, Hashable {
-    let id: Int
-    let name: String
     
-    func toModel() -> CollectionType {
-        let model = CollectionType(
+    func toModel() -> Collection {
+        let model = Collection(
             id: self.id,
-            name: self.name
+            title: self.title,
+            desc: self.description,
+            imageId: self.thumbId,
+            isPublic: self.isPublic,
+            isHomeScreen: self.isHomeScreen,
+            createdAt: self.createdAt,
+            updatedAt: self.updatedAt,
+            endedAt: self.endedAt,
         )
         return model
     }
 }
-
-struct PreachCollectionWrapper: Decodable {
-    let preach: PreachDTO
-}
-
-
+//
+//struct PreachCollectionType: Identifiable, Codable, Hashable {
+//    let id: Int
+//    let name: String
+//}
+//
+//struct PreachCollectionWrapper: Decodable {
+//    let preach: Preach
+//}

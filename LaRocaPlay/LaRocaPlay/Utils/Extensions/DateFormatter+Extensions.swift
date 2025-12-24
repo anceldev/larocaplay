@@ -17,3 +17,20 @@ extension DateFormatter {
         return dateFormatter
     }()
 }
+extension DateFormatter {
+    static let supabaseDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter
+    }()
+    
+    static let supabaseTimestamp: DateFormatter = {
+           let formatter = DateFormatter()
+           formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSxxxxx"
+           formatter.timeZone = TimeZone(secondsFromGMT: 0)
+           formatter.locale = Locale(identifier: "en_US_POSIX")
+           return formatter
+       }()
+}

@@ -11,10 +11,10 @@ import Foundation
 class PreviewData {
     static let user: User = .init(id: UUID(), name: "Test User", email: "test@mail.com", role: .admin)
     
-    static let preacherMiguel: Preacher = .init(id: 1, name: "Miguel López", role: .init(id: 1, name: "Pastor"), thumbId: nil)
-    static let preacherJavier: Preacher = .init(id: 2, name: "Javier Felipe", role: .init(id: 1, name: "Pastor"), thumbId: nil)
-    static let preacherYuna: Preacher = .init(id: 3, name: "Yuna Lee", role: .init(id: 2, name: "Pastora"), thumbId: nil)
-    static let preachers: [Preacher] = [
+    static let preacherMiguel: PreacherDTO = .init(id: 1, name: "Miguel López", role: .init(id: 1, name: "Pastor"), thumbId: nil)
+    static let preacherJavier: PreacherDTO = .init(id: 2, name: "Javier Felipe", role: .init(id: 1, name: "Pastor"), thumbId: nil)
+    static let preacherYuna: PreacherDTO = .init(id: 3, name: "Yuna Lee", role: .init(id: 2, name: "Pastora"), thumbId: nil)
+    static let preachers: [PreacherDTO] = [
         PreviewData.preacherMiguel,
         PreviewData.preacherJavier,
         PreviewData.preacherYuna
@@ -42,7 +42,7 @@ class PreviewData {
         )
         ]
     
-    static let preaches: [Preach] = [
+    static let preaches: [PreachDTO] = [
 //        .init(
 //            id: 1,
 //            title: "Honra a todos",

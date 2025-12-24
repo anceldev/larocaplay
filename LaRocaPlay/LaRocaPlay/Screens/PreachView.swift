@@ -16,7 +16,7 @@ struct PreachView: View {
     @Environment(CollectionRepository.self) var collections
     @State private var showPaywall = false
     @State private var errorMessage: String? = nil
-    var preach: Preach
+    var preach: PreachDTO
 
     
     let spanishDateFormatter: DateFormatter = {

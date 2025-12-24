@@ -1,11 +1,11 @@
 //
-//  Preacher.swift
+//  PreacherDTO.swift
 //  LaRocaPlay
 //
 //  Created by Ancel Dev account on 19/8/25.
 //
 
-struct Preacher: Codable, Identifiable, Equatable, Hashable {
+struct PreacherDTO: Codable, Identifiable, Equatable, Hashable {
     var id: Int
     var name: String
 //    var role: String?
@@ -16,6 +16,16 @@ struct Preacher: Codable, Identifiable, Equatable, Hashable {
         case id, name
         case role = "preacher_role_id"
         case thumbId = "thumb_id"
+    }
+    
+    func toModel() -> Preacher {
+        let model = Preacher(
+            id: self.id,
+            name: self.name,
+            role: self.role.name,
+            photoId: self.thumbId
+        )
+        return model
     }
 }
 

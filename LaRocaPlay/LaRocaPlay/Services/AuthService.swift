@@ -56,7 +56,7 @@ final class AuthService {
                 try await signout()
                 throw AuthError.noUserFound
             }
-            try await getSuscriptionStatus(userId: userId.uuidString)
+            try await getSuscriptionStatus(userId: userId.uuidString.lowercased())
             self.authState = .authenticated
         } catch {
             print(error)
@@ -122,15 +122,24 @@ final class AuthService {
     }
     
     func getProfile(for userId: UUID) async throws -> Profile {
-        let profile: Profile = try await client
+//        let profile: Profile = try await client
+//            .from("profiles")
+//            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
+//            .eq("user_id", value: userId)
+//            .single()
+//            .execute()
+//            .value
+        let profile = try await client
             .from("profiles")
-            .select("user_id, display_name, email, avatar_id, locale, profile_role")
+            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
             .eq("user_id", value: userId)
             .single()
             .execute()
-            .value
-
-        return profile
+        
+        print(try JSONSerialization.jsonObject(with: profile.data))
+        let porf = try JSONDecoder.supabaseDateDecoder.decode(Profile.self, from: profile.data)
+        return porf
+//        return profile
     }
     
     private func resetValues() {
