@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AccountCard: View {
 //    let user: User
-    let user: Profile
+    let user: ProfileDTO
     
     var body: some View {
         VStack(spacing: 12) {
@@ -23,7 +23,7 @@ struct AccountCard: View {
             VStack(alignment: .center, spacing: 6) {
                 Text(user.displayName ?? "NO-NAME")
                     .font(.system(size: 20))
-                Text(user.email)
+                Text(user.email ?? "email")
                     .font(.system(size: 17))
                     .foregroundStyle(.white.opacity(0.4))
             }

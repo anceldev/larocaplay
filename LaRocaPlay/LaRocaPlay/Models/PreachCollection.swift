@@ -73,10 +73,26 @@ struct PreachCollectionType: Identifiable, Codable, Hashable {
         )
         return model
     }
+    
+    init(id: Int, name: String) {
+        self.id = id
+        self.name = name
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+    }
 }
 
 struct PreachCollectionWrapper: Decodable {
     let preach: PreachDTO
+    let position: Int?
 }
 
-
+struct CollectionPreachResponseDTO: Decodable {
+    let id: Int
+    let preach: PreachDTO
+    let position: Int?
+}

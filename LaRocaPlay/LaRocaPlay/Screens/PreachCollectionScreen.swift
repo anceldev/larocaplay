@@ -26,9 +26,12 @@ struct PreachCollectionScreen: View {
     @State private var listView: ListView = .grid
     @State private var image: UIImage?
     
-    init(collectionId: Int) {
+    init(collectionId: Int, collectionItems: [CollectionItem]) {
         self._collectionId = State(initialValue: collectionId)
+        self.collectionItems = collectionItems
     }
+    
+    var collectionItems: [CollectionItem]
     
     var preaches: [PreachDTO] {
         guard let preaches = collections.series.first (where: { $0.id == collectionId })?.preaches else {
@@ -48,7 +51,18 @@ struct PreachCollectionScreen: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            //            ThumbImageLoader(title: collection?.title, storageCollection: .collections(collection?.thumbId))
+//            VStack {
+//                ForEach(collectionItems.sorted(by: { $0.position <= $1.position })) { item in
+//                    HStack {
+//                        if let preach = item.preach {
+//                            if item.position != 0 {
+//                                Text(item.position, format: .number)
+//                            }
+//                            Text(preach.title)
+//                        }
+//                    }
+//                }
+//            }
             ScrollView(.vertical) {
                 VStack(spacing: 8) {
                     Text("Últimas predicaciones")
@@ -64,25 +78,10 @@ struct PreachCollectionScreen: View {
                 }
                 
                 VStack(spacing: 0) {
-                    switch loadingState {
-                    case .loading:
-                        ProgressView()
-                    case .empty:
-                        Text("Todavía no hay ningún contenido en esta colección")
-                    case .loaded(let array):
+                    VStack {
                         VStack {
-                            //                        ScrollView(.vertical) {
-                            VStack {
-                                //                                ItemsList(preaches: preaches, cols: cols) // For debug
-                                ItemsList(preaches: preaches, cols: cols, listView: listView) // For debug
-                            }
-                            //                        }
-                            //                        .scrollIndicators(.hidden)
+                            ItemsList(items: collectionItems.sorted(by: { $0.position <= $1.position }), listView: listView) // For debug
                         }
-                    case .error(let message):
-                        Text("Error: \(message)")
-                            .foregroundStyle(.orange)
-                            .font(.system(size: 12, weight: .semibold))
                     }
                 }
             }

@@ -9,11 +9,8 @@ import SwiftUI
 
 struct ResetPasswordScreen: View {
     @Environment(AuthService.self) var auth
+    @Environment(AuthManager.self) var authManager
     @State private var email: String = ""
-    @Binding var authMode: AuthMode
-    //    @FocusState var focused
-    @Binding var isLoading: Bool
-    @State private var errorMessage: String? = nil
     
     var body: some View {
         VStack(spacing: 32) {
@@ -48,45 +45,21 @@ struct ResetPasswordScreen: View {
                 Button {
                     sendPasswordRequest()
                 } label: {
-                    if isLoading {
-                        ProgressView()
-                            .tint(.dirtyWhite)
-                    } else {
-                        Text("Restablecer contraseña")
-                    }
+                    Text("Restablecer contraseña")
                 }
                 .buttonStyle(.capsuleButton(.customRed))
-                Button {
-                    self.authMode = .login
-                } label: {
-                    Text("Inicier sesión")
-                }
             }
         }
-    }
-    private func sendPasswordRequest() {
-        Task {
-            self.isLoading = true
-            self.errorMessage = nil
-            do {
-                try Validations.shared.isValidEmail(self.email)
-                try await auth.resetPassword(email)
-            } catch {
-                print(error)
-                self.errorMessage = error.localizedDescription
-            }
-            self.isLoading = false
-        }
-    }
-}
-
-#Preview {
-    @Previewable @State var email: String = ""
-    @Previewable @State var isLoading: Bool = false
-    @Previewable @State var errorMesage: String = ""
-    @Previewable @State var authMode: AuthMode = .signup
-
-    ResetPasswordScreen(authMode: $authMode, isLoading: $isLoading)
-        .environment(AuthService())
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(18)
         .background(.customBlack)
+        .enableInjection()
+        
+    }
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
+    private func sendPasswordRequest() {
+        // TODO: Send password request
+    }
 }

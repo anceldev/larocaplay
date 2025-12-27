@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SignInForm: View {
     @Environment(AuthService.self) var auth
+    @Environment(AuthManager.self) var authManager
     
     private enum FocusedField {
         case email, password
@@ -16,13 +17,8 @@ struct SignInForm: View {
     
     @FocusState private var focusedField: FocusedField?
     
-    @Binding var email: String
-    @Binding var password: String
-    @Binding var isLoading: Bool
-    @Binding var authMode: AuthMode
-//    let action: () async -> Void
-    
-    @State private var errorMessage: String? = nil
+    @State private var email: String = ""
+    @State private var password: String = ""
     
     var body: some View {
         VStack(spacing: 32) {
@@ -39,9 +35,6 @@ struct SignInForm: View {
                         .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(.dirtyWhite)
                 }
-//                Text("Iniciar sesión")
-//                    .font(.system(size: 24, weight: .medium))
-//                    .foregroundStyle(.white)
             }
             VStack(spacing: 24) {
                 VStack(spacing: 16) {
@@ -88,13 +81,22 @@ struct SignInForm: View {
                             .onSubmit {
                                 focusedField = nil
                             }
+                        NavigationLink {
+                            ResetPasswordScreen()
+                        } label: {
+                            Text("He olvidad mi contraseña")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(.dirtyWhite)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+
                     }
                 }
                 VStack {
                     Button {
                         signInAction()
                     } label: {
-                        if isLoading {
+                        if authManager.isLoading {
                             ProgressView()
                                 .tint(.dirtyWhite)
                         } else {
@@ -102,23 +104,31 @@ struct SignInForm: View {
                         }
                     }
                     .buttonStyle(.capsuleButton(.customRed))
-                    .disabled(isLoading)
-                 
-                    VStack {
-                        Text("¿Has olvidado tu contraseña?")
-                        Button {
-                            withAnimation(.easeIn) {
-                                self.authMode = .resetPassword
+                    .disabled(authManager.isLoading)
+                    
+                    VStack(spacing: 16) {
+                        VStack {
+                            Text("¿Todavía no tienes una cuenta?")
+                                .fontWeight(.light)
+                            NavigationLink {
+                                SignUpForm()
+                            } label: {
+                                Text("Regístrate")
+                                    .fontWeight(.bold)
                             }
-                        } label: {
-                            Text("Restablecer contraseña")
-                                .underline()
+                            .buttonStyle(.plain)
+                            .disabled(authManager.isLoading)
                         }
+                        .font(.system(size: 14))
+                        .foregroundStyle(.dirtyWhite)
                     }
                 }
             }
         }
-        .padding()
+//        .border(.yellow, width: 1)z
+        .frame(maxHeight: .infinity)
+        .background(.customBlack)
+//        .padding()
         .enableInjection()
     }
 #if DEBUG
@@ -126,21 +136,25 @@ struct SignInForm: View {
 #endif
     private func signInAction() {
         Task {
-            self.isLoading = true
-            self.errorMessage = nil
-            do {
-                try Validations.shared.isValidEmail(self.email)
-                try Validations.shared.isValidPassword(self.password)
-                try await auth.signIn(email: self.email, password: self.password)
-
-            } catch (let error as SignUpError) {
-                self.errorMessage = error.errorDescription
-            } catch {
-                print(error.localizedDescription)
-                self.errorMessage = error.localizedDescription
-            }
-            self.isLoading = false
+            await authManager.signIn(email: email, password: password)
         }
+        
+//        Task {
+//            self.isLoading = true
+//            self.errorMessage = nil
+//            do {
+//                try Validations.shared.isValidEmail(self.email)
+//                try Validations.shared.isValidPassword(self.password)
+//                try await auth.signIn(email: self.email, password: self.password)
+//
+//            } catch (let error as SignUpError) {
+//                self.errorMessage = error.errorDescription
+//            } catch {
+//                print(error.localizedDescription)
+//                self.errorMessage = error.localizedDescription
+//            }
+//            self.isLoading = false
+//        }
     }
 }
 
@@ -149,7 +163,9 @@ struct SignInForm: View {
     @Previewable @State var email: String = ""
     @Previewable @State var password: String = ""
     @Previewable @State var authMode: AuthMode = .login
-    SignInForm(email: $email, password: $password, isLoading: .constant(false), authMode: $authMode)
+    SignInForm()
+        .padding(18)
         .background(.customBlack)
         .environment(AuthService())
+        .environment(AuthManager(service: AuthService()))
 }

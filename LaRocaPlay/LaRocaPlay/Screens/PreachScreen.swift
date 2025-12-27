@@ -17,7 +17,7 @@ struct PreachScreen: View {
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
 
-    var preach: PreachDTO
+    var preach: Preach
     
     let spanishDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -49,7 +49,7 @@ struct PreachScreen: View {
 //                        .aspectRatio(16/9, contentMode: .fill)
                     } else {
                         if let videoURL {
-                            VimeoVideoPlayer(videoURL: videoURL, thumbId: preach.thumbId)
+                            VimeoVideoPlayer(videoURL: videoURL, thumbId: preach.imageId)
                         }
                     }
                 }
@@ -67,7 +67,7 @@ struct PreachScreen: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
 //                    .border(.red, width: 1)
-                    if let description = preach.description {
+                    if let description = preach.desc {
                         Text(description)
                             .foregroundStyle(.secondary)
                             .font(.system(size: 14))
@@ -113,7 +113,7 @@ struct PreachScreen: View {
     private func loadVideoURL() {
         Task {
             do {
-                self.videoURL = try await VimeoService.shared.getVideoURL(for: preach.videoUrl)
+                self.videoURL = try await VimeoService.shared.getVideoURL(for: preach.videoId)
             } catch {
                 print(error)
                 print(error.localizedDescription)

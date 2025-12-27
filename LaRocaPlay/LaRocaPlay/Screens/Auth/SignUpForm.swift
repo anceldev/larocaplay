@@ -10,18 +10,16 @@ import Supabase
 
 struct SignUpForm: View {
     @Environment(AuthService.self) var auth
+    @Environment(AuthManager.self) var authManager
     private enum FocusedField {
         case email, password, confirmPassword
     }
     
     @FocusState private var focusedField: FocusedField?
     
-    @Binding var email: String
-    @Binding var password: String
-    @Binding var confirmPassword: String
-    @Binding var isLoading: Bool
-    
-    @State private var errorMessage: String? = nil
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var confirmPassword: String = ""
     
 //    let action: () async -> Void
     
@@ -121,19 +119,19 @@ struct SignUpForm: View {
                             }
                     }
                 }
-                if let errorMessage {
-                    withAnimation(.easeIn) {
-                        
-                        Text(errorMessage)
-                            .foregroundStyle(.orange)
-                            .multilineTextAlignment(.center)
-                            .font(.system(size: 14))
-                    }
-                }
+//                if let errorMessage {
+//                    withAnimation(.easeIn) {
+//                        
+//                        Text(errorMessage)
+//                            .foregroundStyle(.orange)
+//                            .multilineTextAlignment(.center)
+//                            .font(.system(size: 14))
+//                    }
+//                }
                 Button {
                     signUpAction()
                 } label: {
-                    if isLoading {
+                    if authManager.isLoading {
                         ProgressView()
                             .tint(.dirtyWhite)
                     } else {
@@ -141,31 +139,18 @@ struct SignUpForm: View {
                     }
                 }
                 .buttonStyle(.capsuleButton(.customRed))
-                .disabled(isLoading)
+                .disabled(authManager.isLoading)
             }
         }
-        .padding()
+        .padding(18)
+        .frame(maxHeight: .infinity)
+        .background(.customBlack)
         .enableInjection()
     }
     
     private func signUpAction() {
         Task {
-            self.isLoading = true
-            self.errorMessage = nil
-            do {
-                try Validations.shared.isValidEmail(self.email)
-                try checkPasswordsField()
-                try await auth.signUp(email: self.email, password: self.password)
-
-            } catch (let error as SignUpError) {
-                self.errorMessage = error.errorDescription
-            } catch (let error as Supabase.AuthError) {
-                self.errorMessage = auth.supabaseAutherror(error: error)
-            } catch {
-                print(error.localizedDescription)
-                self.errorMessage = error.localizedDescription
-            }
-            self.isLoading = false
+            await authManager.signUp(email: email, password: password, confirmPassword: confirmPassword)
         }
     }
     
@@ -179,19 +164,4 @@ struct SignUpForm: View {
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-}
-
-#Preview {
-    @Previewable @State var email = ""
-    @Previewable @State var password = ""
-    @Previewable @State var confirmPassword = ""
-    
-    SignUpForm(
-        email: $email,
-        password: $password,
-        confirmPassword: $confirmPassword,
-        isLoading: .constant(false),
-    )
-    .background(.customBlack)
-    .environment(AuthService())
 }

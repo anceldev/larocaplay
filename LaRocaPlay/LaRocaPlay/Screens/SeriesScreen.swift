@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-
-
+import SwiftData
 
 struct SeriesScreen: View {
     @Environment(AppRouter.self) var router
@@ -15,15 +14,19 @@ struct SeriesScreen: View {
     
     @State private var errorMessage: String? = nil
     
+    @Query(filter: #Predicate<Collection>{ collection in
+        collection.typeName == "Serie"
+    }, sort: \Collection.title, order: .forward) private var series: [Collection]
+    
     var body: some View {
         VStack(spacing: 0) {
             TopBarScreen(title: "Series", true)
-            if seriesRepository.series.count == 0 {
+            if series.isEmpty {
                 Text("No hay ninguna serie añadida")
             } else {
                 ScrollView(.vertical) {
                     VStack(spacing: 24) {
-                        ForEach(seriesRepository.series.filter({ $0.collectionType.id == 2 })) { serie in
+                        ForEach(series) { serie in
                             Button {
                                 router.navigateTo(.collection(id: serie.id, cols: 2))
                             } label: {

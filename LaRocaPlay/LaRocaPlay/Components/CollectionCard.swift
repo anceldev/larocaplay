@@ -10,14 +10,15 @@ import SwiftUI
 struct CollectionCard: View {
     @Environment(AppRouter.self) var router
     
-    var collection: PreachCollection
+//    var collection: PreachCollection
+    var collection: Collection
     
     var body: some View {
         VStack {
             Button {
                 router.navigateTo(.collection(id: collection.id, cols: 1))
             } label: {
-                ThumbImageLoader(title: collection.title, storageCollection: .collections(collection.thumbId))
+                ThumbImageLoader(title: collection.title, storageCollection: .collections(collection.imageId))
             }
         }
         .padding(6)

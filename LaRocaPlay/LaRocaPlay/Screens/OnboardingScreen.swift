@@ -14,23 +14,51 @@ struct OnboardingScreen: View {
 //    init(_ appState: Binding<AppState>) {
 //        self._appState = appState
 //    }
+    @Environment(AuthManager.self) var authManager
     @Binding var hideOnboarding: Bool
     
     var body: some View {
         // TODO: En esta pantalla se muestran las principales características de la app.
-        VStack {
-            Spacer()
-            Text("Welcome Screen")
-            Spacer()
-            Button {
-//                UserDefaults.standard.appState = .unauthenticated
-//                appState = .unauthenticated
-                UserDefaults.standard.set(true, forKey: "hideOnboarding")
-                hideOnboarding = true
-            } label: {
-                Text("Empezar")
+        NavigationStack {
+            VStack {
+                Spacer()
+                Text("Bienvenido")
+                // TODO: Carrusel de capturas de cosas llamativas de la app, cosas que el usuario puede ver
+                Text("Puedes entrar ya con tu cuenta, crear una o simplemente echar un vistazo (Invitado)")
+                Spacer()
+                NavigationLink {
+                    AuthenticationView()
+                } label: {
+                    Text("Iniciar sesión")
+                }
+                .buttonStyle(.capsuleButton(.customRed, textColor: .white))
+                Button {
+                    print("Apple signin")
+                } label: {
+                    Text("Apple signin")
+                }
+                .buttonStyle(.capsuleButton(.black, textColor: .white))
+                Button {
+                    print("Google signin")
+                } label: {
+                    Text("Google SignIn")
+                }
+                .buttonStyle(.capsuleButton(.white, textColor: .customBlack))
+                
+                Button {
+                    signinAsGuest()
+                } label: {
+                    Text("Empezar como invitado")
+                }
+                .buttonStyle(.capsuleButton(.white, textColor: .customBlack))
             }
-            .buttonStyle(.borderedProminent)
+            .padding(18)
+            .background(.customBlack)
+        }
+    }
+    private func signinAsGuest() {
+        Task {
+            await authManager.startGuestSession()
         }
     }
 }

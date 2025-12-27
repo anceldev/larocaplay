@@ -12,7 +12,7 @@ import RevenueCatUI
 struct SettingsView: View {
     @Environment(AuthService.self) var auth
 //    @Binding var account: User?
-    @Binding var account: Profile?
+    @Binding var account: ProfileDTO?
     @State var flow: AuthState
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
@@ -21,7 +21,7 @@ struct SettingsView: View {
         auth.customerInfo?.entitlements["pro"]?.isActive ?? false
     }
     
-    init(account: Binding<Profile?>) {
+    init(account: Binding<ProfileDTO?>) {
         self._account = account
         self.flow = account.wrappedValue == nil ? .unauthenticated : .authenticated
     }

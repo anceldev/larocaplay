@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PreachesScreen: View {
     @Environment(CelebrationRepository.self) var celebration
     @Environment(AppRouter.self) var router
+    @Environment(\.modelContext) var context
     @State private var searchQuery = ""
     @State private var listView: ListView = .list
     
@@ -17,11 +19,26 @@ struct PreachesScreen: View {
     @State private var cols: Int = 1
     @State private var errorMessage: String? = nil
     
-    var preaches: [PreachDTO] {
+//    var preaches: [Preach] {
+//        if searchQuery.isEmpty {
+//            return preachItems
+//        }
+//        return preachItems.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+//    }
+    let mainCollectionId = 1
+    
+    @Query(filter: #Predicate<CollectionItem> { item in
+//        preach.collectionLinks.contains(where: { link in
+//            link.collection?.id == 1
+//        })
+        item.collection?.id == 1
+    }, sort: \CollectionItem.preach?.date, order: .reverse) private var items: [CollectionItem]
+//    @Query var preachItems: [Preach]
+    var filteredItems: [CollectionItem] {
         if searchQuery.isEmpty {
-            return celebration.preaches
+            return items
         }
-        return celebration.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+        return items.filter { $0.preach?.title.contains(searchQuery.lowercased()) ?? false }
     }
     
     var body: some View {
@@ -33,10 +50,11 @@ struct PreachesScreen: View {
                         .font(.system(size: 14, weight: .semibold))
                     Button {
                         withAnimation(.easeIn) {
-                            router.navigateTo(.preach(preach: preaches[0]))
+                            router.navigateTo(.preach(preach: items[0].preach!))
                         }
                     } label: {
-                        PreachGridItem(preaches[0], aspect: 16/9)
+//                        PreachGridItem(preaches[0], aspect: 16/9)
+                        PreachGridItem(item: items[0], aspect: 16/9)
                             .frame(maxWidth: .infinity)
                     }
                     .border(.yellow, width: 1)
@@ -62,7 +80,7 @@ struct PreachesScreen: View {
                 VStack {
                     ScrollView(.vertical) {
                         VStack {
-                            ItemsList(preaches: Array(preaches.dropFirst()), cols: cols, listView: listView) // For debug
+                            ItemsList(items: Array(filteredItems.dropFirst()), listView: listView) // For debug
                         }
                         Button {
                             withAnimation(.easeIn) {

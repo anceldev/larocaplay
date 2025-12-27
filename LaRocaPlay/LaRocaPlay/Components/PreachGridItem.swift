@@ -8,109 +8,33 @@
 import SwiftUI
 
 
+
 struct PreachGridItem: View {
-    let preach: PreachDTO
+    let item: CollectionItem
     let listView: ListView
     let aspect: CGFloat
     
-    init(_ preach: PreachDTO, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading) {
-        self.preach = preach
+//    init(_ preach: Preach, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading, item: CollectionItem) {
+//        self.preach = preach
+    init(item: CollectionItem, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading) {
+
         self.listView = listView
         self.aspect = aspect
+        self.item = item
     }
     var body: some View {
         VStack {
-            switch listView {
-            case .single:
-                VStack(spacing: 8) {
-                    ThumbImageLoader(storageCollection: .preaches(preach.thumbId))
-                    VStack(alignment: .center, spacing: 4) {
-                        Text(preach.title)
-                            .foregroundStyle(.white)
-                            .font(.system(size: 16, weight: .medium, design: .default))
-                            .multilineTextAlignment(.center)
-                        HStack(alignment: .center , spacing: 4) {
-                            HStack(alignment: .top, spacing: 4) {
-                                Text(preach.preacher.role.name)
-                                Text(preach.preacher.name)
-                            }
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.dirtyWhite)
-                            Text("- \(preach.date, style: .date)")
-                                .font(.system(size: 10))
-                                .foregroundStyle(.dirtyWhite)
-                        }
-                    }
-                    .padding(.horizontal, 8)
+            if let teach = item.preach {
+                switch listView {
+                case .single, .grid:
+                    TeachingCard(teach: teach, listView: listView)
+                case .list:
+                    TeachingRow(teach: teach, position: item.position)
                 }
-            case .grid:
-                VStack(spacing: 8) {
-                    ThumbImageLoader(storageCollection: .preaches(preach.thumbId))
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(preach.title)
-                            .foregroundStyle(.white)
-                            .font(.system(size: 12, weight: .medium, design: .default))
-                            .multilineTextAlignment(.leading)
-//                        HStack(alignment: .center , spacing: 8) {
-//                            HStack(spacing: 4) {
-//                                Text(preach.preacher.role.name)
-//                                Text(preach.preacher.name)
-//                            }
-//                            .font(.system(size: 10, weight: .semibold))
-//                            .foregroundStyle(.dirtyWhite)
-//                            Text(preach.date, style: .date)
-//                                .font(.system(size: 10))
-//                                .foregroundStyle(.dirtyWhite)
-//                        }
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-                        HStack(alignment: .center , spacing: 8) {
-                            HStack(spacing: 4) {
-                                Text("\(preach.preacher.role.name) \(preach.preacher.name) - \(Text(preach.date, style: .date))")
-//                                Text(preach.preacher.name)
-                            }
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.dirtyWhite)
-//                            Text(preach.date, style: .date)
-//                                .font(.system(size: 10))
-//                                .foregroundStyle(.dirtyWhite)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                .frame(maxWidth: .infinity)
-            case .list:
-                VStack {
-                    HStack(spacing: 8) {
-                        ThumbImageLoader(storageCollection: .preaches(preach.thumbId))
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(preach.title)
-                                .foregroundStyle(.white)
-                                .font(.system(size: 14, weight: .medium, design: .default))
-                                .multilineTextAlignment(.leading)
-                            HStack(alignment: .center , spacing: 8) {
-                                HStack(spacing: 4) {
-                                    Text(preach.preacher.role.name)
-                                    Text(preach.preacher.name)
-                                }
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(.dirtyWhite)
-                                Text(preach.date, style: .date)
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(.dirtyWhite)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .padding(.horizontal, 8)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: 80, alignment: .leading)
-                    .padding(.vertical, 6)
-                }
-                .enableInjection()
             }
         }
     }
 #if DEBUG
-            @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw
 #endif
 }

@@ -13,7 +13,7 @@ import Supabase
 final class PreachesRepository {
     let client = SBCLient.shared.supabase
     var preaches = [PreachDTO]()
-    var externalLinks = [ExternalLink]()
+    var externalLinks = [ExternalLinkDTO]()
     
     private var itemLimit = 5
 //    var preaches: [Preach]
@@ -36,8 +36,8 @@ final class PreachesRepository {
         }
     }
     
-    func getExternalLinks() async throws -> [ExternalLink]{
-        let links: [ExternalLink] = try await client
+    func getExternalLinks() async throws -> [ExternalLinkDTO]{
+        let links: [ExternalLinkDTO] = try await client
             .from("external_links")
             .select()
             .execute()

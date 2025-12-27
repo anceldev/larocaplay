@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // TODO: Crear una carpeta 'resources' en Storage, para que la imagen de carga aquí sea dinámica, y tener una imagen por defecto en caso de que no se pueda obtener la remota
 
@@ -17,12 +18,16 @@ struct DiscipleshipListScreen: View {
 //    let role: UserRole
     @State private var errorMessage: String? = ""
     
+    @Query(filter: #Predicate<Collection> { collection in
+        collection.typeName == "Discipulado"
+    }, sort: \Collection.title, order: .forward) private var collectionItems: [Collection]
+    
     var body: some View {
         VStack(spacing: 0) {
             TopBarScreen(title: "Capacitaciones")
             ScrollView(.vertical) {
                 VStack(spacing: 24) {
-                    ForEach(collectionsRepository.series.filter({ $0.collectionType.id == 3 })) { discipleship in
+                    ForEach(collectionItems) { discipleship in
                         Button {
                             router.navigateTo(.collection(id: discipleship.id, cols: 1))
                         } label: {

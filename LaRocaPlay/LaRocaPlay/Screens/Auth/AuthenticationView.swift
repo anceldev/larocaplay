@@ -18,6 +18,7 @@ enum AuthMode {
 struct AuthenticationView: View {
     
     @Environment(AuthService.self) var auth
+    @Environment(AuthManager.self) var authManager
 
     @State private var email: String = ""
     @State private var password: String = ""
@@ -28,62 +29,34 @@ struct AuthenticationView: View {
     
     var body: some View {
         VStack {
-            Group {
-                switch authMode {
-                case .login:
-                    SignInForm(
-                        email: $email,
-                        password: $password,
-                        isLoading: $isLoading,
-                        authMode: $authMode
-                    )
-                case .signup:
-                    SignUpForm(
-                        email: $email,
-                        password: $password,
-                        confirmPassword: $confirmPassword,
-                        isLoading: $isLoading
-                    )
-                case .resetPassword:
-                    ResetPasswordScreen(
-                        authMode: $authMode,
-                        isLoading: $isLoading
-                    )
-                }
-            }
+            
+            SignInForm()
+                .background(.customBlack)
+            
             VStack(spacing: 24) {
                 if let errorMessage {
                     Text(errorMessage)
                         .foregroundStyle(.orange)
                         .font(.system(size: 12))
                 }
-                
-                VStack(spacing: 16) {
-                    VStack {
-                        Text(authMode == .login ? "¿Todavía no tienes una cuenta?" : "")
-                            .fontWeight(.light)
-                        Button {
-                            withAnimation(.easeIn) {
-                                authMode = authMode == .login ? .signup : .login
-                            }
-                        } label: {
-                            Text(authMode == .login ? "Regístrate" : "Tengo cuenta")
-                                .fontWeight(.bold)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(isLoading)
-                    }
-                    .font(.system(size: 14))
-                    .foregroundStyle(.dirtyWhite)
+                Button {
+                    startAsGuest()
+                } label: {
+                    Text("Empezar como invitado")
                 }
             }
         }
+        
         .frame(maxHeight: .infinity)
-        .padding()
+        .padding(18)
         .background(.customBlack)
         .enableInjection()
     }
-
+    private func startAsGuest() {
+        Task {
+            await authManager.startGuestSession()
+        }
+    }
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif

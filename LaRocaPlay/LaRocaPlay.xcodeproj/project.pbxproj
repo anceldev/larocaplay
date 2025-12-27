@@ -27,9 +27,33 @@
 		B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaRocaPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B4AE9ECF2EFC17A2007A6D49 /* Exceptions for "LaRocaPlay" folder in "LaRocaPlay" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				FolderStructure.md,
+			);
+			target = B4A75FB62E3D27D0005568C4 /* LaRocaPlay */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		B4AE9ED02EFC17A2007A6D49 /* Exceptions for "LaRocaPlay" folder in "Compile Sources" phase from "LaRocaPlay" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = B4A75FB32E3D27D0005568C4 /* Sources */;
+			membershipExceptions = (
+				FolderStructure.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B4A75FB92E3D27D0005568C4 /* LaRocaPlay */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B4AE9ECF2EFC17A2007A6D49 /* Exceptions for "LaRocaPlay" folder in "LaRocaPlay" target */,
+				B4AE9ED02EFC17A2007A6D49 /* Exceptions for "LaRocaPlay" folder in "Compile Sources" phase from "LaRocaPlay" target */,
+			);
 			path = LaRocaPlay;
 			sourceTree = "<group>";
 		};

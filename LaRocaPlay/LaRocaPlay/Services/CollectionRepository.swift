@@ -58,7 +58,7 @@ final class CollectionRepository {
     func getCollections() async throws {
         do {
             let collections: [PreachCollection] = try await client
-                .from("preach_collection")
+                .from("collection")
                 .select("""
                     id,
                     title,

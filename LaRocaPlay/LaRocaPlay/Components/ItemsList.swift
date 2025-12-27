@@ -12,22 +12,41 @@ enum ListView {
     case single
     case grid
     case list
+    
+    var fontSize: CGFloat {
+        switch self {
+        case .single:   16
+        case .grid:     12
+        case .list:     14
+        }
+    }
+    var textAlignment: Alignment {
+        switch self {
+        case .single:   .center
+        case .grid:     .leading
+        case .list:     .leading
+        }
+    }
 }
 
 struct ItemsList: View {
     
     @Environment(AppRouter.self) var router
-    let preaches: [PreachDTO]
+//    let preaches: [PreachDTO]
+//    let preaches: [Preach]
     let cols: Int
+    
+    var items: [CollectionItem]
+//    var collectionItem: CollectionItem
     
     var listView: ListView
     
-    init(preaches: [PreachDTO], cols: Int = 2, listView: ListView) {
-        self.preaches = preaches
+//    init(preaches: [PreachDTO], cols: Int = 2, listView: ListView) {
+    init(items: [CollectionItem], listView: ListView) {
 //        self.cols = cols
+        self.items = items
         self.listView = listView
         self.cols = self.listView == .grid ? 2 : 1
-        
     }
     
     var columns: [GridItem] {
@@ -36,13 +55,15 @@ struct ItemsList: View {
     var body: some View {
         VStack {
             LazyVGrid(columns: columns, spacing: 20) {
-                ForEach(preaches) { item in
-                    Button {
-                        router.navigateTo(.preach(preach: item))
-                    } label: {
-                        PreachGridItem(item, listView: listView)
+                ForEach(items) { item in
+                    if let preach = item.preach {
+                        Button {
+                            router.navigateTo(.preach(preach: preach))
+                        } label: {
+                            PreachGridItem(item: item, listView: listView)
+                        }
+                        .frame(maxHeight: .infinity, alignment: .top)
                     }
-                    .frame(maxHeight: .infinity, alignment: .top)
                 }
             }
         }
