@@ -11,7 +11,8 @@ import ConfidentialKit
 
 struct AuthenticatedView: View {
     
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
+    @Environment(AuthManager.self) var authManager
     @Binding var account: User?
     @State private var authState: AuthState
     @State private var errorMessage: String?
@@ -32,7 +33,7 @@ struct AuthenticatedView: View {
                 ProgressView()
             case .authenticated:
                 AccountView(account: $account, authState: $authState)
-                    .environment(auth)
+//                    .environment(auth)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -60,7 +61,7 @@ struct AuthenticatedView: View {
             do {
                 authState = .authenticating
 //                self.account = try await auth.getSession()
-                try await auth.getSession()
+//                try await auth.getSession()
                 authState = .authenticated
             } catch {
                 self.errorMessage = error.localizedDescription

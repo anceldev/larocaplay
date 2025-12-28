@@ -74,6 +74,7 @@ struct PreachDTO: PreachProtocol, Hashable {
         self.updatedAt = updatedDate
         
         self.videoUrl = try container.decode(String.self, forKey: .videoUrl)
+        self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
     }
     func encode(to encoder: any Encoder) throws {
         

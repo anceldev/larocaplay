@@ -9,9 +9,13 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
+    @Environment(LibraryManager.self) var libManager
     var body: some View {
         MainScreen()
             .enableInjection()
+            .task {
+                await libManager.initialSync()
+            }
     }
 #if DEBUG
 @ObserveInjection var forceRedraw

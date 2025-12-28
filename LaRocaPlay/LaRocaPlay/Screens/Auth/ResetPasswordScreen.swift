@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ResetPasswordScreen: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     @Environment(AuthManager.self) var authManager
     @State private var email: String = ""
     

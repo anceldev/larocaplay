@@ -13,18 +13,18 @@ struct TeachingCard: View {
     
     var preacherAndDate: String {
         let role = self.teach.preacher?.role
-            let name = self.teach.preacher?.name
-            let dateString = teach.date.formatted(date: .numeric, time: .omitted)
-
-            let nameParts = [role, name]
-                .compactMap { $0 }
-                .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
-            let fullName = nameParts.joined(separator: " ")
-
-            if fullName.isEmpty {
-                return dateString
-            }
-            return "\(fullName) - \(dateString)"
+        let name = self.teach.preacher?.name
+        let dateString = teach.date.formatted(date: .numeric, time: .omitted)
+        
+        let nameParts = [role, name]
+            .compactMap { $0 }
+            .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        let fullName = nameParts.joined(separator: " ")
+        
+        if fullName.isEmpty {
+            return dateString
+        }
+        return "\(fullName) - \(dateString)"
     }
     
     
@@ -32,19 +32,22 @@ struct TeachingCard: View {
     var body: some View {
         VStack(spacing: 8) {
             ThumbImageLoader(storageCollection: .preaches(teach.imageId))
-            VStack(alignment: listView.hAlignment, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(teach.title)
                     .foregroundStyle(.white)
-                    .font(.system(size: listView.fontSize, weight: .medium, design: .default))
-                    .multilineTextAlignment(.center)
-//                HStack(alignment: .center , spacing: 4) {
-                    Text(preacherAndDate)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(.gray.opacity(0.7))
-//                }
-                .frame(maxWidth: .infinity, alignment: listView.textAlignment)
+                    .font(.system(size: listView.titleSize, weight: .medium, design: .default))
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .border(.red, width: 1)
+                Text(preacherAndDate)
+                    .font(.system(size: listView.subtitleSize, weight: .medium, design: .rounded))
+                    .foregroundStyle(.gray.opacity(0.7))
+                    .frame(maxWidth: .infinity, alignment: listView.textAlignment)
             }
-            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .onAppear {
+            print(teach.imageId ?? "NO-NAME")
         }
         
     }

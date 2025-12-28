@@ -10,8 +10,8 @@ import RevenueCatUI
 
 struct PreachScreen: View {
     @Environment(AppRouter.self) var router
-    @Environment(PreachesRepository.self) var preaches
-    @Environment(AuthService.self) var auth
+//    @Environment(PreachesRepository.self) var preaches
+//    @Environment(AuthService.self) var auth
 //    @Environment(CollectionRepository.self) var collections
     @State private var videoURL: URL?
     @State private var errorMessage: String? = nil
@@ -122,18 +122,18 @@ struct PreachScreen: View {
 //        }
 //    }
     private func getCustomerInfo() {
-        Task {
-            do {
-                guard let userId = auth.user?.id else {
-                    return
-                }
-                try await auth.getSuscriptionStatus(userId: userId.uuidString)
-//                collections.series.removeAll()
-            } catch {
-                print(error.localizedDescription)
-                self.errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                guard let userId = auth.user?.id else {
+//                    return
+//                }
+//                try await auth.getSuscriptionStatus(userId: userId.uuidString)
+////                collections.series.removeAll()
+//            } catch {
+//                print(error.localizedDescription)
+//                self.errorMessage = error.localizedDescription
+//            }
+//        }
     }
 
 

@@ -17,7 +17,7 @@ enum AuthMode {
 
 struct AuthenticationView: View {
     
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     @Environment(AuthManager.self) var authManager
 
     @State private var email: String = ""
@@ -64,6 +64,6 @@ struct AuthenticationView: View {
 
 #Preview {
     AuthenticationView()
-        .environment(AuthService())
+//        .environment(AuthService())
         .background(.customBlack)
 }

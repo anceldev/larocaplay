@@ -14,8 +14,6 @@ struct PreachGridItem: View {
     let listView: ListView
     let aspect: CGFloat
     
-//    init(_ preach: Preach, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading, item: CollectionItem) {
-//        self.preach = preach
     init(item: CollectionItem, listView: ListView = .single, aspect: CGFloat = 16/9, titleAlignment: TextAlignment = .leading) {
 
         self.listView = listView
@@ -29,7 +27,7 @@ struct PreachGridItem: View {
                 case .single, .grid:
                     TeachingCard(teach: teach, listView: listView)
                 case .list:
-                    TeachingRow(teach: teach, position: item.position)
+                    TeachingRow(teach: teach, position: item.position, listView: listView)
                 }
             }
         }

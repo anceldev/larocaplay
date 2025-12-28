@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct SubscriptionScreen: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     
-    var managementURL: URL? {
-        guard let managementURL = auth.customerInfo?.managementURL else {
-            return nil
-        }
-        return managementURL
-    }
+//    var managementURL: URL? {
+//        guard let managementURL = auth.customerInfo?.managementURL else {
+//            return nil
+//        }
+//        return managementURL
+//    }
     
     @State private var expirationDate: Date? = nil
 //    @State private var renewDate: Date? = nil
@@ -44,40 +44,40 @@ struct SubscriptionScreen: View {
                         .foregroundStyle(.customRed)
 //                    }
                 }
-                if let product = auth.currentProduct {
-                    
-                    HStack {
-                        Image(.box)
-                        Text("Producto")
-                        Spacer(minLength: 0)
-                        Text(product.localizedTitle)
-                            .font(.system(size: 14))
-                            .foregroundStyle(.customRed)
-                        //                    }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                    HStack {
-                        Image(.subscription2)
-                        Text("Precio")
-                        Spacer(minLength: 0)
-                        Text(product.localizedPriceString)
-                            .font(.system(size: 14))
-                            .foregroundStyle(.customRed)
-                        //                    }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    HStack {
-                        Image(.subscription2)
-                        Text("Tipo")
-                        Spacer(minLength: 0)
-                        Text(product.subscriptionPeriod?.unit == .month ? "Mensual" : "Anual")
-                            .font(.system(size: 14))
-                            .foregroundStyle(.customRed)
-                        //                    }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+//                if let product = auth.currentProduct {
+//                    
+//                    HStack {
+//                        Image(.box)
+//                        Text("Producto")
+//                        Spacer(minLength: 0)
+//                        Text(product.localizedTitle)
+//                            .font(.system(size: 14))
+//                            .foregroundStyle(.customRed)
+//                        //                    }
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//
+//                    HStack {
+//                        Image(.subscription2)
+//                        Text("Precio")
+//                        Spacer(minLength: 0)
+//                        Text(product.localizedPriceString)
+//                            .font(.system(size: 14))
+//                            .foregroundStyle(.customRed)
+//                        //                    }
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    HStack {
+//                        Image(.subscription2)
+//                        Text("Tipo")
+//                        Spacer(minLength: 0)
+//                        Text(product.subscriptionPeriod?.unit == .month ? "Mensual" : "Anual")
+//                            .font(.system(size: 14))
+//                            .foregroundStyle(.customRed)
+//                        //                    }
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                }
                 HStack {
                     Image(.calendarDays)
                     Text("Fecha de expiración")
@@ -97,16 +97,16 @@ struct SubscriptionScreen: View {
                         .foregroundStyle(.customRed)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                if let managementURL {
-                    Link(destination: managementURL) {
-                        HStack {
-                            Image(.fileContent)
-                            Text("Cancelar suscripción")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .disabled(!auth.isPremium)
-                }
+//                if let managementURL {
+//                    Link(destination: managementURL) {
+//                        HStack {
+//                            Image(.fileContent)
+//                            Text("Cancelar suscripción")
+//                        }
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                    }
+////                    .disabled(!auth.isPremium)
+//                }
             }
             .padding()
             .background(.black.opacity(0.45))
@@ -122,12 +122,12 @@ struct SubscriptionScreen: View {
         .enableInjection()
     }
     private func getExpirationAndRenewDate() {
-        if auth.isPremium {
-            if let entitlement = auth.customerInfo?.entitlements["pro"] {
-                self.expirationDate = entitlement.expirationDate
-                self.willRenew = entitlement.willRenew
-            }
-        }
+//        if auth.isPremium {
+//            if let entitlement = auth.customerInfo?.entitlements["pro"] {
+//                self.expirationDate = entitlement.expirationDate
+//                self.willRenew = entitlement.willRenew
+//            }
+//        }
     }
 #if DEBUG
     @ObserveInjection var forceRedraw

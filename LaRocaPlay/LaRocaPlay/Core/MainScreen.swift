@@ -12,13 +12,7 @@ import SwiftUI
 typealias AppRouter = Router<AppTab, Destination, Sheet>
 
 struct MainScreen: View {
-    @Environment(AuthService.self) var auth
-    @Environment(PreachesRepository.self) var repository
-//    @Environment(CollectionRepository.self) var collections
-
-    
     @State private var router = AppRouter(initialTab: .home)
-    @State var account: ProfileDTO?
     
     @ObserveInjection var forceRedraw
     
@@ -33,12 +27,9 @@ struct MainScreen: View {
                                 HomeView()
                             case .preaches:
                                 PreachesScreen(collectionId: 1)
-//                                Text("Preaches screen")
                             case .training:
                                 DiscipleshipListScreen()
-//                                Text("Discipleship screen")
                             case .karaoke:
-//                                MusicScreen()
                                 Text("Music screen")
                             }
                         }
@@ -90,7 +81,7 @@ struct MainScreen: View {
                 .navigationBarBackButtonHidden()
         case .serie(let serieId):
             SerieScreen(serieId: serieId)
-        case .collection(let id, let cols):
+        case .collection(let id):
             CollectionDetailScreen(collectionId: id)
                 .navigationBarBackButtonHidden()
         case .subscription:
@@ -103,13 +94,12 @@ struct MainScreen: View {
     private func sheetView(for sheet: Sheet) -> some View {
         switch sheet {
         case .settings:
-            SettingsView(account: $account)
+            Text("Settings View")
         case .profile:
             Text("Profile view")
         case .compose:
             Text("Compose view")
         case .auth:
-//            AuthenticatedView(account: $account)
             Text("Auth state")
         }
     }
@@ -118,8 +108,5 @@ struct MainScreen: View {
 
 #Preview {
     MainScreen()
-        .environment(AWService())
-        .environment(AuthService())
-        .environment(PreachesRepository())
         .environment(AuthManager(service: AuthService()))
 }

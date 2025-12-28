@@ -9,7 +9,7 @@ import SwiftUI
 import AppRouter
 
 struct TopBar: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     @Environment(AuthManager.self) var authManager
     @Environment(AppRouter.self) var router
     

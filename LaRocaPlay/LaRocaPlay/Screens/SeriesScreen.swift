@@ -28,7 +28,7 @@ struct SeriesScreen: View {
                     VStack(spacing: 24) {
                         ForEach(series) { serie in
                             Button {
-                                router.navigateTo(.collection(id: serie.id, cols: 2))
+                                router.navigateTo(.collection(id: serie.id))
                             } label: {
                                 CollectionCard(collection: serie)
                             }

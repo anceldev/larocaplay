@@ -16,7 +16,7 @@ struct CollectionCard: View {
     var body: some View {
         VStack {
             Button {
-                router.navigateTo(.collection(id: collection.id, cols: 1))
+                router.navigateTo(.collection(id: collection.id))
             } label: {
                 ThumbImageLoader(title: collection.title, storageCollection: .collections(collection.imageId))
             }

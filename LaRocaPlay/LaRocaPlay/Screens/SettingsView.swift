@@ -10,16 +10,17 @@ import RevenueCat
 import RevenueCatUI
 
 struct SettingsView: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
 //    @Binding var account: User?
+    @Environment(AuthManager.self) var authManager
     @Binding var account: ProfileDTO?
     @State var flow: AuthState
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
     
-    var subscriptionStatus: Bool {
-        auth.customerInfo?.entitlements["pro"]?.isActive ?? false
-    }
+//    var subscriptionStatus: Bool {
+//        auth.customerInfo?.entitlements["pro"]?.isActive ?? false
+//    }
     
     init(account: Binding<ProfileDTO?>) {
         self._account = account
@@ -32,12 +33,12 @@ struct SettingsView: View {
                 VStack(spacing: 24) {
                     // TODO: Vista de perfil, con nombre de usuario y email. Editar perfil, Cambiar contraseña y cerrar sesión.
                     // TODO: Nivel de suscripción y poder modificarlo
-                    if let account = auth.user {
+                    if let account = authManager.currentUserProfile {
                         VStack(spacing: 12) {
                             HStack(spacing: 0) {
                                 Text("Bienvenido")
                                     .fontWeight(.light)
-                                Text(", \(account.email)")
+                                Text(", \(account.email ?? "NO-MAIL")")
                                     .fontWeight(.medium)
                             }
                             .font(.system(size: 12))
@@ -72,13 +73,13 @@ struct SettingsView: View {
                                     Text("Suscripción")
                                     Spacer(minLength: 0)
                                     Button {
-                                        if !subscriptionStatus {
-                                            showPaywall = true
-                                        }
+//                                        if !subscriptionStatus {
+//                                            showPaywall = true
+//                                        }
                                     } label: {
-                                        Text(subscriptionStatus ? "Activa" : "Sin suscripción")
-                                            .font(.system(size: 14))
-                                            .foregroundStyle(subscriptionStatus ? .customRed : .white.opacity(0.4))
+//                                        Text(subscriptionStatus ? "Activa" : "Sin suscripción")
+//                                            .font(.system(size: 14))
+//                                            .foregroundStyle(subscriptionStatus ? .customRed : .white.opacity(0.4))
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,36 +159,36 @@ struct SettingsView: View {
     }
     
     private func getCustomerInfor() {
-        Task {
-            do {
-                guard let userId = auth.user?.id else {
-                    return
-                }
-//                try await auth.getCustomerInfor()
-                try await auth.getSuscriptionStatus(userId: userId.uuidString)
-            } catch {
-                print(error.localizedDescription)
-                errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                guard let userId = auth.user?.id else {
+//                    return
+//                }
+////                try await auth.getCustomerInfor()
+//                try await auth.getSuscriptionStatus(userId: userId.uuidString)
+//            } catch {
+//                print(error.localizedDescription)
+//                errorMessage = error.localizedDescription
+//            }
+//        }
     }
 
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
     private func signout() {
-        Task {
-            do {
-                try await auth.signout()
-                account = nil
-                flow = .unauthenticated
-                let customerInfo = try await Purchases.shared.logOut()
-                print(customerInfo)
-            } catch {
-                print(error.localizedDescription)
-                errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                try await auth.signout()
+//                account = nil
+//                flow = .unauthenticated
+//                let customerInfo = try await Purchases.shared.logOut()
+//                print(customerInfo)
+//            } catch {
+//                print(error.localizedDescription)
+//                errorMessage = error.localizedDescription
+//            }
+//        }
     }
 }
 

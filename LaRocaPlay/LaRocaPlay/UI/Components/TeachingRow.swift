@@ -10,6 +10,7 @@ import SwiftUI
 struct TeachingRow: View {
     var teach: Preach
     var position: Int
+    var listView: ListView
     
     var preacherAndDate: String {
         let role = self.teach.preacher?.role
@@ -45,10 +46,10 @@ struct TeachingRow: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(teach.title)
                         .foregroundStyle(.white)
-                        .font(.system(size: 18, weight: .medium, design: .default))
+                        .font(.system(size: listView.titleSize, weight: .medium, design: .default))
                         .multilineTextAlignment(.leading)
                     Text(preacherAndDate)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(.system(size: listView.subtitleSize, weight: .medium, design: .rounded))
                         .foregroundStyle(.gray.opacity(0.7))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .multilineTextAlignment(.leading)

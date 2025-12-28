@@ -9,16 +9,9 @@ import SwiftUI
 import SwiftData
 
 struct CollectionDetailScreen: View {
-//    @Environment(CollectionRepository.self) var collections
+    
     @Environment(LibraryManager.self) var libManager
     var collectionId: Int
-    
-//    var collection: PreachCollection? {
-//        guard let collection = collections.series.first (where: { $0.id == collectionId }) else {
-//            return nil
-//        }
-//        return collection
-//    }
     
     @Query private var collections: [Collection]
     
@@ -31,25 +24,28 @@ struct CollectionDetailScreen: View {
         collections.first
     }
     
-//    @Query private var collection: Collection
-    
     var body: some View {
         VStack(spacing: 10) {
-            VStack(spacing: 14) {
-                HeaderView(storageCollection: .collections(collection?.imageId))
-                VStack(spacing: 8) {
-                    Text(collection?.title ?? "")
-                        .font(.system(size: 24, weight: .bold, design: .default))
-                    Text(collection?.desc ?? "")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(.dirtyWhite)
-                        .padding(.horizontal, 24)
-                        .multilineTextAlignment(.center)
+            ScrollView(.vertical) {
+                
+                
+                VStack(spacing: 14) {
+                    HeaderView(storageCollection: .collections(collection?.imageId))
+                    VStack(spacing: 8) {
+                        Text(collection?.title ?? "")
+                            .font(.system(size: 24, weight: .bold, design: .default))
+                        Text(collection?.desc ?? "")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(.dirtyWhite)
+                            .padding(.horizontal, 24)
+                            .multilineTextAlignment(.center)
+                    }
                 }
+                PreachCollectionScreen(collectionId: collectionId, collectionItems: collection?.items ?? [])
             }
-            PreachCollectionScreen(collectionId: collectionId, collectionItems: collection?.items ?? [])
-                .padding(.horizontal)
+            .scrollIndicators(.hidden)
         }
+        .padding(.horizontal, 18)
         .background(.customBlack)
         .enableInjection()
         .task {

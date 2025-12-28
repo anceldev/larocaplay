@@ -9,7 +9,7 @@ import SwiftUI
 import Supabase
 
 struct SignUpForm: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     @Environment(AuthManager.self) var authManager
     private enum FocusedField {
         case email, password, confirmPassword

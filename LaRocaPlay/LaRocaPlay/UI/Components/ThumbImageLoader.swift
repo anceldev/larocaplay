@@ -33,7 +33,7 @@ struct ThumbImageLoader: View {
                     .aspectRatio(16/9, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             }
-            if let title {
+            if let title, self.image == nil {
                 Text(title)
                     .font(.system(size: 24, weight: .semibold))
                     .shadow(color: .black, radius: 6, x: 1, y: 1)

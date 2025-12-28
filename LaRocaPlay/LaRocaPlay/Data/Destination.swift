@@ -18,7 +18,7 @@ enum Destination: DestinationType {
     case congresses
     case series
     case serie(id: Int)
-    case collection(id: Int, cols: Int)
+    case collection(id: Int)
     case subscription
     //    case auth(user: User)
     //    case auth(user: User?)

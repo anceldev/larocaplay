@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileScreen: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     var body: some View {
         VStack {
             TopBarScreen(title: "Información de perfil", true)

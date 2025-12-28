@@ -10,7 +10,7 @@ import AVKit
 import AppRouter
 
 struct PreachesView: View {
-    @Environment(PreachesRepository.self) var repository
+//    @Environment(PreachesRepository.self) var repository
     @Environment(AppRouter.self) var router
     
     @State private var preaches: [PreachDTO]
@@ -21,12 +21,12 @@ struct PreachesView: View {
     init(preaches: [PreachDTO]) {
         self._preaches = .init(initialValue: preaches)
     }
-    var filteredPreaches: [PreachDTO] {
-        if searchQuery.isEmpty {
-            return repository.preaches
-        }
-        return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
-    }
+//    var filteredPreaches: [PreachDTO] {
+//        if searchQuery.isEmpty {
+//            return repository.preaches
+//        }
+//        return repository.preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+//    }
     
     var body: some View {
         VStack(alignment: .center) {
@@ -56,13 +56,13 @@ struct PreachesView: View {
                 Spacer()
             }
 //            .padding(.horizontal, 24)
-            if !repository.isFull && !repository.preaches.isEmpty {
-                Button {
-                    fetchPreaches()
-                } label: {
-                    Text("Cargar más")
-                }
-            }
+//            if !repository.isFull && !repository.preaches.isEmpty {
+//                Button {
+//                    fetchPreaches()
+//                } label: {
+//                    Text("Cargar más")
+//                }
+//            }
         }
         .padding()
         .background(.customBlack)
@@ -73,13 +73,13 @@ struct PreachesView: View {
     @ObserveInjection var forceRedraw
 #endif
     private func fetchPreaches() {
-        Task {
-            do {
-                let newPreaches = try await repository.getPreaches()
-                self.preaches.append(contentsOf: newPreaches)
-            } catch {
-                self.errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                let newPreaches = try await repository.getPreaches()
+//                self.preaches.append(contentsOf: newPreaches)
+//            } catch {
+//                self.errorMessage = error.localizedDescription
+//            }
+//        }
     }
 }

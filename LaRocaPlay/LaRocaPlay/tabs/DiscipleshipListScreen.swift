@@ -12,7 +12,7 @@ import SwiftData
 
 struct DiscipleshipListScreen: View {
     @Environment(AppRouter.self) var router
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
 //    @Environment(CollectionRepository.self) var collectionsRepository
     
 //    let role: UserRole
@@ -29,7 +29,7 @@ struct DiscipleshipListScreen: View {
                 VStack(spacing: 24) {
                     ForEach(collectionItems) { discipleship in
                         Button {
-                            router.navigateTo(.collection(id: discipleship.id, cols: 1))
+                            router.navigateTo(.collection(id: discipleship.id))
                         } label: {
 //                            DiscipleshipCard(title: discipleship.title, image: Image(.preview2))
                             CollectionCard(collection: discipleship)

@@ -14,17 +14,27 @@ struct StreamingCard: View {
         ZStack {
             Image(.bannerStreaming)
                 .resizable()
-                .scaledToFit()
-            VStack {
-                Image(.halfDottedCirclePlay)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40)
-                    .foregroundStyle(.dirtyWhite)
+                .scaledToFill()
+//            VStack(spacing: 0) {
+//                Image(.halfDottedCirclePlay)
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(width: 40)
+//                    .foregroundStyle(.customRed)
+                    
                 
                 Link(destination: URL(string: "https://www.youtube.com/@CentroCristianoLaRoca")!) {
                     VStack {
+                        Image(.halfDottedCirclePlay)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40)
+                            .foregroundStyle(.customRed)
+                        //                        .overlay {
                         Text("Ver emisión en directo")
+                            .shadow(color: .black,radius: 5)
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.white)
                             .opacity(isVisible ? 1.0 : 0.0)
                             .onAppear {
                                 withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
@@ -32,15 +42,14 @@ struct StreamingCard: View {
                                 }
                             }
                     }
-                    .foregroundStyle(.white)
-                    .font(.system(size: 18, weight: .bold))
-                    .shadow(color: .black,radius: 5)
+//                        }
                 }
-                .padding(.bottom, 16)
-            }
+//            }
+            
         }
         .frame(maxWidth: .infinity)
         .background(.gray)
+        .frame(height: 100)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .enableInjection()
     }
@@ -48,7 +57,3 @@ struct StreamingCard: View {
     @ObserveInjection var forceRedraw
 #endif
 }
-//
-//#Preview {
-//    StreamingCard()
-//}

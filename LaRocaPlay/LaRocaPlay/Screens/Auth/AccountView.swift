@@ -10,16 +10,17 @@ import RevenueCat
 import RevenueCatUI
 
 struct AccountView: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
 //    @Environment(CollectionRepository.self) var collectionsRepository
+    @Environment(AuthManager.self) var authManager
     @Binding var account: User?
     @Binding var authState: AuthState
     @State private var errorMessage: String? = nil
     @State private var showSubscriptionSheet = false
     
-    var subscriptionStatus: Bool {
-        auth.customerInfo?.entitlements["pro"]?.isActive ?? false
-    }
+//    var subscriptionStatus: Bool {
+//        auth.customerInfo?.entitlements["pro"]?.isActive ?? false
+//    }
 
     var body: some View {
         VStack {
@@ -27,7 +28,7 @@ struct AccountView: View {
                 VStack(spacing: 16) {
                     // TODO: Vista de perfil, con nombre de usuario y email. Editar perfil, Cambiar contraseña y cerrar sesión.
                     // TODO: Nivel de suscripción y poder modificarlo
-                    if let account = auth.user {
+                    if let account = authManager.currentUserProfile {
                         VStack(spacing: 8) {
                             HStack(spacing: 0) {
                                 Text("Bienvenido")
@@ -79,21 +80,21 @@ struct AccountView: View {
     #endif
     
     private func signout() {
-        Task {
-            do {
-                try await auth.signout()
-                account = nil
-                authState = .unauthenticated
-//                self.collectionsRepository.series.removeAll()
-                let customerInfo = try await Purchases.shared.logOut()
-//                try await auth.getCustomerInfor()
-//                try await auth.getSuscriptionStatus()
-//                print(customerInfo)
-            } catch {
-                print(error.localizedDescription)
-                errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                try await auth.signout()
+//                account = nil
+//                authState = .unauthenticated
+////                self.collectionsRepository.series.removeAll()
+//                let customerInfo = try await Purchases.shared.logOut()
+////                try await auth.getCustomerInfor()
+////                try await auth.getSuscriptionStatus()
+////                print(customerInfo)
+//            } catch {
+//                print(error.localizedDescription)
+//                errorMessage = error.localizedDescription
+//            }
+//        }
     }
 }
 //

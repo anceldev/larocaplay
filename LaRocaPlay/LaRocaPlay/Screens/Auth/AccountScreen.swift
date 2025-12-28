@@ -11,7 +11,7 @@ import RevenueCatUI
 
 struct AccountScreen: View {
     @Environment(AppRouter.self) var router
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
 //    @Environment(CollectionRepository.self) var collections
     
     @Environment(AuthManager.self) var authManager
@@ -30,7 +30,7 @@ struct AccountScreen: View {
                 ScrollView(.vertical) {
                     VStack {
                         VStack(spacing: 24) {
-                            if let user = auth.user {
+                            if let user = authManager.currentUserProfile {
                                 AccountCard(user: user)
                             }
                             VStack(spacing: 10) {
@@ -54,15 +54,15 @@ struct AccountScreen: View {
                                         Text("Suscripción")
                                         Spacer(minLength: 0)
                                         Button {
-                                            if !auth.isPremium {
-                                                showPaywall = true
-                                            } else {
-                                                router.navigateTo(.subscription)
-                                            }
+//                                            if !auth.isPremium {
+//                                                showPaywall = true
+//                                            } else {
+//                                                router.navigateTo(.subscription)
+//                                            }
                                         } label: {
-                                            Text(auth.isPremium ? "Activa" : "Sin suscripción")
-                                                .font(.system(size: 14))
-                                                .foregroundStyle(auth.isPremium ? .customRed : .white.opacity(0.4))
+//                                            Text(auth.isPremium ? "Activa" : "Sin suscripción")
+//                                                .font(.system(size: 14))
+//                                                .foregroundStyle(auth.isPremium ? .customRed : .white.opacity(0.4))
                                         }
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -194,18 +194,18 @@ struct AccountScreen: View {
 //        }
     }
     private func getCustomerInfo() {
-        Task {
-            do {
-                guard let userId = auth.user?.id else {
-                    return
-                }
-                try await auth.getSuscriptionStatus(userId: userId.uuidString)
-//                collections.series.removeAll()
-            } catch {
-                print(error.localizedDescription)
-                errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                guard let userId = auth.user?.id else {
+//                    return
+//                }
+//                try await auth.getSuscriptionStatus(userId: userId.uuidString)
+////                collections.series.removeAll()
+//            } catch {
+//                print(error.localizedDescription)
+//                errorMessage = error.localizedDescription
+//            }
+//        }
     }
     private func abrirMail() {
         let email = "soporte@tudominio.com"

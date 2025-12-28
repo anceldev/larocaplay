@@ -9,7 +9,8 @@ import SwiftUI
 
 struct AccountCard: View {
 //    let user: User
-    let user: ProfileDTO
+//    let user: ProfileDTO
+    let user: UserProfile
     
     var body: some View {
         VStack(spacing: 12) {

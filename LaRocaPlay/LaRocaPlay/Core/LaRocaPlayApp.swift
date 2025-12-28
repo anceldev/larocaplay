@@ -14,18 +14,10 @@ import SwiftUI
 
 @main
 struct LaRocaPlayApp: App {
-    @State private var authService = AuthService()
-    
-    @State var repository = PreachesRepository()
-//    @State private var collections = CollectionRepository()
-//    @State private var celebration = CelebrationRepository()
     @State private var musicVideoRepository = MusicVideoRepository()
-    
-//    @State private var authManager = AuthManager(service: AuthService())
     @State private var authManager: AuthManager
     @State private var libManager: LibraryManager
     
-    //    @State private var appState: AppState = UserDefaults.standard.appState
     @State private var hideOnboarding: Bool = UserDefaults.standard.bool(forKey: "hideOnboarding")
     let container: ModelContainer
     
@@ -76,29 +68,16 @@ struct LaRocaPlayApp: App {
                         OnboardingScreen(hideOnboarding: $hideOnboarding)
                     case .authorized:
                         RootView()
-                                .environment(authService)
-                                .environment(repository)
-//                                .environment(collections)
-//                                .environment(celebration)
-                                .environment(musicVideoRepository)
-                                .preferredColorScheme(.dark)
-                                .modelContainer(container)
                     }
                 }
                 .environment(authManager)
                 .environment(libManager)
-                .environment(authService)
-                .environment(repository)
-//                .environment(collections)
-//                .environment(celebration)
                 .environment(musicVideoRepository)
-                .preferredColorScheme(.dark)
                 .modelContainer(container)
             }
             .preferredColorScheme(.dark)
             .task {
                 await authManager.initialize()
-                await libManager.initialSync()
             }
         }
     }

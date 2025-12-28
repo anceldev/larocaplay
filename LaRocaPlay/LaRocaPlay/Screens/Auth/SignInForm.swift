@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignInForm: View {
-    @Environment(AuthService.self) var auth
+//    @Environment(AuthService.self) var auth
     @Environment(AuthManager.self) var authManager
     
     private enum FocusedField {
@@ -166,6 +166,6 @@ struct SignInForm: View {
     SignInForm()
         .padding(18)
         .background(.customBlack)
-        .environment(AuthService())
+//        .environment(AuthService())
         .environment(AuthManager(service: AuthService()))
 }

@@ -12,7 +12,8 @@ import RevenueCatUI
 struct PreachView: View {
     
     @Environment(AppRouter.self) var router
-    @Environment(AuthService.self) var auth
+    @Environment(AuthManager.self) var authManager
+//    @Environment(AuthService.self) var auth
 //    @Environment(CollectionRepository.self) var collections
     @State private var showPaywall = false
     @State private var errorMessage: String? = nil
@@ -30,11 +31,11 @@ struct PreachView: View {
         VStack(alignment: .leading) {
             ScrollView(.vertical) {
                 VStack {
-                    if auth.isPremium {
+//                    if auth.isPremium {
 //                        VimeoVideoPlayer(for: preach.videoUrl)
 //                        VimeoEmbedPlayer(videoURL: preach.videoUrl)
 //                            .aspectRatio(16/9, contentMode: .fit)
-                    } else {
+//                    } else {
                         ZStack {
                             Color.black
                             VStack {
@@ -50,7 +51,7 @@ struct PreachView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .aspectRatio(16/9, contentMode: .fill)
-                    }
+//                    }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: .customBlack.opacity(0.5), radius: 10)
@@ -106,17 +107,17 @@ struct PreachView: View {
     @ObserveInjection var forceRedraw
     #endif
     private func getCustomerInfo() {
-        Task {
-            do {
-                guard let userId = auth.user?.id else {
-                    return
-                }
-                try await auth.getSuscriptionStatus(userId: userId.uuidString)
-//                collections.series.removeAll()
-            } catch {
-                print(error.localizedDescription)
-                self.errorMessage = error.localizedDescription
-            }
-        }
+//        Task {
+//            do {
+//                guard let userId = auth.user?.id else {
+//                    return
+//                }
+//                try await auth.getSuscriptionStatus(userId: userId.uuidString)
+////                collections.series.removeAll()
+//            } catch {
+//                print(error.localizedDescription)
+//                self.errorMessage = error.localizedDescription
+//            }
+//        }
     }
 }

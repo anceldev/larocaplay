@@ -23,10 +23,6 @@ final class LibraryManager {
         self.context = context
     }
     
-//    func setContext(context: ModelContext) {
-//        self.modelContext = modelContext
-//    }
-    
     @MainActor
     func initialSync() async {
         self.isFetching = true

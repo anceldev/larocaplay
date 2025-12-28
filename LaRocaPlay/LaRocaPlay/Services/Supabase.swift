@@ -22,7 +22,8 @@ final class SBCLient {
 //        let anonKey = "\(Secrets.$supabaseanonkey)"
 //        let projectUrl = "\(Secrets.$supabaseprojecturl)"
         supabase = .init(
-            supabaseURL: URL(string: projectUrl)!,
+//            supabaseURL: URL(string: projectUrl)!,
+            supabaseURL: URL(string: "http://192.168.1.11:54321")!,
             supabaseKey: anonKey
         )
         
