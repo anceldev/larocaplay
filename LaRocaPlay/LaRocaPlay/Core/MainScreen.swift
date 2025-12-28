@@ -14,7 +14,7 @@ typealias AppRouter = Router<AppTab, Destination, Sheet>
 struct MainScreen: View {
     @Environment(AuthService.self) var auth
     @Environment(PreachesRepository.self) var repository
-    @Environment(CollectionRepository.self) var collections
+//    @Environment(CollectionRepository.self) var collections
 
     
     @State private var router = AppRouter(initialTab: .home)

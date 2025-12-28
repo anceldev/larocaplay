@@ -16,7 +16,7 @@ enum LoadingState: Equatable {
 }
 
 struct PreachCollectionScreen: View {
-    @Environment(CollectionRepository.self) var collections
+//    @Environment(CollectionRepository.self) var collections
     @State private var searchQuery = ""
     
     @State var collectionId: Int
@@ -33,36 +33,24 @@ struct PreachCollectionScreen: View {
     
     var collectionItems: [CollectionItem]
     
-    var preaches: [PreachDTO] {
-        guard let preaches = collections.series.first (where: { $0.id == collectionId })?.preaches else {
-            return []
-        }
-        if searchQuery.isEmpty {
-            return preaches
-        }
-        return preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
-    }
-    var collection: PreachCollection? {
-        guard let collection = collections.series.first (where: { $0.id == collectionId }) else {
-            return nil
-        }
-        return collection
-    }
-    
+//    var preaches: [PreachDTO] {
+//        guard let preaches = collections.series.first (where: { $0.id == collectionId })?.preaches else {
+//            return []
+//        }
+//        if searchQuery.isEmpty {
+//            return preaches
+//        }
+//        return preaches.filter { $0.title.lowercased().contains(searchQuery.lowercased()) }
+//    }
+//    var collection: PreachCollection? {
+//        guard let collection = collections.series.first (where: { $0.id == collectionId }) else {
+//            return nil
+//        }
+//        return collection
+//    }
+//    
     var body: some View {
         VStack(spacing: 16) {
-//            VStack {
-//                ForEach(collectionItems.sorted(by: { $0.position <= $1.position })) { item in
-//                    HStack {
-//                        if let preach = item.preach {
-//                            if item.position != 0 {
-//                                Text(item.position, format: .number)
-//                            }
-//                            Text(preach.title)
-//                        }
-//                    }
-//                }
-//            }
             ScrollView(.vertical) {
                 VStack(spacing: 8) {
                     Text("Últimas predicaciones")
@@ -88,11 +76,11 @@ struct PreachCollectionScreen: View {
             .scrollIndicators(.hidden)
         }
         .background(.customBlack)
-        .onAppear {
-            Task {
-                await getState()
-            }
-        }
+//        .onAppear {
+//            Task {
+//                await getState()
+//            }
+//        }
         
         .enableInjection()
     }
@@ -102,17 +90,17 @@ struct PreachCollectionScreen: View {
 #endif
     
     private func getState() async {
-        do {
-            try await collections.getSeriePreaches(serieId: collectionId)
-            if preaches.count == 0 {
-                self.loadingState = .empty
-                return
-            }
-            self.loadingState = .loaded(preaches)
-        } catch {
-            print(error)
-            print(error.localizedDescription)
-            self.loadingState = .error(error.localizedDescription)
-        }
+//        do {
+//            try await collections.getSeriePreaches(serieId: collectionId)
+//            if preaches.count == 0 {
+//                self.loadingState = .empty
+//                return
+//            }
+//            self.loadingState = .loaded(preaches)
+//        } catch {
+//            print(error)
+//            print(error.localizedDescription)
+//            self.loadingState = .error(error.localizedDescription)
+//        }
     }
 }

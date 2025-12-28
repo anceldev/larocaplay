@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SerieScreen: View {
-    @Environment(CollectionRepository.self) var seriesRepository
+//    @Environment(CollectionRepository.self) var seriesRepository
     @State private var searchQuery = ""
     
     let serieId: Int

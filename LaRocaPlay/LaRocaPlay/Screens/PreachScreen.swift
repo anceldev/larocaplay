@@ -12,7 +12,7 @@ struct PreachScreen: View {
     @Environment(AppRouter.self) var router
     @Environment(PreachesRepository.self) var preaches
     @Environment(AuthService.self) var auth
-    @Environment(CollectionRepository.self) var collections
+//    @Environment(CollectionRepository.self) var collections
     @State private var videoURL: URL?
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
@@ -31,27 +31,27 @@ struct PreachScreen: View {
         VStack(alignment: .leading) {
             ScrollView(.vertical) {
                 VStack {
-                    if !auth.isPremium {
-                        ZStack {
-                            Color.black
-                            VStack {
-                                Text("Necesitas estar suscrito para ver este contenido")
-                                    .multilineTextAlignment(.center)
-                                Button {
-                                    self.showPaywall = true
-                                } label: {
-                                    Text("Suscribirme")
-                                        .underline(true)
-                                }
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(16/9, contentMode: .fill)
-                    } else {
-                        if let videoURL {
-                            VimeoVideoPlayer(videoURL: videoURL, thumbId: preach.imageId)
-                        }
-                    }
+//                    if !auth.isPremium {
+//                        ZStack {
+//                            Color.black
+//                            VStack {
+//                                Text("Necesitas estar suscrito para ver este contenido")
+//                                    .multilineTextAlignment(.center)
+//                                Button {
+//                                    self.showPaywall = true
+//                                } label: {
+//                                    Text("Suscribirme")
+//                                        .underline(true)
+//                                }
+//                            }
+//                        }
+//                        .frame(maxWidth: .infinity)
+////                        .aspectRatio(16/9, contentMode: .fill)
+//                    } else {
+//                        if let videoURL {
+                            VimeoVideoPlayer(preach: preach)
+//                        }
+//                    }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: .customBlack.opacity(0.5), radius: 10)
@@ -102,25 +102,25 @@ struct PreachScreen: View {
                 getCustomerInfo()
             }
         }
-        .onAppear(perform: {
-            loadVideoURL()
-        })
+//        .onAppear(perform: {
+//            loadVideoURL()
+//        })
         .enableInjection()
     }
 #if DEBUG
 @ObserveInjection var forceRedraw
 #endif
-    private func loadVideoURL() {
-        Task {
-            do {
-                self.videoURL = try await VimeoService.shared.getVideoURL(for: preach.videoId)
-            } catch {
-                print(error)
-                print(error.localizedDescription)
-                self.errorMessage = "Ha ocurrido un error al cargar la predicación"
-            }
-        }
-    }
+//    private func loadVideoURL() {
+//        Task {
+//            do {
+//                self.videoURL = try await VimeoService.shared.getVideoURL(for: preach.videoId)
+//            } catch {
+//                print(error)
+//                print(error.localizedDescription)
+//                self.errorMessage = "Ha ocurrido un error al cargar la predicación"
+//            }
+//        }
+//    }
     private func getCustomerInfo() {
         Task {
             do {
@@ -128,7 +128,7 @@ struct PreachScreen: View {
                     return
                 }
                 try await auth.getSuscriptionStatus(userId: userId.uuidString)
-                collections.series.removeAll()
+//                collections.series.removeAll()
             } catch {
                 print(error.localizedDescription)
                 self.errorMessage = error.localizedDescription

@@ -69,8 +69,8 @@ struct AuthenticatedView: View {
         }
     }
 }
-
-#Preview {
-    AuthenticatedView(account: .constant(PreviewData.user))
-        .environment(AuthService())
-}
+//
+//#Preview {
+//    AuthenticatedView(account: .constant(PreviewData.user))
+//        .environment(AuthService())
+//}

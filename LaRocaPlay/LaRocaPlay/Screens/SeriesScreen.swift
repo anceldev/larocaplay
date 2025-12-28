@@ -10,7 +10,7 @@ import SwiftData
 
 struct SeriesScreen: View {
     @Environment(AppRouter.self) var router
-    @Environment(CollectionRepository.self) var seriesRepository
+//    @Environment(CollectionRepository.self) var seriesRepository
     
     @State private var errorMessage: String? = nil
     
@@ -49,14 +49,14 @@ struct SeriesScreen: View {
     #endif
     
     private func getCollections() async {
-        do {
-            if seriesRepository.series.isEmpty {
-                try await self.seriesRepository.getCollections()
-            }
-        } catch {
-            print(error)
-            self.errorMessage = "No se han podido recuperar las colecciones"
-        }
+//        do {
+//            if seriesRepository.series.isEmpty {
+//                try await self.seriesRepository.getCollections()
+//            }
+//        } catch {
+//            print(error)
+//            self.errorMessage = "No se han podido recuperar las colecciones"
+//        }
     }
 }
 

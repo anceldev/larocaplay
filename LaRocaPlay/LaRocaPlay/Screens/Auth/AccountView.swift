@@ -11,7 +11,7 @@ import RevenueCatUI
 
 struct AccountView: View {
     @Environment(AuthService.self) var auth
-    @Environment(CollectionRepository.self) var collectionsRepository
+//    @Environment(CollectionRepository.self) var collectionsRepository
     @Binding var account: User?
     @Binding var authState: AuthState
     @State private var errorMessage: String? = nil
@@ -84,7 +84,7 @@ struct AccountView: View {
                 try await auth.signout()
                 account = nil
                 authState = .unauthenticated
-                self.collectionsRepository.series.removeAll()
+//                self.collectionsRepository.series.removeAll()
                 let customerInfo = try await Purchases.shared.logOut()
 //                try await auth.getCustomerInfor()
 //                try await auth.getSuscriptionStatus()
@@ -96,9 +96,9 @@ struct AccountView: View {
         }
     }
 }
-
-#Preview {
-    AccountView(account: .constant(PreviewData.user), authState: .constant(.authenticated))
-        .environment(AuthService())
-        .background(.customBlack)
-}
+//
+//#Preview {
+//    AccountView(account: .constant(PreviewData.user), authState: .constant(.authenticated))
+//        .environment(AuthService())
+//        .background(.customBlack)
+//}

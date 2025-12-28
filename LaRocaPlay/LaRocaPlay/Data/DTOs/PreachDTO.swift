@@ -29,9 +29,6 @@ struct PreachDTO: PreachProtocol, Hashable {
     var videoUrl: String
     var thumbId: String?
     
-    var serie: PreachCollection?
-    var collection: PreachCollection?
-    var discipleship: PreachCollection?
     
     var updatedAt: Date?
     
@@ -47,7 +44,7 @@ struct PreachDTO: PreachProtocol, Hashable {
         case updatedAt = "updated_at"
     }
     
-    init(id: Int, title: String, description: String? = nil, date: Date = .now, preacher: PreacherDTO, videoUrl: String, serie: PreachCollection? = nil, thumbId: String? = nil, collection: PreachCollection? = nil, discipleship: PreachCollection? = nil, updatedAt: Date? = nil) {
+    init(id: Int, title: String, description: String? = nil, date: Date = .now, preacher: PreacherDTO, videoUrl: String, thumbId: String? = nil, updatedAt: Date? = nil) {
         self.id = id
         self.title = title
         self.description = description
@@ -55,9 +52,6 @@ struct PreachDTO: PreachProtocol, Hashable {
         self.preacher = preacher
         self.videoUrl = videoUrl
         self.thumbId = thumbId
-        self.serie = serie
-        self.collection = collection
-        self.discipleship = discipleship
         self.updatedAt = updatedAt
     }
     
@@ -80,10 +74,6 @@ struct PreachDTO: PreachProtocol, Hashable {
         self.updatedAt = updatedDate
         
         self.videoUrl = try container.decode(String.self, forKey: .videoUrl)
-        self.serie = try container.decodeIfPresent(PreachCollection.self, forKey: .serie)
-        self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
-        self.collection = try container.decodeIfPresent(PreachCollection.self, forKey: .collection)
-        self.discipleship = try container.decodeIfPresent(PreachCollection.self, forKey: .discipleship)
     }
     func encode(to encoder: any Encoder) throws {
         

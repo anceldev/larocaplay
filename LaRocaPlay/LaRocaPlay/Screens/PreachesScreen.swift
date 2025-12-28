@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct PreachesScreen: View {
-    @Environment(CelebrationRepository.self) var celebration
+//    @Environment(CelebrationRepository.self) var celebration
     @Environment(AppRouter.self) var router
     @Environment(\.modelContext) var context
     @State private var searchQuery = ""
@@ -89,8 +89,8 @@ struct PreachesScreen: View {
                         } label: {
                             Text("Cargar más")
                         }
-                        .disabled(celebration.isFull)
-                        .opacity(celebration.isFull ? 0 : 1).animation(.easeInOut, value: celebration.isFull)
+//                        .disabled(celebration.isFull)
+//                        .opacity(celebration.isFull ? 0 : 1).animation(.easeInOut, value: celebration.isFull)
                     }
                     .scrollIndicators(.hidden)
                 }
@@ -108,12 +108,12 @@ struct PreachesScreen: View {
     }
     private func loadMore() {
         Task {
-            do {
-                try await celebration.getCelebrationPreaches()
-            } catch {
-                print(error)
-                self.errorMessage = "Ha ocurrido un error al intentar cargar más predicas de la celebración."
-            }
+//            do {
+//                try await celebration.getCelebrationPreaches()
+//            } catch {
+//                print(error)
+//                self.errorMessage = "Ha ocurrido un error al intentar cargar más predicas de la celebración."
+//            }
         }
     }
 #if DEBUG

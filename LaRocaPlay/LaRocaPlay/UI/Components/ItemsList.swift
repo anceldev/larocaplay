@@ -15,12 +15,19 @@ enum ListView {
     
     var fontSize: CGFloat {
         switch self {
-        case .single:   16
-        case .grid:     12
+        case .single:   20
+        case .grid:     16
         case .list:     14
         }
     }
     var textAlignment: Alignment {
+        switch self {
+        case .single:   .center
+        case .grid:     .leading
+        case .list:     .leading
+        }
+    }
+    var hAlignment: HorizontalAlignment {
         switch self {
         case .single:   .center
         case .grid:     .leading

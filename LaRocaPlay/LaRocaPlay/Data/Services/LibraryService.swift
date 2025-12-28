@@ -30,33 +30,6 @@ final class LibraryService {
             .value
     }
     
-//    func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [PreachDTO] {
-//        let teachings: [PreachCollectionWrapper] = try await supabaseClient
-//            .from("preach_collection_membership")
-//            .select("""
-//                preach: preach_id (
-//                    id,
-//                    title,
-//                    description,
-//                    date,
-//                    thumb_id,
-//                    video_url,
-//                    preacher: preacher_id (
-//                        id,
-//                        name,
-//                        preacher_role_id(id, name),
-//                        thumb_id
-//                        )
-//                ),
-//                position
-//                """)
-//            .eq("collection_id", value: collectionId)
-//            .range(from: offset, to: limit)
-//            .execute()
-//            .value
-//        let mappedTeachings = teachings.map { $0.preach }.sorted { $0.date > $1.date }
-//        return mappedTeachings
-//    }
     func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [CollectionPreachResponseDTO] {
         try await supabaseClient
             .from("preach_collection_membership")
@@ -83,32 +56,6 @@ final class LibraryService {
 //            .range(from: offset, to: limit)
             .execute()
             .value
-//        let data = try await supabaseClient
-//            .from("preach_collection_membership")
-//            .select("""
-//                preach: preach_id (
-//                    id,
-//                    title,
-//                    description,
-//                    date,
-//                    thumb_id,
-//                    video_url,
-//                    updated_at,
-//                    preacher: preacher_id (
-//                        id,
-//                        name,
-//                        preacher_role_id(id, name),
-//                        thumb_id
-//                        )
-//                ),
-//                position,
-//                id
-//                """)
-//            .eq("collection_id", value: collectionId)
-//            .range(from: offset, to: limit)
-//            .execute()
-//        let mappedTeachings = teachings.map { $0.preach }.sorted { $0.date > $1.date }
-//        return mappedTeachings
     }
     
     func fetchAllPreachers() async throws -> [PreacherDTO] {
@@ -131,5 +78,13 @@ final class LibraryService {
             .value
         print(data)
         return data
+    }
+    
+    func fetchSignedLink(for videoId: String) async throws -> VideoLinkResponseDTO {
+        try await supabaseClient.functions.invoke(
+            "get-vimeo-temporal-link",
+            options: FunctionInvokeOptions(
+                body: ["videoId": videoId]
+            ))
     }
 }

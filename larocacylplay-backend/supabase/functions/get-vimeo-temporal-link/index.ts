@@ -41,36 +41,36 @@ serve(async (req) => {
     // 1️⃣ Buscar en cache
     // link válido si expira en al menos 1h (queda mínimo 2h de vida)
     // ─────────────────────────────────────
-    const now = new Date();
-    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 2000);
+    // const now = new Date();
+    // const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 2000);
 
-    console.log("Buscando en cache de supabase...")
-    // console.log("Ahora:", now.toISOString())
-    // console.log("Mínimo de expiración (1h desde ahora):", oneHourFromNow.toISOString())
+    // console.log("Buscando en cache de supabase...")
+    // // console.log("Ahora:", now.toISOString())
+    // // console.log("Mínimo de expiración (1h desde ahora):", oneHourFromNow.toISOString())
 
-    const { data: cachedVideo, error: cacheError } = await supabase
-      .from("video_temporal_link")
-      .select("video_id, link, link_expiration_time")
-      .eq("video_id", videoId)
-      .gte("link_expiration_time", oneHourFromNow.toISOString())
-      .order("link_expiration_time", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // const { data: cachedVideo, error: cacheError } = await supabase
+    //   .from("video_temporal_link")
+    //   .select("video_id, link, link_expiration_time")
+    //   .eq("video_id", videoId)
+    //   .gte("link_expiration_time", oneHourFromNow.toISOString())
+    //   .order("link_expiration_time", { ascending: false })
+    //   .limit(1)
+    //   .maybeSingle();
 
-    if (cacheError) {
-      console.error("Cache error:", cacheError);
-    }
+    // if (cacheError) {
+    //   console.error("Cache error:", cacheError);
+    // }
 
-    if (cachedVideo) {
-        console.log("Encontrado en cache, devolviendo desde sb cache")
-      // ✅ Cache hit
-      console.log(cachedVideo)
-      return new Response(
-        // JSON.stringify({ video_id: cachedVideo.video_id, link: cachedVideo.video_link, link_expiration_time: cachedVideo.link_expiration_time }),
-        JSON.stringify(cachedVideo),
-        { status: 200, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    // if (cachedVideo) {
+    //     console.log("Encontrado en cache, devolviendo desde sb cache")
+    //   // ✅ Cache hit
+    //   console.log(cachedVideo)
+    //   return new Response(
+    //     // JSON.stringify({ video_id: cachedVideo.video_id, link: cachedVideo.video_link, link_expiration_time: cachedVideo.link_expiration_time }),
+    //     JSON.stringify(cachedVideo),
+    //     { status: 200, headers: { "Content-Type": "application/json" } }
+    //   );
+    // }
 
     // ─────────────────────────────────────
     // 2️⃣ Cache miss → Vimeo
@@ -87,28 +87,28 @@ serve(async (req) => {
     // console.log("URL:", url)
     console.log("Obteniendo enlace de Vimeo")
     const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+      method: 'GET',
+      headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
       },
     });
 
     if(response.status !== 200) {
-            const errorText = await response.text();
-            console.error('Vimeo API Error: ');
-            console.error('Status Code:', response.status);
-            console.error('Response Body', errorText);
-            return new Response(
-              JSON.stringify({
-              error: 'Video access denied',
-              statusCode: response.status,
-              details: errorText
-            }),
-            {
-                status: response.status,
-                headers: {'Content-Type': 'application/json'}
-            });
+      const errorText = await response.text();
+      console.error('Vimeo API Error: ');
+      console.error('Status Code:', response.status);
+      console.error('Response Body', errorText);
+      return new Response(
+        JSON.stringify({
+        error: 'Video access denied',
+        statusCode: response.status,
+        details: errorText
+      }),
+      {
+          status: response.status,
+          headers: {'Content-Type': 'application/json'}
+      });
     }
 
     const data: VimeoResponse = await response.json();
@@ -131,29 +131,29 @@ serve(async (req) => {
         break;
       }
     }
-    console.log('Guardando en sb cache')
-    // ─────────────────────────────────────
-    // 3️⃣ Guardar en cache
-    // ─────────────────────────────────────
+    // console.log('Guardando en sb cache')
+    // // ─────────────────────────────────────
+    // // 3️⃣ Guardar en cache
+    // // ─────────────────────────────────────
 
-    const {data: savedVideo, error: saveError} = await supabase
-    .from("video_temporal_link")
-    .insert({
-      video_id: videoId,
-      video_link: selected.link,
-      link_expiration_time: selected.link_expiration_time,
-    })
-    .select()
-    if(saveError) {
-      console.log("Save errors:", saveError)
-    }
-    console.log("Guardado en cache")
-    console.log("Devolviendo video")
+    // const {data: savedVideo, error: saveError} = await supabase
+    // .from("video_temporal_link")
+    // .insert({
+    //   video_id: videoId,
+    //   video_link: selected.link,
+    //   link_expiration_time: selected.link_expiration_time,
+    // })
+    // .select()
+    // if(saveError) {
+    //   console.log("Save errors:", saveError)
+    // }
+    // console.log("Guardado en cache")
+    // console.log("Devolviendo video")
     // ─────────────────────────────────────
     // 4️⃣ Responder solo el link
     // ─────────────────────────────────────
     return new Response(
-      JSON.stringify({ video_id: videoId, link: selected.link, link_expiration_time: selected.link_expiration_time }),
+      JSON.stringify({ video_id: videoId, video_url: selected.link, link_expiration_time: selected.link_expiration_time }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
 

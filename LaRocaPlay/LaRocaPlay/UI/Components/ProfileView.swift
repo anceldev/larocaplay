@@ -21,6 +21,6 @@ struct ProfileView: View {
     #endif
 }
 
-#Preview {
-    ProfileView(account: PreviewData.user)
-}
+//#Preview {
+//    ProfileView(account: PreviewData.user)
+//}

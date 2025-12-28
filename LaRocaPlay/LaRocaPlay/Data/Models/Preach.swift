@@ -18,9 +18,22 @@ final class Preach {
     var imageId: String?
     var updatedAt: Date?
     
+    var videoUrl: String?
+    var videoUrlExpiration: Date?
+    
+    
     var preacher: Preacher?
 //    var collections: [Collection] = []
     @Relationship(deleteRule: .cascade, inverse: \CollectionItem.preach) var collectionLinks: [CollectionItem] = []
+    
+    var hasValidUrl: Bool {
+        guard let expiration = videoUrlExpiration,
+              let url = videoUrl,
+              !url.isEmpty
+        else { return false }
+        let safetyMargin: TimeInterval = 2 * 3600
+        return expiration > Date().addingTimeInterval(safetyMargin)
+    }
     
     
     init(id: Int, title: String, desc: String? = nil, date: Date, videoId: String, imageId: String? = nil, preacher: Preacher? = nil, updatedAt: Date? = nil) {
@@ -41,5 +54,10 @@ final class Preach {
         self.videoId = dto.videoUrl
         self.imageId = dto.thumbId
         self.updatedAt = dto.updatedAt
+    }
+    
+    func updateVideoCache(url: String, expiration: Date) {
+        self.videoUrl = url
+        self.videoUrlExpiration = expiration
     }
 }

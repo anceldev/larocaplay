@@ -5,6 +5,7 @@
 //  Created by Ancel Dev account on 1/8/25.
 //
 
+import AVKit
 import ConfidentialKit
 import RevenueCat
 import RevenueCatUI
@@ -16,8 +17,8 @@ struct LaRocaPlayApp: App {
     @State private var authService = AuthService()
     
     @State var repository = PreachesRepository()
-    @State private var collections = CollectionRepository()
-    @State private var celebration = CelebrationRepository()
+//    @State private var collections = CollectionRepository()
+//    @State private var celebration = CelebrationRepository()
     @State private var musicVideoRepository = MusicVideoRepository()
     
 //    @State private var authManager = AuthManager(service: AuthService())
@@ -50,6 +51,12 @@ struct LaRocaPlayApp: App {
             
             let libManager = LibraryManager(service: LibraryService(), context: self.container.mainContext)
             self._libManager = State(initialValue: libManager)
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                print("ERROR: Error configurando la sesión de audio \(error)")
+            }
         } catch {
             fatalError("Error al inicializar SwiftData: \(error.localizedDescription)")
         }
@@ -71,8 +78,8 @@ struct LaRocaPlayApp: App {
                         RootView()
                                 .environment(authService)
                                 .environment(repository)
-                                .environment(collections)
-                                .environment(celebration)
+//                                .environment(collections)
+//                                .environment(celebration)
                                 .environment(musicVideoRepository)
                                 .preferredColorScheme(.dark)
                                 .modelContainer(container)
@@ -82,8 +89,8 @@ struct LaRocaPlayApp: App {
                 .environment(libManager)
                 .environment(authService)
                 .environment(repository)
-                .environment(collections)
-                .environment(celebration)
+//                .environment(collections)
+//                .environment(celebration)
                 .environment(musicVideoRepository)
                 .preferredColorScheme(.dark)
                 .modelContainer(container)

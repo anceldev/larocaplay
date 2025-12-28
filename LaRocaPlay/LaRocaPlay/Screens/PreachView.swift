@@ -13,7 +13,7 @@ struct PreachView: View {
     
     @Environment(AppRouter.self) var router
     @Environment(AuthService.self) var auth
-    @Environment(CollectionRepository.self) var collections
+//    @Environment(CollectionRepository.self) var collections
     @State private var showPaywall = false
     @State private var errorMessage: String? = nil
     var preach: PreachDTO
@@ -112,7 +112,7 @@ struct PreachView: View {
                     return
                 }
                 try await auth.getSuscriptionStatus(userId: userId.uuidString)
-                collections.series.removeAll()
+//                collections.series.removeAll()
             } catch {
                 print(error.localizedDescription)
                 self.errorMessage = error.localizedDescription

@@ -10,7 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(AppRouter.self) var router
-    @Environment(CelebrationRepository.self) var celebration
+//    @Environment(CelebrationRepository.self) var celebration
     @Environment(\.modelContext) var context
     
     @State private var searchQuery: String = ""

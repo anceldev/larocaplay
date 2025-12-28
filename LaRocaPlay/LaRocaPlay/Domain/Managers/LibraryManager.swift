@@ -8,6 +8,7 @@
 import Foundation
 import Observation
 import SwiftData
+import MediaPlayer
 
 @Observable
 final class LibraryManager {
@@ -57,6 +58,13 @@ final class LibraryManager {
                     }
             
         }
+    }
+    
+    @MainActor
+    func syncCollections(dtos: [CollectionDTO]) throws {
+        let ids = dtos.map { $0.id }
+        let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ ids.contains($0.id) })
+        let existingCollections = try context.fetch(descriptor)
     }
     
 
@@ -122,5 +130,37 @@ final class LibraryManager {
         } catch {
             print("ERROR: Error en sync collection \(error)")
         }
+    }
+    
+    @MainActor
+    func getValidVideoUrl(for preach: Preach) async throws -> URL {
+        if preach.hasValidUrl, let url = preach.videoUrl {
+            print("DEBUG: Usando URL cacheada para: \(preach.title)")
+            return URL(string: url)!
+        }
+        let response = try await service.fetchSignedLink(for: preach.videoId)
+        
+        preach.updateVideoCache(
+            url: response.videoUrl,
+            expiration: response.linkExpirationTime
+        )
+        try context.save()
+        return URL(string: response.videoUrl)!
+    }
+}
+
+extension LibraryManager {
+    func updateNowPlayingInfo(for preach: Preach, duration: Double = 0) {
+        let center = MPNowPlayingInfoCenter.default()
+        var nowPlayingInfo = [String : Any]()
+        
+        nowPlayingInfo[MPMediaItemPropertyTitle] = preach.title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = preach.preacher?.name ?? "Predicador"
+        
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = 0
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
+        
+        center.nowPlayingInfo = nowPlayingInfo
     }
 }

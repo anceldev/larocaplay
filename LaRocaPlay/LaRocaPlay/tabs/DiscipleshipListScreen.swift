@@ -13,7 +13,7 @@ import SwiftData
 struct DiscipleshipListScreen: View {
     @Environment(AppRouter.self) var router
     @Environment(AuthService.self) var auth
-    @Environment(CollectionRepository.self) var collectionsRepository
+//    @Environment(CollectionRepository.self) var collectionsRepository
     
 //    let role: UserRole
     @State private var errorMessage: String? = ""
@@ -51,16 +51,16 @@ struct DiscipleshipListScreen: View {
     @ObserveInjection var forceRedraw
 #endif
     private func getCollections() {
-        if collectionsRepository.series.isEmpty {
-            Task {
-                do {
-                    try await collectionsRepository.getCollections()
-                } catch {
-                    print(error)
-                    self.errorMessage = "No se han podido recuperar las capacitaciones"
-                }
-            }
-        }
+//        if collectionsRepository.series.isEmpty {
+//            Task {
+//                do {
+//                    try await collectionsRepository.getCollections()
+//                } catch {
+//                    print(error)
+//                    self.errorMessage = "No se han podido recuperar las capacitaciones"
+//                }
+//            }
+//        }
     }
 }
 

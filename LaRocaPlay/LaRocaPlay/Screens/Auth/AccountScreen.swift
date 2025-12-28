@@ -12,7 +12,7 @@ import RevenueCatUI
 struct AccountScreen: View {
     @Environment(AppRouter.self) var router
     @Environment(AuthService.self) var auth
-    @Environment(CollectionRepository.self) var collections
+//    @Environment(CollectionRepository.self) var collections
     
     @Environment(AuthManager.self) var authManager
     @State private var errorMessage: String? = nil
@@ -200,7 +200,7 @@ struct AccountScreen: View {
                     return
                 }
                 try await auth.getSuscriptionStatus(userId: userId.uuidString)
-                collections.series.removeAll()
+//                collections.series.removeAll()
             } catch {
                 print(error.localizedDescription)
                 errorMessage = error.localizedDescription
