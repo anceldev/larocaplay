@@ -1,6 +1,5 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import { preacherRoles } from "@/lib/constants"
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
@@ -30,7 +29,6 @@ export const columns: ColumnDef<Preacher>[] = [
     accessorKey: "preacher_role_id",
     header: "Rol",
     cell: ({ row }) => {
-      console.log("Row is", row.original)
       const role = preacherRoles.find(role => role.id === row.original.preacher_role_id.id)
       return role?.name
     }

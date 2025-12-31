@@ -7,7 +7,7 @@ export async function getPreachers(): Promise<Preacher[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
   .from('preacher')
-  .select('id, name, preacher_role_id(id, name), thumb_id, created_at');
+  .select('id, name, preacher_role_id(id, name), image_id, created_at');
   if (error) {
     throw error;
   }

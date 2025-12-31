@@ -1,7 +1,5 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
-import { preacherRoles } from "@/lib/constants"
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
  
@@ -15,9 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { PreachCollection } from "@/lib/types"
+import { Collection } from "@/lib/types"
 
-export const columns: ColumnDef<PreachCollection>[] = [
+export const columns: ColumnDef<Collection>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -35,7 +33,7 @@ export const columns: ColumnDef<PreachCollection>[] = [
     accessorKey: "isPublic",
     header: "Público",
     cell: ({ row }) => {
-      return row.original.isPublic ? "Sí" : "No"
+      return row.original.is_public ? "Sí" : "No"
     }
   },
   {

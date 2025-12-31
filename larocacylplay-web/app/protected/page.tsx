@@ -1,15 +1,5 @@
 import { redirect } from 'next/navigation'
-import { LogoutButton } from '@/components/logout-button'
 import { createClient } from '@/lib/supabase/server'
-import NewPreachForm from '@/components/forms/new-preach-form'
-import { getPreachers } from '@/lib/services/preacher'
-import { getEvents } from '@/lib/services/event'
-import { getSeries } from '@/lib/services/series'
-import NewEventForm from '@/components/forms/new-event-form'
-import NewSerieForm from '@/components/forms/new-serie-form'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/app-sidebar'
-import { SiteHeader } from '@/components/site-header'
 
 export default async function ProtectedPage() {
   const supabase = await createClient()

@@ -1,47 +1,6 @@
-// export interface Preacher {
-//   id: number;
-//   name: string;
-//   preacher_role?: {
-//     id: number;
-//     name: string;
-//   };
-//   thumb_id?: string;
-// }
 
 import { UUID } from "crypto"
 
-// export interface Series {
-//   id: number;
-//   created_at: Date;
-//   name: string;
-//   description?: string;
-//   thumb_id?: string;
-//   preaches?: Preach[];
-// }
-
-// export interface Event {
-//   id: number;
-//   created_at: Date;
-//   name: string;
-//   description?: string;
-//   started_at: Date;
-//   ended_at: Date;
-//   thumb_id?: string;
-//   preaches?: Preach[];
-// }
-
-// export interface Preach {
-//   id: number;
-//   created_at: Date;
-//   title: string;
-//   description?: string;
-//   preacher_id?: Preacher;
-//   date: Date;
-//   video: string;
-//   serie_id: Series;
-//   thumb_id?: string;
-//   congress_id?: Event;
-// }
 export type Preacher = {
   id: string
   name: string
@@ -51,12 +10,12 @@ export type Preacher = {
   }
   thumb_id?: string
 }
-export type PreachCollection = {
+export type Collection = {
   id: number
   title: string
   description?: string
   thumb_id?: string
-  isPublic: boolean
+  is_public: boolean
   collection_type_id: {
     id: number,
     name: string
@@ -65,14 +24,19 @@ export type PreachCollection = {
   updated_at: Date
   ended_at: Date
 }
+export type ShortCollection = {
+  id: number
+  title: string
+  description?: string
+}
 
 export type Preach = {
   id: number
   title: string
   description?: string
   date: Date
-  video_url: string
-  thumb_id?: string
+  video_id: string
+  image_id?: string
   preacher: {
     id: number,
     name: string,
@@ -83,6 +47,18 @@ export type Preach = {
   }
   created_at: Date
   updated_at: Date
+}
+export type ShortPreach = {
+  id: number,
+  title: string,
+  description?: string
+  date: Date
+  preacher: {
+    name: string,
+    preacher_role_id: {
+      name: string
+    }
+  }
 }
 
 export type PreacherRole = {

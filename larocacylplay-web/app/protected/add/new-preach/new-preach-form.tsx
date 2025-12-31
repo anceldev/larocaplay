@@ -8,24 +8,25 @@ import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { DateTimePicker } from '@/components/date-time-picker'
-import { Preacher } from '@/lib/types'
+import { Collection, Preacher } from '@/lib/types'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { error } from 'console'
-import { createPreach } from '@/lib/services/preaches'
+import { addPreachToCollection, createPreach } from '@/lib/services/preaches'
 
 const formSchema = z.object({
   title: z.string().min(2, { message: "El título debe tener al menos 2 carácteres" }).max(50),
   description: z.string().optional(),
   date: z.date(),
   preacher_id: z.number().min(1, { message: "Debes seleccionar un predicador" }),
-  video_url: z.string().min(1, { message: "Debes introducir la url del video" }),
+  video_id: z.string().min(1, { message: "Debes introducir la url del video" }),
+  collection_id: z.number().min(1, { message: "Debes seleccionar una colección"}),
+  collection_position: z.number().optional()
 })
 
 
 
-export default function NewPreachForm({preachers}:{ preachers: Preacher[] }) {
+export default function NewPreachForm({preachers, collections}:{ preachers: Preacher[], collections: Collection[] }) {
   
   // Create a date with current date but time set to 11:30:00 AM
   const getDefaultDate = () => {
@@ -41,20 +42,31 @@ export default function NewPreachForm({preachers}:{ preachers: Preacher[] }) {
       description: undefined,
       date: getDefaultDate(),
       preacher_id: 0,
-      video_url: ""
+      video_id: "",
+      collection_id: 1,
+      collection_position: undefined
     }
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const data = await createPreach({
+      console.log("Insertando celebracion")
+      const preachId = await createPreach({
         title: values.title,
         description: values.description,
         date: values.date,
         preacher_id: values.preacher_id,
-        video_url: values.video_url
+        video_id: values.video_id
       })
-      if (data == true) {
+      console.log("Celebracion insertada")
+      console.log("Añadiendo a coleccion")
+      const added = await addPreachToCollection({
+        preachId: preachId,
+        collectionId: values.collection_id,
+        position: values.collection_position
+      })
+      console.log("Añadido a colección")
+      if (added == true) {
         toast.success("Predicación añadida")
       }
 
@@ -107,21 +119,57 @@ export default function NewPreachForm({preachers}:{ preachers: Preacher[] }) {
             </Field>
           )}
         />
-
+        <div className='flex gap-x-4'>
         <Controller
           name="date"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor={field.name}>Fecha</FieldLabel>
+              <FieldDescription>Selecciona la fecha.</FieldDescription>
               <DateTimePicker 
                 value={field.value}
                 onChange={field.onChange}
               />
-              <FieldDescription>
+              {/* <FieldDescription>
                 Fecha de la predicación
-              </FieldDescription>
+              </FieldDescription> */}
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="collection_id"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field orientation="responsive" data-invalid={fieldState.invalid}>
+              <FieldContent>
+                <FieldLabel htmlFor="form-rhf-select-preacher">Serie</FieldLabel>
+                <FieldDescription>
+                  Selecciona la serie.
+                </FieldDescription>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldContent>
+              <Select
+                name={field.name}
+                value={field.value ? String(field.value) : undefined}
+                onValueChange={(value) => field.onChange(Number(value))}
+              >
+                <SelectTrigger
+                  id="form-rhf-select-preacher"
+                  aria-invalid={fieldState.invalid}
+                  className="min-w-[120px]"
+                >
+                  <SelectValue placeholder="Seleccionar predicador..." />
+                </SelectTrigger>
+                <SelectContent position="item-aligned">
+                  {collections.map((collection: Collection) => (
+                    <SelectItem key={collection.id} value={String(Number(collection.id))}>
+                      {collection.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
           )}
         />
@@ -162,25 +210,51 @@ export default function NewPreachForm({preachers}:{ preachers: Preacher[] }) {
             </Field>
           )}
         />
-
+        </div>
+        <div className='flex gap-x-4'>
         <FormField
             control={form.control}
-            name="video_url"
+            name="collection_position"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Video url</FormLabel>
+              <FormItem className='w-1/3'>
+                <FormLabel>Posición en la colección</FormLabel>
                 <FormControl>
-                  <Input placeholder="video url" {...field} />
+                  <Input 
+                    type="number"
+                    placeholder="Posición (opcional)" 
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? undefined : Number(value))
+                    }}
+                  />
                 </FormControl>
                 <FormDescription>
-                  Url del video de la predicación
+                  Posición del video en la colección (opcional)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
             />
+        <FormField
+            control={form.control}
+            name="video_id"
+            render={({ field }) => (
+              <FormItem className='w-2/3'>
+                <FormLabel>Video ID</FormLabel>
+                <FormControl>
+                  <Input placeholder="video ID" {...field} />
+                </FormControl>
+                <FormDescription>
+                  ID del video de vimeo
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+            />
+        </div>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Guardar</Button>
       </form>
     </Form>
   )

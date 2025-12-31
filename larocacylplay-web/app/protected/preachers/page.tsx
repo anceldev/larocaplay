@@ -3,7 +3,6 @@ import { getPreachers } from '@/lib/services/preacher'
 import React from 'react'
 import { columns } from './columns'
 
-
 export default async function PreachersPage() {
   const preachers = await getPreachers()
   return (

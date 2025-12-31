@@ -6,4 +6,5 @@ export const preacherRoles = [
   { id: 4, name: 'Profeta' },
   { id: 5, name: 'Supervisor' },
   { id: 6, name: 'Supervisora' },
+  { id: 7, name: 'Equipador'}
 ]

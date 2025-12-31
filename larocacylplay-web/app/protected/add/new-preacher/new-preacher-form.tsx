@@ -1,27 +1,21 @@
 'use client'
-
 import React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '@/components/ui/input'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { DateTimePicker } from '@/components/date-time-picker'
-import { Preacher, PreacherRole } from '@/lib/types'
+import { PreacherRole } from '@/lib/types'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { error } from 'console'
-import { createPreach } from '@/lib/services/preaches'
 import { createNewPreacher } from '@/lib/services/preacher'
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "El título debe tener al menos 2 carácteres" }).max(50),
   preacher_role_id: z.number().min(1, { message: "Debes seleccionar un predicador" }),
 })
-
-
 
 export default function NewPreacherForm({preacherRoles}:{ preacherRoles: PreacherRole[] }) {
   const form = useForm<z.infer<typeof formSchema>>({

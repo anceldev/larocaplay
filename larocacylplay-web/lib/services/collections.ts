@@ -1,21 +1,33 @@
 "use server"
 import { createClient } from "@/lib/supabase/server";
-import { Preach, PreachCollection } from "@/lib/types";
+import { Preach, Collection, ShortCollection } from "@/lib/types";
 
 
-export async function getPreachCollections(): Promise<PreachCollection[]> {
+export async function getPreachCollections(): Promise<Collection[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase.from('preach_collection').select('id, title, description, thumb_id, is_public, collection_type_id(id, name), created_at, updated_at, ended_at');
+  const { data, error } = await supabase.from('collection').select('id, title, description, image_id, is_public, collection_type_id(id, name), created_at, updated_at, ended_at');
   if (error) {
     throw error;
   }
-  return data as unknown as PreachCollection[];
+  console.log(data)
+  return data as unknown as Collection[];
+}
+
+export async function getShortCollections(): Promise<ShortCollection[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+  .from('collection')
+  .select('id, title, description');
+  if (error) {
+    throw error;
+  }
+  return data as unknown as Collection[];
 }
 
 export async function getPreachesForCollection(collectionId: number): Promise<Preach[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase.from('preach_collection_membership')
-  .select('preach:preach_id (id, title, description, date, video_url, preacher:preacher_id(id, name, preacher_role_id(id, name), thumb_id))')
+  const { data, error } = await supabase.from('collection_item')
+  .select('preach:preach_id (id, title, description, date, video_id, preacher:preacher_id(id, name, preacher_role_id(id, name), image_id))')
   .eq('collection_id', collectionId)
   .order('preach(date)', { ascending: true })
 
@@ -33,7 +45,7 @@ export async function getPreachesForCollection(collectionId: number): Promise<Pr
 
 export async function updateCollectionPhoto(collectionId: number, photoId: string): Promise<void> {
   const supabase = await createClient();
-  const { data , error } = await supabase.from('preach_collection').update({ 'thumb_id': photoId }).eq('id', collectionId)
+  const { data , error } = await supabase.from('collection').update({ 'image_id': photoId }).eq('id', collectionId)
   if (error) {
     console.log("Server error", error)
     throw error;

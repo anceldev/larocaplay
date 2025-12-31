@@ -64,6 +64,9 @@ export const columns: ColumnDef<Preach>[] = [
             <DropdownMenuItem asChild>
               <Link href={`/protected/preaches/add-preach-thumb/${preach.id}`}>Añadir foto</Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/protected/preaches/add-to-collection/${preach.id}`}>Añadir a una colección</Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
