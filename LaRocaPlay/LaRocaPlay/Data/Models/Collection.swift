@@ -21,12 +21,13 @@ final class Collection {
     var createdAt: Date?
     var updatedAt: Date?
     var endedAt: Date?
+    var needItemsSync: Bool = true
     
 //    @Relationship(inverse: \Preach.collections) var preaches: [Preach] = []
     @Relationship(deleteRule: .cascade, inverse: \CollectionItem.collection) var items: [CollectionItem] = []
 
     
-    init(id: Int, title: String, desc: String? = nil, imageId: String? = nil, isPublic: Bool, isHomeScreen: Bool, typeName: String, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil) {
+    init(id: Int, title: String, desc: String? = nil, imageId: String? = nil, isPublic: Bool, isHomeScreen: Bool, typeName: String, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, needItemsSync: Bool = true) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -37,6 +38,18 @@ final class Collection {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.endedAt = endedAt
+        self.needItemsSync = needItemsSync
+    }
+    func update(from dto: CollectionDTO) {
+        self.title = dto.title
+        self.desc = dto.description
+        self.imageId = dto.thumbId
+        self.isPublic = dto.isPublic
+        self.isHomeScreen = dto.isHomeScreen
+        self.typeName = dto.collectionType.name
+        self.createdAt = dto.createdAt
+        self.updatedAt = dto.updatedAt
+        self.endedAt = dto.endedAt
     }
 }
 

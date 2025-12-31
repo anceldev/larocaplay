@@ -27,7 +27,6 @@ struct CustomVideoPlayer: UIViewControllerRepresentable {
         controller.allowsPictureInPicturePlayback = true
         controller.canStartPictureInPictureAutomaticallyFromInline = true
         
-        
         // Configurar Audio Session para Background Audio
         setupAudioSession()
         

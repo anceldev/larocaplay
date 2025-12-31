@@ -11,7 +11,7 @@ struct AnonymousView: View {
     @Binding var showAuthSheet: Bool
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "person.circle.fill")
+            Image(systemName: "person.fill")
                 .resizable()
                 .frame(width: 80, height: 80)
                 .foregroundStyle(.gray)
@@ -27,9 +27,10 @@ struct AnonymousView: View {
             Button("Crear cuenta o Iniciar sesión") {
                 showAuthSheet = true
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.capsuleButton(.customRed, textColor: .white))
         }
-        .padding()
+        .padding(18)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .enableInjection()
     }
 #if DEBUG

@@ -47,9 +47,9 @@ struct PreachesView: View {
                 }
                 else {
                     ScrollView(.vertical) {
-//                        ItemsList(preaches: repository.preaches)
+//                        CollectionItemsList(preaches: repository.preaches)
                         
-//                        ItemsList(preaches: [], listView: .grid)
+//                        CollectionItemsList(preaches: [], listView: .grid)
                     }
                     .scrollIndicators(.hidden)
                 }

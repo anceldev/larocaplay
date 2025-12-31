@@ -28,23 +28,11 @@ struct OnboardingScreen: View {
                 Spacer()
                 NavigationLink {
                     AuthenticationView()
+                        .navigationBarBackButtonHidden()
                 } label: {
                     Text("Iniciar sesión")
                 }
                 .buttonStyle(.capsuleButton(.customRed, textColor: .white))
-                Button {
-                    print("Apple signin")
-                } label: {
-                    Text("Apple signin")
-                }
-                .buttonStyle(.capsuleButton(.black, textColor: .white))
-                Button {
-                    print("Google signin")
-                } label: {
-                    Text("Google SignIn")
-                }
-                .buttonStyle(.capsuleButton(.white, textColor: .customBlack))
-                
                 Button {
                     signinAsGuest()
                 } label: {

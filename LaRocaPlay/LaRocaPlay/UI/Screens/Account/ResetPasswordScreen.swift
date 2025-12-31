@@ -13,42 +13,7 @@ struct ResetPasswordScreen: View {
     @Binding var authMode: AuthMode
     var body: some View {
         VStack(spacing: 32) {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
-                    Text("¿Has olvidado tu contraseña?")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(.dirtyWhite)
-                        .multilineTextAlignment(.center)
-                    Text("Restablecer contraseña")
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.center)
-                }
-            }
-            VStack(alignment: .leading, spacing: 24) {
-                HStack(spacing: 0) {
-                    Text("Correo")
-                        .foregroundStyle(.white)
-                    Text("*")
-                        .foregroundStyle(.customRed)
-                }
-                .font(.system(size: 14))
-                TextField("email", text: $email, prompt:Text("Correo electrónico").foregroundStyle(.dirtyWhite.opacity(0.3)))
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .foregroundStyle(.white)
-                    .tint(.white)
-                    .submitLabel(.send)
-                    .textFieldStyle(.customTextFieldStyle)
-            }
-            VStack {
-                Button {
-                    print("Send password request")
-                } label: {
-                    Text("Restablecer contraseña")
-                }
-                .buttonStyle(.capsuleButton(.customRed))
-            }
+            ResetPasswordForm(email: $email)
             VStack(spacing: 16) {
                 VStack {
                     Button {
@@ -67,8 +32,9 @@ struct ResetPasswordScreen: View {
                 .foregroundStyle(.dirtyWhite)
             }
         }
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .background(.customBlack)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(Theme.Padding.normal)
+        .background(.customBlack)
         .enableInjection()
         
     }

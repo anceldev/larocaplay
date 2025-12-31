@@ -29,8 +29,31 @@ struct AuthenticationView: View {
     @State private var isLoading = false
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
+                Button {
+                    withAnimation(.easeIn) {
+                        switch authMode {
+                        case .login:
+                            break
+                        case .signup, .resetPassword:
+                            self.authMode = .login
+                        }
+                    }
+                } label: {
+                    Circle()
+                        .fill(Color.dirtyWhite.opacity(0.4))
+                        .frame(width: 32, height: 32)
+                        .overlay(alignment: .center) {
+                            Image(systemName: "chevron.left")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 10)
+                                .foregroundStyle(.customBlack)
+                        }
+                }
+                .opacity(self.authMode == .login ? 0 : 1)
+                .disabled(self.authMode == .login)
                 Spacer()
                 Button {
                     dismiss()
@@ -47,24 +70,56 @@ struct AuthenticationView: View {
                         }
                 }
             }
-            NavigationStack {
-                SignInForm()
-                    .background(.customBlack)
+            Spacer()
+            VStack(spacing: 32) {
+                VStack {
+                    switch authMode {
+                    case .login:
+                        SignInForm(authMode: $authMode)
+                    case .signup:
+                        SignUpForm(authMode: $authMode)
+                    case .resetPassword:
+                        ResetPasswordScreen(authMode: $authMode)
+                    }
+                }
+                VStack(spacing: 24) {
+                    HStack {
+                        Rectangle()
+                            .frame(height: 1)
+                            .background(.dirtyWhite)
+                            .frame(maxWidth: 70)
+                        Text("O inicia sesión con")
+                        Rectangle()
+                            .frame(height: 1)
+                            .background(.dirtyWhite)
+                            .frame(maxWidth: 70)
+                    }
+                    HStack(spacing: 24) {
+                        Button {
+                            print("Apple signin")
+                        } label: {
+                            Image(.logoSIWALogoOnlyBlack)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 44)
+                                .mask(RoundedRectangle(cornerRadius: 12))
+                        }
+                        Button {
+                            print("Google signin")
+                        } label: {
+                            Image(.iosNeutralRdNa)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 44)
+                        }
+                    }
+                }
+                .opacity(self.authMode == .resetPassword ? 0 : 1)
             }
-//            VStack(spacing: 24) {
-//                if let errorMessage {
-//                    Text(errorMessage)
-//                        .foregroundStyle(.orange)
-//                        .font(.system(size: 12))
-//                }
-//                Button {
-//                    startAsGuest()
-//                } label: {
-//                    Text("Empezar como invitado")
-//                }
-//            }
+            Spacer()
         }
         .frame(maxHeight: .infinity)
+//        .frame(maxHeight: .infinity)
         .padding(18)
         .background(.customBlack)
         .enableInjection()

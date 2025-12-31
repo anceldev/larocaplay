@@ -31,7 +31,7 @@ struct ThumbImageLoader: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(16/9, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+//                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
             }
             if let title, self.image == nil {
                 Text(title)
@@ -48,7 +48,8 @@ struct ThumbImageLoader: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .background(.blue)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .aspectRatio(16/9, contentMode: .fit)
         .onAppear {
             loadImage()

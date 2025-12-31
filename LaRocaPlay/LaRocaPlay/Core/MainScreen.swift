@@ -26,7 +26,8 @@ struct MainScreen: View {
                             case .home:
                                 HomeView()
                             case .preaches:
-                                PreachesScreen(collectionId: 1)
+//                                PreachesScreen(collectionId: 1)
+                                CollectionDetailScreen(collectionId: 1, order: .date, backButton: false)
                             case .training:
                                 DiscipleshipListScreen()
                             case .karaoke:
@@ -69,24 +70,26 @@ struct MainScreen: View {
         case .account:
             AccountScreen()
                 .navigationBarBackButtonHidden()
-        case .userDetail:
-            ProfileScreen()
+        case .userDetails(let profile):
+            UserDetailsScreen(userProfile: profile)
                 .navigationBarBackButtonHidden()
         case .postDetail(let id):
             Text("Post details view: \(id)")
         case .congresses:
             CongressesScreen()
-        case .series:
-            SeriesScreen()
-                .navigationBarBackButtonHidden()
         case .serie(let serieId):
             SerieScreen(serieId: serieId)
+        case .collections(let typeName, let title):
+            CollectionsScreen(typeName: typeName, title: title)
+                .navigationBarBackButtonHidden()
         case .collection(let id):
-            CollectionDetailScreen(collectionId: id)
+            CollectionDetailScreen(collectionId: id, order: .position)
                 .navigationBarBackButtonHidden()
         case .subscription:
             SubscriptionScreen()
                 .navigationBarBackButtonHidden()
+        case .resetPassword:
+            ResetPasswordScreen(authMode: .constant(.resetPassword))
         }
     }
     

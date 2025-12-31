@@ -30,7 +30,7 @@ final class LibraryService {
             .value
     }
     
-    func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [CollectionPreachResponseDTO] {
+    func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
             .from("preach_collection_membership")
             .select("""
@@ -57,6 +57,32 @@ final class LibraryService {
             .execute()
             .value
     }
+    func fetchTeachingsWithoutLimit(collectionId: Int) async throws -> [CollectionItemResponseDTO] {
+        try await supabaseClient
+            .from("preach_collection_membership")
+            .select("""
+                preach: preach_id (
+                    id,
+                    title,
+                    description,
+                    date,
+                    thumb_id,
+                    video_url,
+                    updated_at,
+                    preacher: preacher_id (
+                        id,
+                        name,
+                        preacher_role_id(id, name),
+                        thumb_id
+                        )
+                ),
+                position,
+                id
+                """)
+            .eq("collection_id", value: collectionId)
+            .execute()
+            .value
+    }
     
     func fetchAllPreachers() async throws -> [PreacherDTO] {
         try await supabaseClient
@@ -70,8 +96,8 @@ final class LibraryService {
             .execute()
             .value
     }
-    func fetchCollectionTypes() async throws -> [PreachCollectionType] {
-        let data: [PreachCollectionType] = try await supabaseClient
+    func fetchCollectionTypes() async throws -> [CollectionTypeResponseDTO] {
+        let data: [CollectionTypeResponseDTO] = try await supabaseClient
             .from("collection_type")
             .select("*")
             .execute()

@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 struct MusicScreen: View {
-    @Environment(MusicVideoRepository.self) var musicVideoRepository
+//    @Environment(MusicVideoRepository.self) var musicVideoRepository
     @State private var isPlayed: Int? = nil
     //    @State private var videoURL: URL? = nil
     
@@ -41,20 +41,20 @@ struct MusicScreen: View {
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(.white)
             
-            ScrollView(.vertical) {
-                if musicVideoRepository.songs.count > 0 {
-                    VStack(spacing: 32) {
-                        ForEach(musicVideoRepository.songs) { song in
-                            VStack {
-                                YoutubeEmbedView(videoID: song.videoUrl, playlistID: nil)
-                                    .frame(height: 220)
-                                    .cornerRadius(12)
-                                    .shadow(radius: 4)
-                            }
-                        }
-                    }
-                }
-            }
+//            ScrollView(.vertical) {
+//                if musicVideoRepository.songs.count > 0 {
+//                    VStack(spacing: 32) {
+//                        ForEach(musicVideoRepository.songs) { song in
+//                            VStack {
+//                                YoutubeEmbedView(videoID: song.videoUrl, playlistID: nil)
+//                                    .frame(height: 220)
+//                                    .cornerRadius(12)
+//                                    .shadow(radius: 4)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
             .scrollIndicators(.hidden)
         }
         .frame(maxWidth: .infinity)

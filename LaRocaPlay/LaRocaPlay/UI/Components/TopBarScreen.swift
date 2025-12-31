@@ -14,7 +14,7 @@ struct TopBarScreen: View {
 //    let storageCollection: StorageCollections
     
     init(title: String, _ backButton: Bool = false) {
-        self.title = title
+        self.title = title.truncated()
         self.backButton = backButton
     }
 
@@ -25,10 +25,13 @@ struct TopBarScreen: View {
                     Button {
                         router.popNavigation()
                     } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .foregroundStyle(.white)
-                        }
+                        Circle()
+                            .tint(.customGray)
+                            .frame(width: 32)
+                            .overlay(alignment: .center) {
+                                Image(systemName: "chevron.left")
+                                    .foregroundStyle(.customBlack)
+                            }
                     }
                 }
                 Spacer()
@@ -39,6 +42,10 @@ struct TopBarScreen: View {
             }
         }
         .padding(.top, 14)
-        .padding(.bottom, 12)
+        .padding(.bottom, 8)
+        .enableInjection()
     }
+#if DEBUG
+@ObserveInjection var forceRedraw
+#endif
 }

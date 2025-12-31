@@ -14,7 +14,7 @@ import SwiftUI
 
 @main
 struct LaRocaPlayApp: App {
-    @State private var musicVideoRepository = MusicVideoRepository()
+//    @State private var musicVideoRepository = MusicVideoRepository()
     @State private var authManager: AuthManager
     @State private var libManager: LibraryManager
     
@@ -24,6 +24,7 @@ struct LaRocaPlayApp: App {
     init() {
         Purchases.logLevel = .debug
         Purchases.configure(withAPIKey: Secrets.$testStore)
+        let audioSession = AVAudioSession.sharedInstance()
         do {
             let schema = Schema([
                 UserProfile.self,
@@ -44,8 +45,8 @@ struct LaRocaPlayApp: App {
             let libManager = LibraryManager(service: LibraryService(), context: self.container.mainContext)
             self._libManager = State(initialValue: libManager)
             do {
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-                try AVAudioSession.sharedInstance().setActive(true)
+                try audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
+                try audioSession.setActive(true)
             } catch {
                 print("ERROR: Error configurando la sesión de audio \(error)")
             }
@@ -72,7 +73,7 @@ struct LaRocaPlayApp: App {
                 }
                 .environment(authManager)
                 .environment(libManager)
-                .environment(musicVideoRepository)
+//                .environment(musicVideoRepository)
                 .modelContainer(container)
             }
             .preferredColorScheme(.dark)

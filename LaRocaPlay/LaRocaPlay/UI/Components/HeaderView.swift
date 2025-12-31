@@ -15,7 +15,19 @@ struct HeaderView: View {
     let storageCollection: StorageCollections
     
     var body: some View {
-        ZStack(alignment:.topLeading) {
+        VStack {
+//            VStack(alignment: .leading) {
+//                Button {
+//                    router.popNavigation()
+//                } label: {
+//                    HStack {
+//                        Image(systemName: "chevron.left")
+//                            .foregroundStyle(.customRed)
+//                    }
+//                }
+//            }
+//            .padding(.top, 16)
+//            .padding(.leading, 16)
             //            ThumbImageLoader(storageCollection: storageCollection)
             ZStack {
                 Color.gray
@@ -33,22 +45,13 @@ struct HeaderView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .clipShape(UnevenRoundedRectangle(topLeadingRadius: 20, topTrailingRadius: 20))
+//            .background(RoundedRectangle(cornerRadius: 20))
+            .mask(RoundedRectangle(cornerRadius: Theme.Radius.player))
             .aspectRatio(16/9, contentMode: .fit)
             .onAppear {
                 loadImage()
             }
-            VStack(alignment: .leading) {
-                Button {
-                    router.popNavigation()
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .foregroundStyle(.customRed)
-                    }
-                }
-            }
-            .padding(6)
+            
         }
         
         .enableInjection()

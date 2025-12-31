@@ -13,13 +13,14 @@ enum Destination: DestinationType {
     case preacher(preacher: PreacherDTO)
     case list
     case account
-    case userDetail
+    case userDetails(UserProfile)
     case postDetail(id: String)     // Different from generic detail
     case congresses
-    case series
+    case collections(String, String)
     case serie(id: Int)
     case collection(id: Int)
     case subscription
+    case resetPassword
     //    case auth(user: User)
     //    case auth(user: User?)
     
@@ -32,7 +33,8 @@ enum Destination: DestinationType {
         switch (previousComponent, path) {
         case ("users", "preach"):
             let id = parameters["id"] ?? "unknown"
-            return .userDetail
+//            return .userDetails
+            return .account
         case ("posts", "preach"):
             let id = parameters["id"] ?? "unknown"
             return .postDetail(id: id)

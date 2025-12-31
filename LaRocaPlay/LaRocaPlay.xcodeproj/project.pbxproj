@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B405472A2F045FC800B4C80D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = B40547292F045FC800B4C80D /* GoogleSignIn */; };
+		B405472C2F045FC800B4C80D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = B405472B2F045FC800B4C80D /* GoogleSignInSwift */; };
 		B44248D32E7325350061FA5E /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = B44248D22E7325350061FA5E /* Inject */; };
 		B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = B4747F422E4BA1B200F6ACE5 /* AppRouter */; };
 		B484D3C62EBEA99C00911E17 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = B484D3C52EBEA99C00911E17 /* RevenueCat */; };
@@ -18,12 +20,16 @@
 		B48846022E461E52006DB382 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = B48846012E461E52006DB382 /* Realtime */; };
 		B48846042E461E52006DB382 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = B48846032E461E52006DB382 /* Storage */; };
 		B48846062E461E52006DB382 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = B48846052E461E52006DB382 /* Supabase */; };
+		B492E0A12F03F2C9007F4C2B /* LaRocacylPlay.storekit in Resources */ = {isa = PBXBuildFile; fileRef = B492E09C2F03F2C9007F4C2B /* LaRocacylPlay.storekit */; };
+		B492E2A12F040C7F007F4C2B /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = B492E2A02F040C7F007F4C2B /* StoreKitTestCertificate.cer */; };
 		B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */ = {isa = PBXBuildFile; productRef = B49DA99D2E50A88800B0E571 /* ConfidentialKit */; };
 		B4A75FDD2E3D2BD5005568C4 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = B4A75FDC2E3D2BD5005568C4 /* Appwrite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B484D3CC2EBEA9D500911E17 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		B492E09C2F03F2C9007F4C2B /* LaRocacylPlay.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = LaRocacylPlay.storekit; sourceTree = "<group>"; };
+		B492E2A02F040C7F007F4C2B /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = StoreKitTestCertificate.cer; sourceTree = "<group>"; };
 		B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaRocaPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -65,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B405472C2F045FC800B4C80D /* GoogleSignInSwift in Frameworks */,
 				B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */,
 				B48846062E461E52006DB382 /* Supabase in Frameworks */,
 				B48846042E461E52006DB382 /* Storage in Frameworks */,
@@ -78,6 +85,7 @@
 				B48846022E461E52006DB382 /* Realtime in Frameworks */,
 				B484D3CD2EBEA9D500911E17 /* StoreKit.framework in Frameworks */,
 				B4A75FDD2E3D2BD5005568C4 /* Appwrite in Frameworks */,
+				B405472A2F045FC800B4C80D /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +106,8 @@
 				B4A75FB92E3D27D0005568C4 /* LaRocaPlay */,
 				B484D3CB2EBEA9D500911E17 /* Frameworks */,
 				B4A75FB82E3D27D0005568C4 /* Products */,
+				B492E09C2F03F2C9007F4C2B /* LaRocacylPlay.storekit */,
+				B492E2A02F040C7F007F4C2B /* StoreKitTestCertificate.cer */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,6 +152,8 @@
 				B44248D22E7325350061FA5E /* Inject */,
 				B484D3C52EBEA99C00911E17 /* RevenueCat */,
 				B484D3C72EBEA99C00911E17 /* RevenueCatUI */,
+				B40547292F045FC800B4C80D /* GoogleSignIn */,
+				B405472B2F045FC800B4C80D /* GoogleSignInSwift */,
 			);
 			productName = LaRocaPlay;
 			productReference = B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */;
@@ -179,6 +191,7 @@
 				B49DA99C2E50A88800B0E571 /* XCRemoteSwiftPackageReference "swift-confidential" */,
 				B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */,
 				B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
+				B40547282F045FC800B4C80D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B4A75FB82E3D27D0005568C4 /* Products */;
@@ -195,6 +208,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B492E0A12F03F2C9007F4C2B /* LaRocacylPlay.storekit in Resources */,
+				B492E2A12F040C7F007F4C2B /* StoreKitTestCertificate.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +445,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B40547282F045FC800B4C80D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 		B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
@@ -489,6 +512,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B40547292F045FC800B4C80D /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B40547282F045FC800B4C80D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		B405472B2F045FC800B4C80D /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B40547282F045FC800B4C80D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		B44248D22E7325350061FA5E /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */;

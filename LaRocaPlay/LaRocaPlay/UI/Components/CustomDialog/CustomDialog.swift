@@ -74,25 +74,30 @@ struct CustomDialog: View {
                     .resizable()
                     .frame(width: 32, height: 32)
                     .fontWeight(.light)
-                    .foregroundStyle(.bw50)
+                    .foregroundStyle(.white)
             }
             VStack(spacing: 8) {
                 Text(dialogType.title)
-                    .font(.hauora(size: 16, weight: .bold))
+//                    .font(.hauora(size: 16, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                 Text(dialogType.confirmationText)
-                    .font(.hauora(size: 14))
+//                    .font(.hauora(size: 14))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .multilineTextAlignment(.center)
                 Text(dialogType.question)
-                    .font(.hauora(size: 14, weight: .semibold))
+//                    .font(.hauora(size: 14, weight: .semibold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                 if !dialogType.details.isEmpty {
                     VStack(spacing: 4) {
                         Text(dialogType.details)
-                            .font(.hauora(size: 12))
+//                            .font(.hauora(size: 12))
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
                             .multilineTextAlignment(.center)
                         Link(destination: URL(string: "https://www.themoviedb.org/settings/account")!) {
                             Text("TMDB")
-                                .foregroundStyle(.blue1)
-                                .font(.hauora(size: 12))
+                                .foregroundStyle(.blue)
+//                                .font(.hauora(size: 12))
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
                         }
                     }
                 }
@@ -110,12 +115,14 @@ struct CustomDialog: View {
                     Text("Accept")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.capsuleButton(height: 40, fontSize: 16))
+//                .buttonStyle(.capsuleButton(height: 40, fontSize: 16))
+                .buttonStyle(.borderedProminent)
             }
         }
         .padding(24)
         .frame(maxWidth: 300)
-        .background(.bw20)
+//        .background(.bw20)
+        .background(.customBlack)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }

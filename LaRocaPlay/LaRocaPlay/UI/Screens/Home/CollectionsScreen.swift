@@ -12,10 +12,6 @@ struct CollectionsScreen: View {
     @Environment(AppRouter.self) var router
     
     @State private var errorMessage: String? = nil
-    
-//    @Query(filter: #Predicate<Collection>{ collection in
-//        collection.typeName == "Serie"
-//    }, sort: \Collection.title, order: .forward) private var series: [Collection]
     @Query private var series: [Collection]
     let title: String
     

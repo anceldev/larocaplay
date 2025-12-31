@@ -14,11 +14,10 @@ struct AccountCard: View {
     
     var body: some View {
         VStack(spacing: 12) {
-            Image(.user)
+            Image(.avatar)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 72)
-                .padding(16)
+                .frame(width: 88)
                 .background(.white.opacity(0.3))
                 .clipShape(.circle)
             VStack(alignment: .center, spacing: 6) {
@@ -30,9 +29,9 @@ struct AccountCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding()
+        .padding(Theme.Padding.normal)
         .background(.black.opacity(0.45))
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .enableInjection()
     }
     

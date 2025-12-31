@@ -12,7 +12,7 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
     var title: String
     var description: String?
     var thumbId: String?
-    var collectionType: PreachCollectionType
+    var collectionType: CollectionTypeResponseDTO
     var isPublic: Bool
     var isHomeScreen: Bool
     var createdAt: Date?
@@ -32,7 +32,7 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
         case endedAt = "ended_at"
     }
     
-    init(id: Int, title: String, description: String? = nil, thumbId: String? = nil, isPublic: Bool, isHomeScreen: Bool = false, collectionType: PreachCollectionType, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, preaches: [PreachDTO] = []) {
+    init(id: Int, title: String, description: String? = nil, thumbId: String? = nil, isPublic: Bool, isHomeScreen: Bool = false, collectionType: CollectionTypeResponseDTO, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, preaches: [PreachDTO] = []) {
         self.id = id
         self.title = title
         self.description = description
@@ -54,7 +54,7 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
         self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
         self.isPublic = try container.decode(Bool.self, forKey: .isPublic)
         self.isHomeScreen = try container.decode(Bool.self, forKey: .isHomeScreen)
-        self.collectionType = try container.decode(PreachCollectionType.self, forKey: .collectionType)
+        self.collectionType = try container.decode(CollectionTypeResponseDTO.self, forKey: .collectionType)
         self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
         self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
         self.endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
@@ -78,7 +78,7 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
     }
 }
 //
-//struct PreachCollectionType: Identifiable, Codable, Hashable {
+//struct CollectionTypeResponseDTO: Identifiable, Codable, Hashable {
 //    let id: Int
 //    let name: String
 //}

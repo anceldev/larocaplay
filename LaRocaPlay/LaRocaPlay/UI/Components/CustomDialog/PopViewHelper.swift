@@ -9,7 +9,7 @@ import SwiftUI
 
 fileprivate struct PopViewHelper<ViewContent: View>: ViewModifier {
     @Binding var isPresented: Bool
-    var onDismiss: () -> Void
+//    var onDismiss: () -> Void
     @ViewBuilder var viewContent: ViewContent
     @State private var presentFullScreenCover: Bool = false
     @State private var animateView: Bool = false
@@ -26,7 +26,8 @@ fileprivate struct PopViewHelper<ViewContent: View>: ViewModifier {
         let screenHeight = screenSize.height
         let animateView = animateView
         content
-            .fullScreenCover(isPresented: $presentFullScreenCover, onDismiss: onDismiss) {
+//            .fullScreenCover(isPresented: $presentFullScreenCover, onDismiss: onDismiss) {
+            .fullScreenCover(isPresented: $presentFullScreenCover, onDismiss: { isPresented = false } ) {
                 ZStack {
                     viewContent
                         .visualEffect { content, proxy in
@@ -76,8 +77,10 @@ fileprivate struct PopViewHelper<ViewContent: View>: ViewModifier {
 
 extension View {
     @ViewBuilder
-    func popView<Content: View>(isPresented: Binding<Bool>, onDismiss: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) -> some View {
+//    func popView<Content: View>(isPresented: Binding<Bool>, onDismiss: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) -> some View {
+    func popView<Content: View>(isPresented: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> some View {
         self
-            .modifier(PopViewHelper(isPresented: isPresented, onDismiss: onDismiss, viewContent: content))
+//            .modifier(PopViewHelper(isPresented: isPresented, onDismiss: onDismiss, viewContent: content))
+            .modifier(PopViewHelper(isPresented: isPresented, viewContent: content))
     }
 }

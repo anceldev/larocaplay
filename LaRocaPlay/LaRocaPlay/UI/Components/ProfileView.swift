@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    var account: User
+//    var account: User
     var body: some View {
         // TODO: Datos del usuario
         // TODO: Datos de membresía del usuario

@@ -19,11 +19,18 @@ struct CollectionCard: View {
                 router.navigateTo(.collection(id: collection.id))
             } label: {
                 ThumbImageLoader(title: collection.title, storageCollection: .collections(collection.imageId))
+                    .blur(radius: 1)
+                    .overlay(alignment: .center) {
+                        Text(collection.title)
+                            .foregroundStyle(.white)
+                            .font(.system(size: 24, weight: .semibold, design: .rounded))
+                            .shadow(color: .black.opacity(0.8), radius: 5, x: 0, y: 0)
+                    }
             }
         }
-        .padding(6)
-        .background(.dirtyWhite)
-        .clipShape(RoundedRectangle(cornerRadius: 26))
+//        .padding(6)
+        .background(.blue.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .enableInjection()
     }
     

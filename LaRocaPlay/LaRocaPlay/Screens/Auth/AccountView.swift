@@ -13,7 +13,7 @@ struct AccountView: View {
 //    @Environment(AuthService.self) var auth
 //    @Environment(CollectionRepository.self) var collectionsRepository
     @Environment(AuthManager.self) var authManager
-    @Binding var account: User?
+//    @Binding var account: User?
     @Binding var authState: AuthState
     @State private var errorMessage: String? = nil
     @State private var showSubscriptionSheet = false

@@ -1,5 +1,5 @@
 //
-//  SeriesScreen.swift
+//  CollectionsScreen.swift
 //  LaRocaPlay
 //
 //  Created by Ancel Dev account on 12/10/25.
@@ -28,7 +28,7 @@ struct SerieScreen: View {
 //            .padding(.vertical, 8)
 //            VStack(spacing: 16) {
 //                ScrollView(.vertical) {
-//                    ItemsList(preaches: lessons, cols: 1)
+//                    CollectionItemsList(preaches: lessons, cols: 1)
 //                }
 //                .padding(.horizontal, 20)
 //                .scrollIndicators(.hidden)
@@ -57,5 +57,5 @@ struct SerieScreen: View {
 }
 
 #Preview {
-    SeriesScreen()
+    CollectionsScreen()
 }

@@ -29,7 +29,6 @@ struct HomeView: View {
     var body: some View {
         VStack(spacing: 16) {
             TopBar()
-//                .border(.pink, width: 1)
             VStack {
                 ScrollView(.vertical) {
                     VStack(spacing: 24) {
@@ -100,7 +99,7 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .enableInjection()
     }
-    #if DEBUG
+#if DEBUG
     @ObserveInjection var forceRedraw
-    #endif
+#endif
 }

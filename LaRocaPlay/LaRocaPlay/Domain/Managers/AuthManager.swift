@@ -60,6 +60,7 @@ final class AuthManager {
     //    var currentUserProfile: ProfileDTO?
     var currentUserProfile: UserProfile?
     var navigationState: AuthNavigationState = .loading
+    
 
     private var isInitialized = false
     private var modelContext: ModelContext?
@@ -164,6 +165,7 @@ final class AuthManager {
             try? await refreshProfile()
             self.navigationState = .authorized
         } catch {
+            print(error)
             handleError(.unknown("Credenciales incorrectass"))
             self.navigationState = .onboarding
         }

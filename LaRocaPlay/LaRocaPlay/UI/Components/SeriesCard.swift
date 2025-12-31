@@ -11,14 +11,12 @@ struct SeriesCard: View {
     @Environment(AppRouter.self) var router
     var body: some View {
         Button {
-            router.navigateTo(.series)
+            router.navigateTo(.collections("Serie", "Series"))
         } label: {
             Image(.bgSeries)
                 .resizable()
                 .scaledToFill()
-                .frame(maxWidth: .infinity)
-                .frame(height: 100)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .blur(radius: 2)
                 .overlay {
                     Text("Series")
                         .font(.system(size: 24, weight: .semibold, design: .rounded))
@@ -26,6 +24,10 @@ struct SeriesCard: View {
                         .shadow(color: .black, radius: 5, x: 0, y: 0)
                 }
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 100)
+        .background(.brown)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .enableInjection()
     }
 #if DEBUG

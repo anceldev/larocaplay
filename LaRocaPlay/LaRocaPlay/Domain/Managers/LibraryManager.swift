@@ -36,8 +36,9 @@ final class LibraryManager {
             
             
             let collectionDTOs = try await service.fetchCollections()
-            collectionDTOs.forEach { context.insert($0.toModel()) }
-            try context.save()
+//            collectionDTOs.forEach { context.insert($0.toModel()) }
+//            try context.save()
+            try await syncCollections(dtos: collectionDTOs)
 
             let preachesDTOs = try await service.fetchTeachings(collectionId: mainCollectionId, limit: 5, offset: 0)
             try syncPreaches(dtos: preachesDTOs, into: mainCollectionId)
@@ -56,77 +57,120 @@ final class LibraryManager {
         }
     }
     
+
     @MainActor
-    func syncCollections(dtos: [CollectionDTO]) throws {
-        let ids = dtos.map { $0.id }
-        let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ ids.contains($0.id) })
-        let existingCollections = try context.fetch(descriptor)
+    func syncCollections(dtos: [CollectionDTO]) async throws {
+        let allIds = dtos.map { $0.id }
+        let descriptor = FetchDescriptor<Collection>()
+        let localCollections = try context.fetch(descriptor)
+        
+        // Borrado de colecciones que no están en el server
+        let serverIds = Set(allIds)
+        var activeCollectionsDict: [Int : Collection] = [:]
+        
+        for localCollection in localCollections {
+            if !serverIds.contains(localCollection.id) {
+                context.delete(localCollection)
+            } else {
+                activeCollectionsDict[localCollection.id] = localCollection
+            }
+        }
+        
+        for dto in dtos {
+            if let existing = activeCollectionsDict[dto.id] {
+                if let serverDate = dto.updatedAt,
+                   let localDate = existing.updatedAt,
+                   serverDate > localDate {
+                    existing.update(from: dto)
+                    existing.needItemsSync = true
+                }
+            } else {
+                let newCollection = dto.toModel()
+                newCollection.needItemsSync = true
+                context.insert(newCollection)
+            }
+        }
+        if context.hasChanges {
+            try context.save()
+        }
     }
     
 
     
     @MainActor
-    private func syncPreaches(dtos: [CollectionPreachResponseDTO], into collectionId: Int) throws {
+    private func syncPreaches(dtos: [CollectionItemResponseDTO], into collectionId: Int) throws {
         let preacherDescriptor = FetchDescriptor<Preacher>()
-        let preachers = try context.fetch(preacherDescriptor)
+        let allPreachers = try context.fetch(preacherDescriptor)
+        let preachersDict = Dictionary(uniqueKeysWithValues: allPreachers.map({ ($0.id, $0) }))
         
         let collectionDescriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.id == collectionId })
-        let collection = try? context.fetch(collectionDescriptor).first
+        let collection = try context.fetch(collectionDescriptor).first
         
-        guard let collection, !preachers.isEmpty else {
+        guard let collection, !preachersDict.isEmpty else {
             print("DEBUG: No hay preachers o colección todavia")
             return
         }
+        
+        let incomingPreachIds = dtos.map { $0.preach.id }
+        let incomingLinkIds = dtos.map { $0.id }
+        let serverLinkIds = Set(incomingLinkIds)
+        
+        let existingPreaches = try context.fetch(FetchDescriptor<Preach>(predicate: #Predicate<Preach>{ incomingPreachIds.contains($0.id) }))
+        
+        let preachesDict = Dictionary(uniqueKeysWithValues: existingPreaches.map({ ($0.id, $0) }))
+        
+        var activeLinksDict: [Int : CollectionItem] = [:]
+        
+        for localItem in collection.items {
+            if !serverLinkIds.contains(localItem.id) {
+                context.delete(localItem)
+            } else {
+                activeLinksDict[localItem.id] = localItem
+            }
+        }
+        
         for dto in dtos {
-            
-            let preachId = dto.preach.id
-            let preachDescriptor = FetchDescriptor<Preach>(predicate: #Predicate<Preach>{ $0.id == preachId })
-            let existingPreach = try? context.fetch(preachDescriptor).first
-            
             let targetPreach: Preach
-            if let localPreach = existingPreach {
+            if let localPreach = preachesDict[dto.preach.id] {
                 if let remoteDate = dto.preach.updatedAt,
-                    let localDate = localPreach.updatedAt,
-                    remoteDate > localDate {
-                    print("DEBUG: Actualizando contenido de predica")
+                   let localDate = localPreach.updatedAt,
+                   remoteDate > localDate {
                     localPreach.update(from: dto.preach)
                 }
                 targetPreach = localPreach
             } else {
-                print("DEBUG: Insertando nueva predica")
-                let newPreach = dto.preach.toModel()
-                context.insert(newPreach)
-                targetPreach = newPreach
+                targetPreach = dto.preach.toModel()
+                context.insert(targetPreach)
             }
-            targetPreach.preacher = preachers.first(where: { $0.id == dto.preach.preacher.id })
-        
             
-            let linkId = dto.id
-            let descriptor = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.id == linkId })
-            let existingLink = try? context.fetch(descriptor).first
+            targetPreach.preacher = preachersDict[dto.preach.preacher.id]
             
-            if let link = existingLink {
+            
+            // MAnejo de links
+            if let link = activeLinksDict[dto.id] {
                 link.position = dto.position ?? 0
                 link.preach = targetPreach
             } else {
-                let newLink = CollectionItem(id: linkId, position: dto.position ?? 0)
+                let newLink = CollectionItem(id: dto.id, position: dto.position ?? 0)
                 newLink.collection = collection
                 newLink.preach = targetPreach
                 context.insert(newLink)
             }
         }
-        try context.save()
-    }
-    
-    @MainActor
-    func syncSpecificCollection(id: Int) async {
-        do {
-            let dtos = try await service.fetchTeachings(collectionId: id, limit: 20, offset: 0)
-            try syncPreaches(dtos: dtos, into: id)
-        } catch {
-            print("ERROR: Error en sync collection \(error)")
+        if context.hasChanges {
+            try context.save()
         }
     }
+    
+//    @MainActor
+//    func syncSpecificCollection(id: Int) async {
+//        do {
+//            let dtos = try await service.fetchTeachings(collectionId: id, limit: 20, offset: 0)
+//            try syncPreaches(dtos: dtos, into: id)
+//        } catch {
+//            print("ERROR: Error en sync collection \(error)")
+//        }
+//    }
     
     @MainActor
     func getValidVideoUrl(for preach: Preach) async throws -> URL {
@@ -142,6 +186,16 @@ final class LibraryManager {
         )
         try context.save()
         return URL(string: response.videoUrl)!
+    }
+    
+    @MainActor
+    func syncCollectionItems(for collection: Collection) async throws {
+        guard collection.needItemsSync else { return }
+        let targetID = collection.id
+        let itemDTOs = try await service.fetchTeachingsWithoutLimit(collectionId: targetID)
+        try syncPreaches(dtos: itemDTOs, into: targetID)
+        collection.needItemsSync = false
+        try context.save()
     }
 }
 

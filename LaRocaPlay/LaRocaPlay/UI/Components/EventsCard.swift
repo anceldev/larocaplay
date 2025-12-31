@@ -13,7 +13,7 @@ struct EventsCard: View {
     var body: some View {
         VStack {
             Button {
-                router.navigateTo(.congresses)
+                router.navigateTo(.collections("Congreso", "Congresos"))
             } label: {
                 ZStack {
                     Image(.bgCongresses)
@@ -32,7 +32,7 @@ struct EventsCard: View {
         .frame(maxWidth: .infinity)
         .frame(minHeight: 200)
         .background(.indigo)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .enableInjection()
     }
     

@@ -23,12 +23,15 @@ struct PreachesScreen: View {
     @Query(filter: #Predicate<CollectionItem> { item in
         item.collection?.id == 1
     }, sort: \CollectionItem.preach?.date, order: .reverse) private var items: [CollectionItem]
-    
+
     var filteredItems: [CollectionItem] {
         if searchQuery.isEmpty {
-            return items
+            return self.items
+        } else {
+            return self.items.filter {
+                $0.preach?.title.lowercased().contains(searchQuery.lowercased()) ?? false
+            }
         }
-        return items.filter { $0.preach?.title.contains(searchQuery.lowercased()) ?? false }
     }
     
     var body: some View {
@@ -50,7 +53,7 @@ struct PreachesScreen: View {
                 ScrollView(.vertical) {
                     LazyVStack {
                         VStack {
-                            ItemsList(items: Array(filteredItems.dropFirst()), listView: listView) // For debug
+                            CollectionItemsList(items: Array(filteredItems.dropFirst()), listView: listView) // For debug
                         }
                         Button {
                             withAnimation(.easeIn) {
@@ -62,8 +65,6 @@ struct PreachesScreen: View {
                     }
                 }
                 .scrollIndicators(.hidden)
-                //                }
-                //                .frame(maxHeight: .infinity)
                 
                 if let errorMessage {
                     Text(errorMessage)
@@ -78,14 +79,7 @@ struct PreachesScreen: View {
         .enableInjection()
     }
     private func loadMore() {
-        Task {
-            //            do {
-            //                try await celebration.getCelebrationPreaches()
-            //            } catch {
-            //                print(error)
-            //                self.errorMessage = "Ha ocurrido un error al intentar cargar más predicas de la celebración."
-            //            }
-        }
+
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
