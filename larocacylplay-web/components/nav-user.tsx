@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useTheme } from "next-themes"
 import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -43,14 +44,12 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
-
+  const router = useRouter()
   const handleLogout = () => {
     try {  
-      console.log("Cerrando sesión")
       const supabase = createClient()
       supabase.auth.signOut()
-      console.log("sesion cerrada")
-
+      router.push('/auth/login')
     } catch (error) {
       console.log("Error cerrando sesión")
       console.log(error)

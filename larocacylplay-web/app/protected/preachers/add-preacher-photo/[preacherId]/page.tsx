@@ -1,23 +1,19 @@
 'use client'
 import FileUpload from '@/components/file-upload'
-import { updatePreacherPhoto } from '@/lib/services/preacher'
 import React from 'react'
+import { toast } from 'sonner'
 
-export default function AddPreacherPhotoPage({ params }: { params: { preacherId: string } }) {
-  const { preacherId } = params
+export default function AddPreacherPhotoPage({ params }: { params: Promise<{ preacherId: string }> }) {
+  const { preacherId } = React.use(params)
 
-  const handleUploadSuccess = async (fileName: string) => {
-    try {
-      await updatePreacherPhoto(Number(preacherId), fileName)
-    } catch (error) {
-      console.log("error actualizando campo en tabla")
-      console.log(error)
-    }
-  }
-
+  const metadata = React.useMemo(() => ({
+    target_id: Number(preacherId), // Forzamos a que sea un número real
+    table_target: 'preacher',
+  }), [preacherId]);
+  
   const handleUploadError = (errors: { name: string; message: string }[]) => {
     console.error('Error en la subida:', errors)
-    
+    toast.error("Error en la subida")
   }
 
   return (
@@ -25,9 +21,9 @@ export default function AddPreacherPhotoPage({ params }: { params: { preacherId:
       <h1 className='text-2xl font-bold'>Añadir foto al predicador</h1>
       <FileUpload 
       bucketName='app' 
-      path={`preachers/`}
-      onSuccess={handleUploadSuccess}
+      path={`preacher/`}
       onError={handleUploadError}
+      metadata={metadata}
       />
     </div>
   )

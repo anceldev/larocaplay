@@ -9,7 +9,7 @@ import Foundation
 import Supabase
 
 final class LibraryService {
-    private let supabaseClient = SBCLient.shared.supabase
+    private let supabaseClient = SupabaseClientInstance.shared.publicClient
     
     
     func fetchCollections() async throws -> [CollectionDTO] {
@@ -19,11 +19,12 @@ final class LibraryService {
                 id,
                 title,
                 description,
-                thumb_id,
+                image_id,
                 collection_type_id(id, name),
                 is_public,
                 is_home_screen,
-                created_at
+                created_at,
+                updated_at
                 """)
             .order("created_at", ascending: true)
             .execute()
@@ -32,48 +33,54 @@ final class LibraryService {
     
     func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
-            .from("preach_collection_membership")
+            .from("collection_item")
             .select("""
                 preach: preach_id (
                     id,
                     title,
                     description,
                     date,
-                    thumb_id,
-                    video_url,
+                    image_id,
+                    video_id,
+                    created_at,
                     updated_at,
                     preacher: preacher_id (
                         id,
                         name,
                         preacher_role_id(id, name),
-                        thumb_id
+                        image_id,
+                        created_at,
+                        updated_at
                         )
                 ),
                 position,
                 id
                 """)
             .eq("collection_id", value: collectionId)
-//            .range(from: offset, to: limit)
+            .order("preach(date)", ascending: false)
             .execute()
             .value
     }
     func fetchTeachingsWithoutLimit(collectionId: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
-            .from("preach_collection_membership")
+            .from("collection_item")
             .select("""
                 preach: preach_id (
                     id,
                     title,
                     description,
                     date,
-                    thumb_id,
-                    video_url,
+                    image_id,
+                    video_id,
+                    created_at,
                     updated_at,
                     preacher: preacher_id (
                         id,
                         name,
                         preacher_role_id(id, name),
-                        thumb_id
+                        image_id,
+                        created_at,
+                        updated_at
                         )
                 ),
                 position,
@@ -82,6 +89,7 @@ final class LibraryService {
             .eq("collection_id", value: collectionId)
             .execute()
             .value
+        
     }
     
     func fetchAllPreachers() async throws -> [PreacherDTO] {
@@ -91,7 +99,8 @@ final class LibraryService {
                 id,
                 name,
                 preacher_role_id(id, name),
-                thumb_id
+                image_id,
+                updated_at
                 """)
             .execute()
             .value
@@ -110,7 +119,16 @@ final class LibraryService {
         try await supabaseClient.functions.invoke(
             "get-vimeo-temporal-link",
             options: FunctionInvokeOptions(
-                body: ["videoId": videoId]
+                method: .post,
+//                body: ["videoId": videoId]
+                body: ["videoId": "1234"]
             ))
+    }
+    func fetchSongs() async throws -> [SongDTO] {
+        try await supabaseClient
+            .from("songs")
+            .select("*")
+            .execute()
+            .value
     }
 }

@@ -7,10 +7,11 @@
 
 import Foundation
 import Observation
-import Supabase
-import SwiftData
 import RevenueCat
 import RevenueCatUI
+import Supabase
+import SwiftData
+import os
 
 enum AuthState {
     case unauthenticated
@@ -39,17 +40,25 @@ enum AuthError: LocalizedError, Equatable {
     
 }
 enum AuthNavigationState {
-    case loading        // App cargando e inicializandose
-    case onboarding     // WelcomeView (No hay sesión)
-    case authorized     // MainTabView (Sesión real o anónima)
+    case loading  // App cargando e inicializandose
+    case onboarding  // WelcomeView (No hay sesión)
+    case authorized  // MainTabView (Sesión real o anónima)
+    case updatePassword
+}
+
+enum ServiceStatus {
+    case healthy  // Todo OK
+    case offline  // Usuario sin internet
+    case serverMaintenance  // Supabase caído (Error 5xx o Timeout)
+    case storeMaintenance  // RevenueCat caído
 }
 
 @Observable
 final class AuthManager {
-    private let supabaseClient = SBCLient.shared.supabase
     private let service: AuthService
+    private var modelContext: ModelContext?
+    private var log = Logger(subsystem: "com.larocaplay.larocaplay", category: "AuthManager")
     
-    //    var authState: AuthState = .unauthenticated
     var session: Supabase.Session?
     var isLoading: Bool = false
     
@@ -57,13 +66,24 @@ final class AuthManager {
     var errorMessage: String?
     var showAlertError: Bool = false
     
-    //    var currentUserProfile: ProfileDTO?
     var currentUserProfile: UserProfile?
-    var navigationState: AuthNavigationState = .loading
+    var customerInfo: CustomerInfo?
     
-
-    private var isInitialized = false
-    private var modelContext: ModelContext?
+    var navigationState: AuthNavigationState = .onboarding
+    var serviceStatus: ServiceStatus = .healthy
+    
+    var isSubscriptionActive: Bool {
+        guard let currentUserProfile else {
+            return false
+        }
+        if currentUserProfile.profileRole == .admin {
+            return true
+        }
+        guard let entitlement = customerInfo?.entitlements["pro"] else {
+            return false
+        }
+        return entitlement.isActive
+    }
     
     var isAnonymous: Bool {
         session?.user.isAnonymous ?? true
@@ -80,49 +100,118 @@ final class AuthManager {
     func setContext(modelContext: ModelContext) {
         guard self.modelContext == nil else { return }
         self.modelContext = modelContext
-        print("DEBUG: Contexto de SwiftData recibido correctamente")
+        log.info("Contexto de SwiftData recibido correctamente")
     }
     
     @MainActor
     func initialize() async {
-        
         self.navigationState = .loading
-        
-//        guard !isInitialized else { return }
-        
         self.isLoading = true
-        
         defer { self.isLoading = false }
         
-        self.error = nil
+//        do {
+//            let session = try await service.getCurrentSession()
+//            self.session = session
+//            loadLocalProfile(id: session.user.id)
+//        } catch let error as Supabase.AuthError where error == .sessionMissing {
+//            log.info("No hay sesión")
+//            self.navigationState = .onboarding
+//            return
+//        } catch let error as URLError {
+//            log.error("Error de red: \(error.localizedDescription)")
+//            self.navigationState = .onboarding
+//            self.serviceStatus = .offline
+//            self.errorMessage = "Necesitas conexión a internet para empezar"
+//            return
+//        } catch {
+//            log.error("No se pudo conectar con servidor de datos: \(error.localizedDescription)")
+//            self.navigationState = .onboarding
+//            self.serviceStatus = .serverMaintenance
+//            self.errorMessage = "No se ha podido conectar con el servidor de datos. Inténtalo más tarde"
+//            return
+//        }
+        do {
+            let session = try await service.getCurrentSession()
+            self.session = session
+            loadLocalProfile(id: session.user.id)
+        } catch {
+            log.info("No hay sesión")
+            self.navigationState = .onboarding
+            return
+        }
         
         do {
-            let currentSession = try await service.getCurrentSession()
-            self.session = currentSession
+            try await syncWithThirdParties()
+        } catch {
+            log.error("Error en tienda \(error)")
+            log.warning("No se pueden realizar suscripciones")
+            self.serviceStatus = .storeMaintenance
+        }
+        
+        do {
+            try await refreshProfile()
+        } catch let error as AuthError where error == .profileNotFound {
+            // log.error("No se encontró el perfil en supabase")  // Si no hay perfil en supabase, el usuario no existe
+            log.warning("No se puede realizar la autenticación")
+            self.navigationState = .onboarding
+            return
+        } catch {
+            log.error("Servidor de supabase no disponible")
+            log.warning("No se puede realizar la autenticación")
+            self.serviceStatus = .serverMaintenance
+            self.errorMessage = "No se puede conectar con el servidor de autenticación. Inténtalo más tarde"
+        }
+        self.navigationState = .authorized
+    }
+    
+    @MainActor
+    func signIn(email: String, password: String) async {
+        self.isLoading = true
+        defer { self.isLoading = false }
+        do {
+            self.session = try await service.signIn(email: email, password: password)
+            loadLocalProfile(id: self.session!.user.id)
+            try await syncWithThirdParties()
+            try? await refreshProfile()
+            self.navigationState = .authorized
+        } catch {
+            print(error)
+            print(error.localizedDescription)
+            handleError(.unknown("Credenciales incorrectass"))
+            self.navigationState = .onboarding
+        }
+    }
+    @MainActor
+    func signUp(email: String, password: String, confirmPassword: String) async {
+        self.isLoading = true
+        self.errorMessage = nil
+        defer { isLoading = false }
+        do {
+            //            try Validations.shared.isValidEmail(email)
+            try checkPasswordsField(password: password, confirmPassword: confirmPassword)
             
-            loadLocalProfile(id: currentSession.user.id)
+            if let session {
+                _ = try await service.updateUser(email: email, password: password)
+            } else {
+                _ = try await service.signUp(email: email, password: password)
+            }
+            self.session = try await service.getCurrentSession()
+            loadLocalProfile(id: self.session!.user.id)
             try await syncWithThirdParties()
             try await refreshProfile()
             self.navigationState = .authorized
+        } catch let error as SignUpError {
+            handleSignupError(error)
+            self.navigationState = .onboarding
+        } catch let error as Supabase.AuthError {
+            handleSignupSupabaseAuthError(error.errorCode)
+            self.navigationState = .onboarding
         } catch {
-            print("DEBUG: Fallo al recuperar la sesión inicial: \(error.localizedDescription)")
-            print(error)
-            print(error.localizedDescription)
-            
-            if let authError = error as? AuthError, authError == .profileNotFound {
-                self.error = authError
-                self.showAlertError = true
-                self.navigationState = .onboarding
-            }
+            handleError(.unknown("No se pudo completar el registro"))
             self.navigationState = .onboarding
         }
     }
     
-    /// Añade dos números enteros y devuelve la suma.
-    /// - Parameters:
-    ///   - a: El primer número.
-    ///   - b: El segundo número.
-    /// - Returns: La suma de `a` y `b`.
     @MainActor
     func startGuestSession() async {
         self.navigationState = .loading
@@ -151,88 +240,55 @@ final class AuthManager {
             throw AuthError.networkError
         }
     }
-    @MainActor
-    func signIn(email: String, password: String) async {
-        self.isLoading = true
-        defer { self.isLoading = false }
-        do {
-            try Validations.shared.isValidEmail(email)
-            try Validations.shared.isValidPassword(password)
-            //            let response = try await supabaseClient.auth.signIn(email: email, password: password)
-            self.session = try await service.signIn2(email: email, password: password)
-            loadLocalProfile(id: self.session!.user.id)
-            try await syncWithThirdParties()
-            try? await refreshProfile()
-            self.navigationState = .authorized
-        } catch {
-            print(error)
-            handleError(.unknown("Credenciales incorrectass"))
-            self.navigationState = .onboarding
-        }
-    }
-    @MainActor
-    func signUp(email: String,  password: String, confirmPassword: String) async {
-        self.isLoading = true
-        defer { isLoading = false }
-        do {
-            try Validations.shared.isValidEmail(email)
-            try checkPasswordsField(password: password, confirmPassword: confirmPassword)
-            
-            _ = try await service.signUp2(email: email, password: password)
-            self.session = try await service.getCurrentSession()
-            loadLocalProfile(id: self.session!.user.id)
-            try await syncWithThirdParties()
-            try await refreshProfile()
-            self.navigationState = .authorized
-        } catch {
-            handleError(.unknown("No se pudo completar el registro"))
-            self.navigationState = .onboarding
-        }
-    }
-    
-    /// Comprueba que dos contraseñas sean validas. Aux function para signup
-    private func checkPasswordsField(password: String, confirmPassword: String) throws {
-        if password == confirmPassword {
-            try Validations.shared.isValidPassword(password)
-            return
-        }
-        throw SignUpError.passwordsDoNotMatch
-    }
     
     /// Actualiza los datos del perfil actual.
     @MainActor
     func refreshProfile() async throws {
         guard let user = session?.user else { return }
         if self.isAnonymous && self.currentUserProfile == nil {
-            print("DEBUG: Usuario anónimo, usando perfil temporal")
-            createTemporaryGuestProfile(for: user)
+            log.info("Usuario anónimo, usando perfil temporal")
+            self.currentUserProfile = createTemporaryGuestProfile(for: user)
             return
         }
         do {
             let dto = try await service.fetchProfile(id: user.id)
             syncProfileToLocal(dto: dto)
             self.error = nil
-        } catch {
-            if currentUserProfile == nil {
-                throw AuthError.profileNotFound
+        } catch let error as PostgrestError {
+            if error.code == "PGRST116" {
+                // print("No hay ningun perfil asociado en la DB")
+                log.info("No hay ningun perfil asociado en la DB")
+                if currentUserProfile == nil {
+                    throw AuthError.profileNotFound
+                }
             }
-            print("Aviso: El perfil no está disponible en la DB")
             throw error
+        } catch {
+            throw error
+        }
+    }
+    @MainActor
+    func refreshSubscriptionStatus() async {
+        do {
+            self.customerInfo = try await Purchases.shared.customerInfo()
+        } catch {
+            // print(error.localizedDescription)
+            //      log.error(error.localizedDescription)
+            log.error("\(error.localizedDescription)")
         }
     }
     
     /// Crea un perfil temporal para un usuario. Se usa en caso de que no haya aún un perfil asociado en el backend.
     /// - Parameters:
     ///   - user: Usuario de backend.
-    private func createTemporaryGuestProfile(for user: Supabase.User) {
-        let guest = UserProfile(
+    private func createTemporaryGuestProfile(for user: Supabase.User) -> UserProfile {
+       UserProfile(
             userId: user.id,
             displayName: "Invitado",
             profileRole: .member
         )
-        self.currentUserProfile = guest
+//        self.currentUserProfile = guest
     }
-    
     
     /// Cierra la sesión actual.
     @MainActor
@@ -245,25 +301,46 @@ final class AuthManager {
             
             self.session = nil
             self.currentUserProfile = nil
-            self.isInitialized = false
+            
             self.navigationState = .onboarding
-//            await initialize()
+            //            await initialize()
         } catch {
+            print(error)
+            print(error.localizedDescription)
             handleError(.unknown("No se pudo cerrar la sesión"))
         }
     }
     
-    
+    @MainActor
+    func deleteAccount() async {
+        self.isLoading = true
+        defer { self.isLoading = false }
+        do {
+            // Borrado en el servidor de supabase
+            try await service.deleteAccount()
+            // Cerramos sesión en RevenueCat (esperamos que termine)
+            _ = try? await Purchases.shared.logOut()
+            // Cerramos sesión en supabase
+            try await service.signout()
+            self.currentUserProfile = nil
+            self.session = nil
+            self.navigationState = .onboarding
+        } catch {
+            print(error)
+            
+        }
+    }
     
     /// Carga el perfil de la cache local, si existe.
     /// - Parameters:
     ///   - id: id del perfil que se tiene que cargar.
     private func loadLocalProfile(id: UUID) {
         guard let modelContext = modelContext else {
-            print("Error: ModelContext no configurado en AuthManager")
+            // print("Error: ModelContext no configurado en AuthManager")
+            log.error("ModelContext no configurado en AuthManager")
             return
         }
-//        let descriptor = FetchDescriptor<UserProfile>(predicate: #Predicate<UserProfile>{ $0.userId == userId })
+        //        let descriptor = FetchDescriptor<UserProfile>(predicate: #Predicate<UserProfile>{ $0.userId == userId })
         let targetID = id
         let descriptor = FetchDescriptor<UserProfile>(
             predicate: #Predicate<UserProfile> { profile in
@@ -273,12 +350,14 @@ final class AuthManager {
         do {
             let results = try modelContext.fetch(descriptor)
             let localModel = results.first
-//            let localModel: UserProfile? = try modelContext?.fetch(descriptor).first
             self.currentUserProfile = localModel
         } catch {
-            print("DEBUG: Todavía no hay perfil local")
-            print(error)
-            print(error.localizedDescription)
+            // print("DEBUG: Todavía no hay perfil local")
+            log.warning("Todavía no hay perfil local")
+            // print(error)
+            //      log.error(error.localizedDescription)
+            log.error("\(error.localizedDescription, privacy: .public)")
+            
         }
     }
     
@@ -288,7 +367,8 @@ final class AuthManager {
     private func syncProfileToLocal(dto: ProfileDTO) {
         // TODO: Guardar el perfil en SwiftData de manera local.
         guard let context = modelContext else {
-            print("Error: ModelContext no configurado en AuthManager")
+            // print("Error: ModelContext no configurado en AuthManager")
+            log.error("ModelContext no configurado en AuthManager")
             return
         }
         let targetUUID = dto.id
@@ -303,11 +383,11 @@ final class AuthManager {
                 profile.displayName = dto.displayName ?? "Usuario"
                 profile.email = dto.email
                 profile.avatarId = dto.avatarId
-                print("Perfil local actualizado correctamente")
+                // print("Perfil local actualizado correctamente")
             } else {
                 let newProfile = dto.toModel()
                 context.insert(newProfile)
-                print("Prefil creado correctamente")
+                // print("Prefil creado correctamente")
             }
             try context.save()
             self.currentUserProfile = try context.fetch(descriptor).first
@@ -320,9 +400,12 @@ final class AuthManager {
     private func syncWithThirdParties() async throws {
         guard let userId = session?.user.id.uuidString.lowercased() else { return }
         do {
-            let (customerInfo, created) = try await Purchases.shared.logIn(userId)
+            let (customerInfo, _) = try await Purchases.shared.logIn(userId)
+            self.customerInfo = customerInfo
         } catch {
-            print("Error vinculando con RevenueCat: \(error)")
+            // print("Error vinculando con RevenueCat: \(error)")
+            log.error("Error vinculando con RevenueCat: \(error)")
+            print(type(of: error))
             throw error
         }
     }
@@ -333,5 +416,100 @@ final class AuthManager {
     private func handleError(_ error: AuthError) {
         self.error = error
         self.showAlertError = true
+    }
+    
+    @MainActor
+    func updatePassword(with newPassword: String, and confirmPassword: String) async {
+        self.isLoading = true
+        self.errorMessage = nil
+        defer { self.isLoading = false }
+        do {
+            try checkPasswordsField(password: newPassword, confirmPassword: confirmPassword)
+            _ = try await service.updatePassword(with: newPassword)
+            guard self.session != nil else { return }
+            self.navigationState = .authorized
+        } catch {
+            print(error)
+            print(error.localizedDescription)
+            log.error("Error al actualizar la contraseña: \(error)")
+            self.errorMessage = error.localizedDescription
+        }
+    }
+    
+    @MainActor
+    func resetPassword(for email: String) async {
+        do {
+            try await service.sendResetPasswordEmail(to: email)
+        } catch {
+            // print("ERROR: Error enviando correo de recuperación")
+            log.error("Error al enviar correo de recuperación: \(error)")
+            print(error.localizedDescription)
+            
+        }
+    }
+    
+    func getSessionFromUrl(from url: URL) async {
+        
+        self.isLoading = true
+        defer { self.isLoading = false }
+        do {
+            self.session = try await service.getSessionFromUrl(from: url)
+            self.navigationState = .updatePassword
+            
+        } catch {
+            // print("ERROR: Error al procesar el link")
+            log.error("Error al procesar el link: \(error)")
+            // print(error)
+            // print(error.localizedDescription)
+            self.navigationState = .onboarding
+        }
+    }
+}
+
+extension AuthManager {
+    private enum ServiceType { case supabase, revenueCat }
+    private func handleNetworkError(_ error: Error, service: ServiceType) {
+        // 1. ¿Es un error de conexión física?
+        if let urlError = error as? URLError, urlError.code == .notConnectedToInternet {
+            self.serviceStatus = .offline
+            return
+        }
+        
+        // 2. ¿Es un error de servidor (5xx) o Timeout?
+        let isServerIssue = (error as? PostgrestError)?.code?.starts(with: "5") ?? false
+        let isTimeout = (error as? URLError)?.code == .timedOut
+        
+        if isServerIssue || isTimeout {
+            if service == .supabase {
+                self.serviceStatus = .serverMaintenance
+            } else {
+                self.serviceStatus = .storeMaintenance
+            }
+        }
+    }
+    
+    private func handleSignupError(_ error: SignUpError) {
+        switch error {
+        case .passwordsDoNotMatch: self.errorMessage = "Las contraseñas no coinciden"
+        case .unknownError: self.errorMessage = "Error desconocido"
+        }
+        return
+    }
+    private func handleSignupSupabaseAuthError(_ errorCode: Supabase.ErrorCode) {
+        switch errorCode {
+        case .emailExists: self.errorMessage = "El correo electrónico ya está registrado"
+        case .invalidCredentials: self.errorMessage = "Correo electrónico o contraseña inválidos"
+        case .overRequestRateLimit:
+            self.errorMessage =
+            "Has intentado iniciar sesión demasiadas veces en un corto periodo de tiempo, por favor espera un tiempo para volver a intentarlo"
+        case .signupDisabled: self.errorMessage = "Registrarse no está disponible en este momento"
+        default: self.errorMessage = "Error en el sistema de autenticación"
+        }
+    }
+    
+    /// Comprueba que dos contraseñas sean validas. Aux function para signup
+    private func checkPasswordsField(password: String, confirmPassword: String) throws {
+        if password == confirmPassword { return }
+        throw SignUpError.passwordsDoNotMatch
     }
 }

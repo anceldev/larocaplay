@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
- 
+
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { Collection } from "@/lib/types"
+import Image from "next/image"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 export const columns: ColumnDef<Collection>[] = [
   {
@@ -25,8 +27,19 @@ export const columns: ColumnDef<Collection>[] = [
     header: "Nombre",
   },
   {
-    accessorKey: "thumb_id",
-    header: "Imagen"
+    accessorKey: "image_id",
+    header: "Imagen",
+    cell: ({ row }) => {
+      const image_id = row.original.image_id
+      return (
+        <HoverCard>
+          <HoverCardTrigger className="underline">{image_id}</HoverCardTrigger>
+          <HoverCardContent>
+            <Image src={`http://127.0.0.1:54321/storage/v1/object/public/app/collection/${row.original.image_id}`} alt={row.original.title} width={300} height={100} />
+          </HoverCardContent>
+        </HoverCard>
+      )
+    }
 
   },
   {
@@ -64,7 +77,7 @@ export const columns: ColumnDef<Collection>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem>Editar información</DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/protected/collections/add-collection-photo/${collection.id}`}>Añadir foto</Link>
+              <Link href={`/protected/collections/add-collection-image/${collection.id}`}>Añadir foto</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

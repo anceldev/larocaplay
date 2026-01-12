@@ -14,7 +14,7 @@ export type Collection = {
   id: number
   title: string
   description?: string
-  thumb_id?: string
+  image_id?: string
   is_public: boolean
   collection_type_id: {
     id: number,
@@ -28,6 +28,11 @@ export type ShortCollection = {
   id: number
   title: string
   description?: string
+}
+
+export type CollectionType = {
+  id: number
+  name: string
 }
 
 export type Preach = {
@@ -62,7 +67,7 @@ export type ShortPreach = {
 }
 
 export type PreacherRole = {
-  id: string
+  id: number
   name: string
 }
 

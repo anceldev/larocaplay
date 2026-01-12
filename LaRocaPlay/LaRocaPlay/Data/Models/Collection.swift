@@ -18,8 +18,8 @@ final class Collection {
     var isHomeScreen: Bool
     // TODO: Añadir ColectionType. solo como texto o con el id?? pregunta a IA
     var typeName: String
-    var createdAt: Date?
-    var updatedAt: Date?
+    var createdAt: Date
+    var updatedAt: Date
     var endedAt: Date?
     var needItemsSync: Bool = true
     
@@ -27,7 +27,7 @@ final class Collection {
     @Relationship(deleteRule: .cascade, inverse: \CollectionItem.collection) var items: [CollectionItem] = []
 
     
-    init(id: Int, title: String, desc: String? = nil, imageId: String? = nil, isPublic: Bool, isHomeScreen: Bool, typeName: String, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, needItemsSync: Bool = true) {
+    init(id: Int, title: String, desc: String? = nil, imageId: String? = nil, isPublic: Bool, isHomeScreen: Bool, typeName: String, createdAt: Date, updatedAt: Date, endedAt: Date? = nil, needItemsSync: Bool = true) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -43,7 +43,7 @@ final class Collection {
     func update(from dto: CollectionDTO) {
         self.title = dto.title
         self.desc = dto.description
-        self.imageId = dto.thumbId
+        self.imageId = dto.imageId
         self.isPublic = dto.isPublic
         self.isHomeScreen = dto.isHomeScreen
         self.typeName = dto.collectionType.name
@@ -59,6 +59,13 @@ extension Collection {
     }
     var latestPreaches: [Preach] {
         items.compactMap { $0.preach }.sorted { $0.date > $1.date }
+    }
+    var itemsSortedByDate: [CollectionItem] {
+        // Accedemos a los items y los ordenamos comparando la fecha de sus preaches
+        return items.sorted { itemA, itemB in
+            // Forzamos el desempaquetado ya que garantizas que siempre existe el preach
+            return itemA.preach!.date > itemB.preach!.date
+        }
     }
 }
 

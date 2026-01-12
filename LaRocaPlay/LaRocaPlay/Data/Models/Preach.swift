@@ -16,7 +16,7 @@ final class Preach {
     var date: Date
     var videoId: String
     var imageId: String?
-    var updatedAt: Date?
+    var updatedAt: Date
     
     var videoUrl: String?
     var videoUrlExpiration: Date?
@@ -36,7 +36,7 @@ final class Preach {
     }
     
     
-    init(id: Int, title: String, desc: String? = nil, date: Date, videoId: String, imageId: String? = nil, preacher: Preacher? = nil, updatedAt: Date? = nil) {
+    init(id: Int, title: String, desc: String? = nil, date: Date, videoId: String, imageId: String? = nil, preacher: Preacher? = nil, updatedAt: Date) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -44,6 +44,7 @@ final class Preach {
         self.videoId = videoId
         self.imageId = imageId
         self.preacher = preacher
+        self.updatedAt = updatedAt
 //        self.collections = collections
     }
     
@@ -51,8 +52,8 @@ final class Preach {
         self.title = dto.title
         self.desc = dto.description
         self.date = dto.date
-        self.videoId = dto.videoUrl
-        self.imageId = dto.thumbId
+        self.videoId = dto.videoId
+        self.imageId = dto.imageId
         self.updatedAt = dto.updatedAt
     }
     

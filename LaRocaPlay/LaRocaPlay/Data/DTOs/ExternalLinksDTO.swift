@@ -9,11 +9,13 @@ import Foundation
 
 struct ExternalLinkDTO: Decodable {
     let id: Int
-    let key: String
+    let keyLink: String
     let link: String?
-    let enabled: Bool
+    let isEnabled: Bool
     
     enum CodingKeys: String, CodingKey {
-        case id, key, link, enabled
+        case id, link
+        case keyLink = "key_link"
+        case isEnabled = "is_enabled"
     }
 }

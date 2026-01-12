@@ -1,7 +1,8 @@
 import React from 'react'
+import NewCollectionForm from './new-collection-form'
 
 export default function Page() {
   return (
-    <div>Añadir nueva colección. Pendiente</div>
+    <NewCollectionForm />
   )
 }

@@ -14,24 +14,25 @@ enum StorageCollections {
     
     var associatedValue: String? {
         switch self {
-        case .preachers(let preacherThumb):
-            return preacherThumb
-        case .collections(let collectionThumb):
-            return collectionThumb
-        case .preaches(let preachThumb):
-            return preachThumb
+        case    .preachers(let val),
+                .collections(let val),
+                .preaches(let val): return val
         }
     }
     
     var path: String {
         switch self {
-        case .preachers(let thumbId):
-            "preachers/\(thumbId!)"
-        case .collections(let thumbId):
-            "collections/\(thumbId!)"
-        case .preaches(let thumbId):
-            "preaches/\(thumbId!)"
+        case .preachers(let thumbId):   "preacher/\(thumbId!)"
+        case .collections(let thumbId): "collection/\(thumbId!)"
+        case .preaches(let thumbId):    "preach/\(thumbId!)"
         }
     }
 }
 
+enum Constants {
+    static let authRedirectUrl = "http://localhost:3000/auth/update-password"
+    static let appAuthRedirectTo = "larocaplayapp://reset-password"
+    
+    static let emailRegex = #"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$"#
+    static let passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$&*.,?+-]).{8,}$"
+}

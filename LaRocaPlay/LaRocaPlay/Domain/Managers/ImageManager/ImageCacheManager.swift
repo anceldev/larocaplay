@@ -29,7 +29,7 @@ class ImageCacheManager {
         do {
             guard let key = path.associatedValue else { return nil }
             guard let localImage = try await ImageCacheManager.shared.getImage(forKey: key) else {
-                let imageData = try await SBCLient.shared.supabase.storage
+                let imageData = try await SupabaseClientInstance.shared.publicClient.storage
                     .from("app")
                     .download(path: path.path)
                 guard let uiImage = UIImage(data: imageData) else {

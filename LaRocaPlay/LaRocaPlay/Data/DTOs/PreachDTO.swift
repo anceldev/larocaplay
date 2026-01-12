@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import JSONCodable
+//import JSONCodable
+
 
 protocol PreachProtocol: Identifiable, Codable {
     var id: Int { get set }
@@ -14,8 +15,8 @@ protocol PreachProtocol: Identifiable, Codable {
     var description: String? { get set }
     var date: Date { get set }
     var preacher: PreacherDTO { get set }
-    var videoUrl: String { get set }
-    var thumbId: String? { get set }
+    var videoId: String { get set }
+    var imageId: String? { get set }
     
     
 }
@@ -26,32 +27,34 @@ struct PreachDTO: PreachProtocol, Hashable {
     var description: String?
     var date: Date
     var preacher: PreacherDTO
-    var videoUrl: String
-    var thumbId: String?
+    var videoId: String
+    var imageId: String?
     
-    
-    var updatedAt: Date?
+    var createdAt: Date
+    var updatedAt: Date
     
     enum CodingKeys: String, CodingKey {
         case id, title, description, date
-        case videoUrl = "video_url"
+        case videoId = "video_id"
 //        case preacher = "preacher_id"
         case preacher = "preacher"
         case serie = "serie_id"
-        case thumbId = "thumb_id"
+        case imageId = "image_id"
         case collection = "collection_id"
         case discipleship = "discipleship_id"
+        case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
     
-    init(id: Int, title: String, description: String? = nil, date: Date = .now, preacher: PreacherDTO, videoUrl: String, thumbId: String? = nil, updatedAt: Date? = nil) {
+    init(id: Int, title: String, description: String? = nil, date: Date = .now, preacher: PreacherDTO, videoUrl: String, imageId: String? = nil, createdAt: Date = .now, updatedAt: Date = .now) {
         self.id = id
         self.title = title
         self.description = description
         self.date = date
         self.preacher = preacher
-        self.videoUrl = videoUrl
-        self.thumbId = thumbId
+        self.videoId = videoUrl
+        self.imageId = imageId
+        self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
     
@@ -63,18 +66,26 @@ struct PreachDTO: PreachProtocol, Hashable {
         self.preacher = try container.decode(PreacherDTO.self, forKey: .preacher)
 
         let stringDate = try container.decode(String.self, forKey: .date)
-        guard let date = DateFormatter.supabaseDate.date(from: stringDate) else {
+        guard let date = DateFormatter.decodedSupabaseDate(stringDate) else {
             throw DecodingError.dataCorruptedError(forKey: .date, in: container, debugDescription: "Wrong date format")
         }
         self.date = date
-        let updateString = try container.decodeIfPresent(String.self, forKey: .updatedAt)
-        guard let updateString, let updatedDate = DateFormatter.supabaseTimestamp.date(from: updateString) else {
-            throw DecodingError.dataCorruptedError(forKey: .updatedAt, in: container, debugDescription: "Wrong updatedAt date format")
-        }
-        self.updatedAt = updatedDate
         
-        self.videoUrl = try container.decode(String.self, forKey: .videoUrl)
-        self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
+        let createdString = try container.decode(String.self, forKey: .createdAt)
+        guard let decodedCreatedDate = DateFormatter.decodedSupabaseDate(createdString)else {
+            throw DecodingError.dataCorruptedError(forKey: .createdAt, in: container, debugDescription: "wrong created_at format")
+        }
+        self.createdAt = decodedCreatedDate
+        
+        let updateString = try container.decode(String.self, forKey: .updatedAt)
+        
+        guard let decodedUpdatedDate = DateFormatter.decodedSupabaseDate(updateString) else {
+            throw DecodingError.dataCorruptedError(forKey: .updatedAt, in: container, debugDescription: "wrong updated_at format")
+        }
+        self.updatedAt = decodedUpdatedDate
+        
+        self.videoId = try container.decode(String.self, forKey: .videoId)
+        self.imageId = try container.decodeIfPresent(String.self, forKey: .imageId)
     }
     func encode(to encoder: any Encoder) throws {
         
@@ -86,8 +97,8 @@ struct PreachDTO: PreachProtocol, Hashable {
             title: self.title,
             desc: self.description,
             date: self.date,
-            videoId: self.videoUrl,
-            imageId: self.thumbId,
+            videoId: self.videoId,
+            imageId: self.imageId,
             updatedAt: self.updatedAt
         )
         return model

@@ -88,7 +88,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
       <div className={cn('flex flex-row items-center gap-x-2 justify-center', className)}>
         <CheckCircle size={16} className="text-primary" />
         <p className="text-primary text-sm">
-          Archivo{files.length > 1 ? 's' : ''} subido correctamente
+          Successfully uploaded {files.length} file{files.length > 1 ? 's' : ''}
         </p>
       </div>
     )
@@ -130,11 +130,11 @@ const DropzoneContent = ({ className }: { className?: string }) => {
                     .join(', ')}
                 </p>
               ) : loading && !isSuccessfullyUploaded ? (
-                <p className="text-xs text-muted-foreground">Subiendo archivo...</p>
+                <p className="text-xs text-muted-foreground">Uploading file...</p>
               ) : !!fileError ? (
-                <p className="text-xs text-destructive">Error al subir el archivo: {fileError.message}</p>
+                <p className="text-xs text-destructive">Failed to upload: {fileError.message}</p>
               ) : isSuccessfullyUploaded ? (
-                <p className="text-xs text-primary">Archivo subido correctamente</p>
+                <p className="text-xs text-primary">Successfully uploaded file</p>
               ) : (
                 <p className="text-xs text-muted-foreground">{formatBytes(file.size, 2)}</p>
               )}
@@ -155,7 +155,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
       })}
       {exceedMaxFiles && (
         <p className="text-sm text-left mt-2 text-destructive">
-          Solo puedes subir hasta {maxFiles} archivos, por favor elimina {files.length - maxFiles} archivo
+          You may upload only up to {maxFiles} files, please remove {files.length - maxFiles} file
           {files.length - maxFiles > 1 ? 's' : ''}.
         </p>
       )}
@@ -169,10 +169,10 @@ const DropzoneContent = ({ className }: { className?: string }) => {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Subiendo...
+                Uploading...
               </>
             ) : (
-              <>Subir archivo</>
+              <>Upload files</>
             )}
           </Button>
         </div>

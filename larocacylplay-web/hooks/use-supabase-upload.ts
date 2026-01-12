@@ -48,6 +48,10 @@ type UseSupabaseUploadOptions = {
    * When set to false, an error is thrown if the object already exists. Defaults to `false`
    */
   upsert?: boolean
+  /**
+   * Metadata to attach to the uploaded file(s). Can be a static object or a function that receives the file and returns metadata.
+   */
+  metadata?: Record<string, string | number> | ((file: File) => Record<string, string | number>)
 }
 
 type UseSupabaseUploadReturn = ReturnType<typeof useSupabaseUpload>
@@ -61,6 +65,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     maxFiles = 1,
     cacheControl = 3600,
     upsert = false,
+    metadata,
   } = options
 
   const [files, setFiles] = useState<FileWithPreview[]>([])
@@ -126,11 +131,12 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
     const responses = await Promise.all(
       filesToUpload.map(async (file) => {
-        const { error } = await supabase.storage
+        const { data, error } = await supabase.storage
           .from(bucketName)
           .upload(!!path ? `${path}/${file.name}` : file.name, file, {
             cacheControl: cacheControl.toString(),
             upsert,
+            metadata: metadata,
           })
         if (error) {
           return { name: file.name, message: error.message }

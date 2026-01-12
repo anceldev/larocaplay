@@ -11,19 +11,18 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
     var id: Int
     var title: String
     var description: String?
-    var thumbId: String?
+    var imageId: String?
     var collectionType: CollectionTypeResponseDTO
     var isPublic: Bool
     var isHomeScreen: Bool
-    var createdAt: Date?
-    var updatedAt: Date?
+    var createdAt: Date
+    var updatedAt: Date
     var endedAt: Date?
-    var preaches: [PreachDTO]
     
     
     enum CodingKeys: String, CodingKey {
         case id, title, description
-        case thumbId = "thumb_id"
+        case imageId = "image_id"
         case isPublic = "is_public"
         case isHomeScreen = "is_home_screen"
         case collectionType = "collection_type_id"
@@ -32,18 +31,17 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
         case endedAt = "ended_at"
     }
     
-    init(id: Int, title: String, description: String? = nil, thumbId: String? = nil, isPublic: Bool, isHomeScreen: Bool = false, collectionType: CollectionTypeResponseDTO, createdAt: Date? = nil, updatedAt: Date? = nil, endedAt: Date? = nil, preaches: [PreachDTO] = []) {
+    init(id: Int, title: String, description: String? = nil, thumbId: String? = nil, isPublic: Bool, isHomeScreen: Bool = false, collectionType: CollectionTypeResponseDTO, createdAt: Date = .now, updatedAt: Date = .now, endedAt: Date? = nil) {
         self.id = id
         self.title = title
         self.description = description
-        self.thumbId = thumbId
+        self.imageId = thumbId
         self.isPublic = isPublic
         self.isHomeScreen = isHomeScreen
         self.collectionType = collectionType
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.endedAt = endedAt
-        self.preaches = preaches
     }
     
     init(from decoder: any Decoder) throws {
@@ -51,14 +49,13 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
         self.id = try container.decode(Int.self, forKey: .id)
         self.title = try container.decode(String.self, forKey: .title)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
-        self.thumbId = try container.decodeIfPresent(String.self, forKey: .thumbId)
+        self.imageId = try container.decodeIfPresent(String.self, forKey: .imageId)
         self.isPublic = try container.decode(Bool.self, forKey: .isPublic)
         self.isHomeScreen = try container.decode(Bool.self, forKey: .isHomeScreen)
         self.collectionType = try container.decode(CollectionTypeResponseDTO.self, forKey: .collectionType)
-        self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
-        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
-        self.preaches = []
     }
     
     func toModel() -> Collection {
@@ -66,7 +63,7 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
             id: self.id,
             title: self.title,
             desc: self.description,
-            imageId: self.thumbId,
+            imageId: self.imageId,
             isPublic: self.isPublic,
             isHomeScreen: self.isHomeScreen,
             typeName: self.collectionType.name,
@@ -77,12 +74,3 @@ struct CollectionDTO: Codable, Identifiable, Hashable {
         return model
     }
 }
-//
-//struct CollectionTypeResponseDTO: Identifiable, Codable, Hashable {
-//    let id: Int
-//    let name: String
-//}
-//
-//struct PreachCollectionWrapper: Decodable {
-//    let preach: Preach
-//}

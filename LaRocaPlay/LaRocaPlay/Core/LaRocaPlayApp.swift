@@ -11,15 +11,18 @@ import RevenueCat
 import RevenueCatUI
 import SwiftData
 import SwiftUI
+import os
+
 
 @main
 struct LaRocaPlayApp: App {
-//    @State private var musicVideoRepository = MusicVideoRepository()
+    
+    @State private var network = NetworkMonitor.shared
     @State private var authManager: AuthManager
     @State private var libManager: LibraryManager
-    
-    @State private var hideOnboarding: Bool = UserDefaults.standard.bool(forKey: "hideOnboarding")
+
     let container: ModelContainer
+    private let logger = Logger(subsystem: "com.anceldev.LaRocaPlay", category: "main")
     
     init() {
         Purchases.logLevel = .debug
@@ -32,25 +35,29 @@ struct LaRocaPlayApp: App {
                 Preacher.self,
                 Collection.self,
                 CollectionType.self,
-                CollectionItem.self
+                CollectionItem.self,
+                Song.self
             ])
-            print(URL.documentsDirectory.path(percentEncoded: false))
-            let config = ModelConfiguration("db.v1.3", schema: schema, isStoredInMemoryOnly: false)
+            logger.info("\(URL.documentsDirectory.path(percentEncoded: false), privacy: .public)")
+
+            let config = ModelConfiguration("db.v1.4.1", schema: schema, isStoredInMemoryOnly: false)
             self.container = try ModelContainer(for: schema, configurations: config)
             
             let manager = AuthManager(service: AuthService())
             manager.setContext(modelContext: self.container.mainContext)
             self._authManager = State(initialValue: manager)
             
-            let libManager = LibraryManager(service: LibraryService(), context: self.container.mainContext)
+            let libManager = LibraryManager(
+                service: LibraryService(), context: self.container.mainContext)
             self._libManager = State(initialValue: libManager)
             do {
                 try audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
                 try audioSession.setActive(true)
             } catch {
-                print("ERROR: Error configurando la sesión de audio \(error)")
+                logger.error("ERROR: Error configurando la sesión de audio \(error)")
             }
         } catch {
+            logger.fault("Error al inicializar SwiftData: \(error.localizedDescription)")
             fatalError("Error al inicializar SwiftData: \(error.localizedDescription)")
         }
     }
@@ -64,21 +71,30 @@ struct LaRocaPlayApp: App {
                         ProgressView {
                             Text("Cargando")
                         }
-                        
+                        .tint(.customRed)
                     case .onboarding:
-                        OnboardingScreen(hideOnboarding: $hideOnboarding)
+                        OnboardingScreen()
+                        
                     case .authorized:
                         RootView()
+                    case .updatePassword:
+                        UpdatePasswordForm()
                     }
                 }
                 .environment(authManager)
                 .environment(libManager)
-//                .environment(musicVideoRepository)
+                .environment(network)
                 .modelContainer(container)
             }
+            .supportOfflineMode(isConnected: network.isConnected)
             .preferredColorScheme(.dark)
             .task {
                 await authManager.initialize()
+            }
+            .onOpenURL { url in
+                Task {
+                    await authManager.getSessionFromUrl(from: url)
+                }
             }
         }
     }
@@ -110,14 +126,15 @@ private var loadInjectionOnce: () = {
 #else
     let bundleName = "maciOSInjection.bundle"
 #endif
-    let bundlePath = "/Applications/InjectionIII.app/Contents/Resources/"+bundleName
+    let bundlePath = "/Applications/InjectionIII.app/Contents/Resources/" + bundleName
     guard let bundle = Bundle(path: bundlePath), bundle.load() else {
-        return print("""
-                ⚠️ Could not load injection bundle from \(bundlePath). \
-                Have you downloaded the InjectionIII.app from either \
-                https://github.com/johnno1962/InjectionIII/releases \
-                or the Mac App Store?
-                """)
+        return print(
+          """
+          ⚠️ Could not load injection bundle from \(bundlePath). \
+          Have you downloaded the InjectionIII.app from either \
+          https://github.com/johnno1962/InjectionIII/releases \
+          or the Mac App Store?
+          """)
     }
 }()
 
@@ -128,9 +145,11 @@ public class InjectionObserver: ObservableObject {
     var cancellable: AnyCancellable? = nil
     let publisher = PassthroughSubject<Void, Never>()
     init() {
-        _ = loadInjectionOnce // .enableInjection() optional Xcode 16+
-        cancellable = NotificationCenter.default.publisher(for:
-                                                            Notification.Name("INJECTION_BUNDLE_NOTIFICATION"))
+        _ = loadInjectionOnce  // .enableInjection() optional Xcode 16+
+        cancellable = NotificationCenter.default.publisher(
+            for:
+                Notification.Name("INJECTION_BUNDLE_NOTIFICATION")
+        )
         .sink { [weak self] change in
             self?.injectionNumber += 1
             self?.publisher.send()
@@ -149,8 +168,9 @@ extension SwiftUI.View {
     public func loadInjection() -> some SwiftUI.View {
         return eraseToAnyView()
     }
-    public func onInjection(bumpState: @escaping () -> ()) -> some SwiftUI.View {
-        return self
+    public func onInjection(bumpState: @escaping () -> Void) -> some SwiftUI.View {
+        return
+        self
             .onReceive(injectionObserver.publisher, perform: bumpState)
             .eraseToAnyView()
     }
@@ -162,7 +182,8 @@ public struct ObserveInjection: DynamicProperty {
     @ObservedObject private var iO = injectionObserver
     public init() {}
     public private(set) var wrappedValue: Int {
-        get {0} set {}
+        get { 0 }
+        set {}
     }
 }
 #else
@@ -174,7 +195,7 @@ extension SwiftUI.View {
     @inline(__always)
     public func loadInjection() -> some SwiftUI.View { return self }
     @inline(__always)
-    public func onInjection(bumpState: @escaping () -> ()) -> some SwiftUI.View {
+    public func onInjection(bumpState: @escaping () -> Void) -> some SwiftUI.View {
         return self
     }
 }
@@ -184,7 +205,8 @@ extension SwiftUI.View {
 public struct ObserveInjection {
     public init() {}
     public private(set) var wrappedValue: Int {
-        get {0} set {}
+        get { 0 }
+        set {}
     }
 }
 #endif

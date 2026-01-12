@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { Preach } from "@/lib/types"
+import Image from "next/image"
 import { format } from "date-fns"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 export const columns: ColumnDef<Preach>[] = [
   {
@@ -33,6 +35,21 @@ export const columns: ColumnDef<Preach>[] = [
       return `${preacher.preacher_role_id.name} ${preacher.name}`
     }
 
+  },
+  {
+    accessorKey: "image_id",
+    header: "Imagen",
+    cell: ({ row }) => {
+      const image_id = row.original.image_id
+      return (
+        <HoverCard>
+          <HoverCardTrigger className="underline">{image_id}</HoverCardTrigger>
+          <HoverCardContent>
+          <Image src={`http://127.0.0.1:54321/storage/v1/object/public/app/preach/${row.original.image_id}`} alt={row.original.title} width={300} height={100} />
+          </HoverCardContent>
+        </HoverCard>
+      )
+    }
   },
   {
     accessorKey: "date",

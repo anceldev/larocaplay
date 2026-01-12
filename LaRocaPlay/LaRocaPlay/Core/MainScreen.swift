@@ -6,12 +6,13 @@
 //
 
 import AppRouter
-import SwiftUI
 @_exported import Inject
+import SwiftUI
 
 typealias AppRouter = Router<AppTab, Destination, Sheet>
 
 struct MainScreen: View {
+    
     @State private var router = AppRouter(initialTab: .home)
     
     @ObserveInjection var forceRedraw
@@ -26,12 +27,17 @@ struct MainScreen: View {
                             case .home:
                                 HomeView()
                             case .preaches:
-//                                PreachesScreen(collectionId: 1)
-                                CollectionDetailScreen(collectionId: 1, order: .date, backButton: false)
+                                CollectionDetailScreen(
+                                    collectionId: 1,
+                                    order: .date,
+                                    backButton: false
+                                )
                             case .training:
                                 DiscipleshipListScreen()
                             case .karaoke:
-                                Text("Music screen")
+                                //                Text("Music screen")
+                                MusicScreen()
+                                
                             }
                         }
                         .navigationDestination(for: Destination.self) { destination in
@@ -53,9 +59,9 @@ struct MainScreen: View {
         }
         .background(.customBlack)
         .environment(router)
-        #if DEBUG
+#if DEBUG
         .enableInjection()
-        #endif
+#endif
     }
     
     @ViewBuilder
@@ -75,21 +81,16 @@ struct MainScreen: View {
                 .navigationBarBackButtonHidden()
         case .postDetail(let id):
             Text("Post details view: \(id)")
-        case .congresses:
-            CongressesScreen()
-        case .serie(let serieId):
-            SerieScreen(serieId: serieId)
         case .collections(let typeName, let title):
             CollectionsScreen(typeName: typeName, title: title)
                 .navigationBarBackButtonHidden()
         case .collection(let id):
             CollectionDetailScreen(collectionId: id, order: .position)
                 .navigationBarBackButtonHidden()
-        case .subscription:
-            SubscriptionScreen()
-                .navigationBarBackButtonHidden()
         case .resetPassword:
             ResetPasswordScreen(authMode: .constant(.resetPassword))
+        case .aboutUs:
+            AboutUsScreen()
         }
     }
     
@@ -107,7 +108,6 @@ struct MainScreen: View {
         }
     }
 }
-
 
 #Preview {
     MainScreen()

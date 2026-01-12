@@ -14,7 +14,8 @@ import RevenueCat
 
 @Observable
 final class AuthService {
-    let client = SBCLient.shared.supabase
+    let supabaseClient = SupabaseClientInstance.shared.publicClient
+    
     var user: ProfileDTO?
     var customerInfo: CustomerInfo?
     //    var authState: AuthState = .unauthenticated
@@ -29,27 +30,27 @@ final class AuthService {
     }
     
     func getCurrentSession() async throws -> Session {
-        return try await client.auth.session
+        return try await supabaseClient.auth.session
     }
     func fetchProfile(id: UUID) async throws -> ProfileDTO {
-        let profile: ProfileDTO = try await client
+        try await supabaseClient
             .from("profiles")
-            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
+            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscriptions(*)")
             .eq("user_id", value: id)
             .single()
             .execute()
             .value
-        return profile
+//        return profile
     }
     func signInAnonymously() async throws -> Session {
-        let session = try await client.auth.signInAnonymously()
+        let session = try await supabaseClient.auth.signInAnonymously()
         return session
     }
     
     
     func getSession() async {
         do {
-            let session = try await client.auth.session
+            let session = try await supabaseClient.auth.session
             //            self.user = try await getUSer(id: session.user.id)
             self.user = try await getProfile(for: session.user.id)
             guard let userId = self.user?.id else {
@@ -65,6 +66,21 @@ final class AuthService {
             self.errorMessage = "Error intentando obtener la sesión"
         }
     }
+    
+    func sendResetPasswordEmail(to email: String) async throws {
+        try await supabaseClient.auth.resetPasswordForEmail(
+            email,
+            redirectTo: URL(string: Constants.appAuthRedirectTo)
+        )
+    }
+    func updatePassword(with newPassword: String) async throws {
+        try await supabaseClient.auth.update(user: UserAttributes(password: newPassword))
+    }
+    
+    func getSessionFromUrl(from url: URL) async throws -> Session {
+        try await supabaseClient.auth.session(from: url)
+    }
+    
     func getSuscriptionStatus(userId: String) async throws {
         do {
             let (customerInfo, _) = try await Purchases.shared.logIn(userId)
@@ -79,74 +95,55 @@ final class AuthService {
             throw error
         }
     }
-    func signIn2(email: String, password: String) async throws -> Session {
-        try await client.auth.signIn(email: email, password: password)
+    func signIn(email: String, password: String) async throws -> Session {
+        try await supabaseClient.auth.signIn(email: email, password: password)
     }
     
-    func signIn(email: String, password: String) async throws {
-        do {
-            let session = try await client.auth.signIn(
-                email: email,
-                password: password
-            )
-            self.user = try await getProfile(for: session.user.id)
-            guard let userId = self.user?.id else {
-                try await signout()
-                throw AuthError.userNotFound
-            }
-            try await getSuscriptionStatus(userId: userId.uuidString)
-            self.authState = .authenticated
-            
-        } catch {
-            print(error)
-            print(error.localizedDescription)
-            throw error
-        }
-    }
+//    func signIn(email: String, password: String) async throws {
+//        do {
+//            let session = try await client.auth.signIn(
+//                email: email,
+//                password: password
+//            )
+//            self.user = try await getProfile(for: session.user.id)
+//            guard let userId = self.user?.id else {
+//                try await signout()
+//                throw AuthError.userNotFound
+//            }
+//            try await getSuscriptionStatus(userId: userId.uuidString)
+//            self.authState = .authenticated
+//            
+//        } catch {
+//            print(error)
+//            print(error.localizedDescription)
+//            throw error
+//        }
+//    }
     
-    func signUp2(email: String, password: String) async throws -> Supabase.User {
+    func updateUser(email: String, password: String) async throws -> Supabase.User {
         let attributes = UserAttributes(email: email, password: password)
-        return try await client.auth.update(user: attributes)
+        return try await supabaseClient.auth.update(user: attributes)
     }
     
     func signUp(email: String, password: String) async throws {
-        do {
-            let session = try await client.auth.signUp(
-                email: email,
-                password: password
-            )
-            self.user = try await getProfile(for: session.user.id)
-            guard let userId = self.user?.id else {
-                try await signout()
-                throw AuthError.userNotFound
-            }
-            try await getSuscriptionStatus(userId: userId.uuidString)
-            self.authState = .authenticated
-        } catch {
-            print(error)
-            print(error.localizedDescription)
-            throw error
-        }
+        try await supabaseClient.auth.signUp(
+            email: email,
+            password: password
+        )
     }
     
     func getProfile(for userId: UUID) async throws -> ProfileDTO {
-        //        let profile: ProfileDTO = try await client
-        //            .from("profiles")
-        //            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
-        //            .eq("user_id", value: userId)
-        //            .single()
-        //            .execute()
-        //            .value
-        let profile = try await client
+        try await supabaseClient
             .from("profiles")
             .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
             .eq("user_id", value: userId)
             .single()
             .execute()
+            .value
         
-        print(try JSONSerialization.jsonObject(with: profile.data))
-        let porf = try JSONDecoder.supabaseDateDecoder.decode(ProfileDTO.self, from: profile.data)
-        return porf
+        //        print(try JSONSerialization.jsonObject(with: profile.data))
+        //        let porf = try JSONDecoder.supabaseDateDecoder.decode(ProfileDTO.self, from: profile.data)
+        //        return porf
         //        return profile
     }
     
@@ -159,9 +156,9 @@ final class AuthService {
     }
     
     func resetPassword(_ email: String) async throws {
-        try await client.auth.resetPasswordForEmail(
+        try await supabaseClient.auth.resetPasswordForEmail(
             email,
-            redirectTo: URL(string: "http://localhost:3000/auth/update-password")
+            redirectTo: URL(string: Constants.authRedirectUrl)
         )
     }
     
@@ -178,12 +175,19 @@ final class AuthService {
     
     func signout() async throws {
         do {
-            try await client.auth.signOut()
-//            self.customerInfo = try await Purchases.shared.logOut()
-//            resetValues()
+            try await supabaseClient.auth.signOut()
+            //            self.customerInfo = try await Purchases.shared.logOut()
+            //            resetValues()
         } catch {
             print(error.localizedDescription)
             throw error
         }
+    }
+    func deleteAccount() async throws {
+        // Llamamos a edge funcition que eliminará la cuenta asociada a este id.
+        // TODO: Llamada a rpc para borrar la cuenta del usuario.
+        try await supabaseClient
+            .rpc("delete_user_account")
+            .execute()
     }
 }

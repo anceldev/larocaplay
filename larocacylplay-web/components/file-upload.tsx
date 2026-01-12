@@ -6,18 +6,17 @@ import { Dropzone, DropzoneContent, DropzoneEmptyState } from './dropzone'
 
 interface FileUploadProps {
   bucketName: string
-  path: string
-  onSuccess?: (fileName: string) => void
+  path: string,
+  metadata?: Record<string, string | number> | ((file: File) => Record<string, string | number>), //
   onError?: (errors: { name: string; message: string }[]) => void
 }
 
 export default function FileUpload({
   bucketName,
   path,
-  onSuccess,
+  metadata,
   onError
 }: FileUploadProps) {
-
   const props = useSupabaseUpload({
     bucketName: bucketName,
     path: path,
@@ -25,6 +24,7 @@ export default function FileUpload({
     maxFiles: 1,
     maxFileSize: 1000 * 1000 * 5, // 5MB,
     upsert: true,
+    metadata: metadata
   })
 
   const { isSuccess, successes, errors, loading } = props
@@ -34,23 +34,18 @@ export default function FileUpload({
 
   // Detectar cuando la subida termina (loading pasa de true a false)
   useEffect(() => {
-    console.log("Comprobando")
     // Si estaba cargando y ahora no está cargando, la subida terminó
     if (prevLoadingRef.current && !loading) {
       if (errors.length > 0) {
         // Hay errores
         onError?.(errors)
-      } else if (isSuccess && successes.length > 0) {
-        // Subida exitosa - pasar solo el nombre del archivo
-        const fileName = successes[0]
-        onSuccess?.(fileName)
       }
     }
     
     prevLoadingRef.current = loading
     prevSuccessesRef.current = successes
     prevErrorsRef.current = errors
-  }, [loading, isSuccess, successes, errors, path, onSuccess, onError])
+  }, [loading, isSuccess, successes, errors, path, onError])
 
   return (
     <div className='flex flex-col gap-2 w-1/2'>

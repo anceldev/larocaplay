@@ -61,8 +61,13 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
+*.DS_Store
+
+
 #Project private files
+
 */Config.plist
 *confidential.yml
 *db.sql
 *.env
+seed.sql

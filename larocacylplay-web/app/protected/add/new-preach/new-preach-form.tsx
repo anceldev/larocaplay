@@ -67,6 +67,7 @@ export default function NewPreachForm({preachers, collections}:{ preachers: Prea
       })
       console.log("Añadido a colección")
       if (added == true) {
+        form.reset()
         toast.success("Predicación añadida")
       }
 

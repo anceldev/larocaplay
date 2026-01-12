@@ -16,8 +16,6 @@ extension DateFormatter {
 
         return dateFormatter
     }()
-}
-extension DateFormatter {
     static let supabaseDate: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -33,4 +31,15 @@ extension DateFormatter {
            formatter.locale = Locale(identifier: "en_US_POSIX")
            return formatter
        }()
+    
+    static func decodedSupabaseDate(_ dateString: String) -> Date? {
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime]
+        if let date = isoFormatter.date(from: dateString) {
+            return date
+        }
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+//        return isoFormatter.date(from: dateString)
+        return isoFormatter.date(from: dateString)
+    }
 }

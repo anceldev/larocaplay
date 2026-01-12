@@ -11,25 +11,22 @@ import Observation
 import ConfidentialKit
 
 @Observable
-final class SBCLient {
-    var supabase: SupabaseClient
+final class SupabaseClientInstance {
+    var publicClient: SupabaseClient
     
     private init() {
-        // Initialize with nil, will be set up later
+        let projectUrl = URL(string: "\(Secrets.$supabaselocalurl)")!
         let anonKey = "\(Secrets.$supabaselocalkey)"
-        let projectUrl = "\(Secrets.$supabaselocalurl)"
         
-//        let anonKey = "\(Secrets.$supabaseanonkey)"
-//        let projectUrl = "\(Secrets.$supabaseprojecturl)"
-        supabase = .init(
+        publicClient = .init(
 //            supabaseURL: URL(string: projectUrl)!,
-            supabaseURL: URL(string: "http://192.168.1.11:54321")!,
+            supabaseURL: URL(string: "http://192.168.1.17:54321")!,
+//            supabaseURL: URL(string: "http://192.168.1.160:54321")!,
             supabaseKey: anonKey
         )
-        
     }
 }
 
-extension SBCLient {
-    static let shared = SBCLient()
+extension SupabaseClientInstance {
+    static let shared = SupabaseClientInstance()
 }
