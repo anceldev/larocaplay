@@ -6,8 +6,8 @@
 //
 
 //import GoogleSignInSwift
+import FirebaseMessaging
 import SwiftUI
-
 
 // TODO: Añadir validadores a los texfields, para que se vean errores cuando no cumplen el regex.
 
@@ -109,12 +109,12 @@ struct SignInForm: View {
                     }
                 }
                 if let errorMessage = authManager.errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
-                        .font(.system(size: 14))
+                   FormErrorMessage(errorMessage: errorMessage)
                 }
                 VStack {
                     Button {
+                        self.focusedField = nil
+                        authManager.errorMessage = nil
                         signInAction()
                     } label: {
                         if authManager.isLoading {
@@ -196,6 +196,7 @@ struct SignInForm: View {
                 }
             }
         }
+        .animation(.easeIn, value: authManager.errorMessage)
 //        .frame(maxHeight: .infinity)
         .background(.customBlack)
         .onChange(of: focusedField) { oldValue, newValue in
@@ -206,6 +207,9 @@ struct SignInForm: View {
             }
         }
         .enableInjection()
+        .onDisappear {
+            self.authManager.errorMessage = nil
+        }
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
@@ -217,7 +221,9 @@ struct SignInForm: View {
     private func signInAction() {
         Task {
             await authManager.signIn(email: formModel.email, password: formModel.password)
-            dismiss()
+            if authManager.isAuthenticated {
+                dismiss()
+            }
         }
     }
     private func signinAsGuest() {

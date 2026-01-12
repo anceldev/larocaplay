@@ -71,13 +71,47 @@ struct AccountScreen: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
                             VStack(spacing: 10) {
-                                Text("Información")
+                                Text("Soporte")
                                     .padding(.leading, 6)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .font(.system(size: 16))
                                     .fontWeight(.semibold)
                                 VStack(spacing: 16) {
 //                                    Link(destination: URL(string:"https://www.google.com")!) {
+                                    Button {
+                                        openMail()
+                                    } label: {
+                                        HStack {
+                                            Image(.lifeRing)
+                                            Text("Contactar con soporte")
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+//                                    Link(destination: URL(string: "https://google.es")!) {
+//                                        HStack {
+//                                            Image(.lock)
+//                                            Text("Política de privacidad")
+//                                        }
+//                                        .frame(maxWidth: .infinity, alignment: .leading)
+//                                    }
+//                                    HStack {
+//                                        Image(.windowPointer)
+//                                        Text(appVersion)
+//                                    }
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .padding()
+                                .background(.black.opacity(0.45))
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                            }
+
+                            VStack(spacing: 10) {
+                                Text("Información")
+                                    .padding(.leading, 6)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16))
+                                    .fontWeight(.semibold)
+                                VStack(spacing: 16) {
                                     Button {
                                         router.navigateTo(.aboutUs)
                                     } label: {
@@ -201,10 +235,10 @@ struct AccountScreen: View {
     private func deleteAccount() async {
         await authManager.deleteAccount()
     }
-    private func abrirMail() {
-        let email = "soporte@tudominio.com"
+    private func openMail() {
+        let email = "soporte@larocaplay.com"
         let subject = "Ayuda"
-        let body = "Hola, necesito ayuda con la app."
+        let body = "Hola, mi correo es \(authManager.currentUserProfile?.email ?? "") y mi id de usuario \(authManager.currentUserProfile?.userId.uuidString, default: "").\nNecesito ayuda con la app."
         
         let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""

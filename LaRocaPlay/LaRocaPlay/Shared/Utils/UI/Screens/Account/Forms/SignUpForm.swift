@@ -5,6 +5,7 @@
 //  Created by Ancel Dev account on 12/9/25.
 //
 
+import FirebaseMessaging
 import SwiftUI
 import Supabase
 
@@ -195,7 +196,9 @@ struct SignUpForm: View {
                 password: formModel.password,
                 confirmPassword: formModel.confirmPassword
             )
-            dismiss()
+            if authManager.isAuthenticated {
+                    dismiss()
+            }
         }
     }
 

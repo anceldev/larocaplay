@@ -70,16 +70,9 @@ final class LibraryManager {
         let preachersDictionary: [Int: Preacher] = Dictionary(uniqueKeysWithValues: localPreachers.map({ ($0.id, $0 )}))
         for dto in dtos {
             if let existing = preachersDictionary[dto.id] {
-                //                if let serverDate  = dto.updatedAt,
-                //                   let localDate = existing.updatedAt,
-                //                   serverDate > localDate {
                 if dto.updatedAt > existing.updatedAt {
                     existing.update(from: dto)
                 }
-                //                } else {
-                //                    let newPreacher = dto.toModel()
-                //                    context.insert(newPreacher)
-                //                }
             } else {
                 let newPreacher = dto.toModel()
                 context.insert(newPreacher)
@@ -219,6 +212,7 @@ final class LibraryManager {
             try context.save()
             return URL(string: response.videoUrl)!
         } catch let error as Supabase.FunctionsError {
+            logger.error("Error en Vimeo Edge Function \(error)")
             try handleVimeoEdgeError(error)
         } catch let error as URLError {
             if error.code == .notConnectedToInternet {

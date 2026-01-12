@@ -91,6 +91,7 @@ struct MainScreen: View {
             ResetPasswordScreen(authMode: .constant(.resetPassword))
         case .aboutUs:
             AboutUsScreen()
+                .navigationBarBackButtonHidden()
         }
     }
     

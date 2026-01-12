@@ -40,11 +40,9 @@ final class AuthService {
             .single()
             .execute()
             .value
-//        return profile
     }
     func signInAnonymously() async throws -> Session {
-        let session = try await supabaseClient.auth.signInAnonymously()
-        return session
+        try await supabaseClient.auth.signInAnonymously()
     }
     
     
@@ -99,27 +97,6 @@ final class AuthService {
         try await supabaseClient.auth.signIn(email: email, password: password)
     }
     
-//    func signIn(email: String, password: String) async throws {
-//        do {
-//            let session = try await client.auth.signIn(
-//                email: email,
-//                password: password
-//            )
-//            self.user = try await getProfile(for: session.user.id)
-//            guard let userId = self.user?.id else {
-//                try await signout()
-//                throw AuthError.userNotFound
-//            }
-//            try await getSuscriptionStatus(userId: userId.uuidString)
-//            self.authState = .authenticated
-//            
-//        } catch {
-//            print(error)
-//            print(error.localizedDescription)
-//            throw error
-//        }
-//    }
-    
     func updateUser(email: String, password: String) async throws -> Supabase.User {
         let attributes = UserAttributes(email: email, password: password)
         return try await supabaseClient.auth.update(user: attributes)
@@ -145,6 +122,14 @@ final class AuthService {
         //        let porf = try JSONDecoder.supabaseDateDecoder.decode(ProfileDTO.self, from: profile.data)
         //        return porf
         //        return profile
+    }
+    func createInitialProfile(id: UUID, email: String) async throws -> ProfileDTO {
+        try await supabaseClient
+            .from("profiles")
+            .upsert(["user_id": id.uuidString, "email": email], onConflict: "user_id")
+            .select("*")
+            .execute()
+            .value
     }
     
     private func resetValues() {

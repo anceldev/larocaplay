@@ -95,6 +95,9 @@ struct PreachScreen: View {
                 }
             }
             .scrollIndicators(.hidden)
+            .refreshable {
+                loadVideoURL()
+            }
         }
         .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
@@ -117,24 +120,27 @@ struct PreachScreen: View {
 
         })
         .onAppear(perform: {
-            Task {
-                await loadVideoURL()
-            }
+//            Task {
+                loadVideoURL()
+//            }
         })
         .enableInjection()
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    private func loadVideoURL() async {
+    private func loadVideoURL() {
+        guard authManager.isSubscriptionActive else { return }
         isLoading = true
         defer { isLoading = false }
-        do {
+        Task {
+            do {
                 let url = try await libManager.getValidVideoUrl(for: preach)
                 self.videoUrl = url
-        } catch {
-            print("ERROR: Error cargando video \(error)")
-            errorMessage = "No pudimmos conectar con el servidor del video"
+            } catch {
+                print("ERROR: Error cargando video \(error)")
+                errorMessage = "No pudimmos conectar con el servidor del video"
+            }
         }
     }
     

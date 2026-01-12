@@ -21,6 +21,8 @@
 		B492E0A12F03F2C9007F4C2B /* LaRocacylPlay.storekit in Resources */ = {isa = PBXBuildFile; fileRef = B492E09C2F03F2C9007F4C2B /* LaRocacylPlay.storekit */; };
 		B492E2A12F040C7F007F4C2B /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = B492E2A02F040C7F007F4C2B /* StoreKitTestCertificate.cer */; };
 		B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */ = {isa = PBXBuildFile; productRef = B49DA99D2E50A88800B0E571 /* ConfidentialKit */; };
+		B4E8B58A2F15701A009E54E9 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = B4E8B5892F15701A009E54E9 /* FirebaseAnalytics */; };
+		B4E8B58C2F15701A009E54E9 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = B4E8B58B2F15701A009E54E9 /* FirebaseMessaging */; };
 		B4F0F7752F10A20E003E4A5C /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = B4F0F7742F10A20E003E4A5C /* YouTubeiOSPlayerHelper */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4E8B58A2F15701A009E54E9 /* FirebaseAnalytics in Frameworks */,
 				B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */,
 				B48846062E461E52006DB382 /* Supabase in Frameworks */,
 				B48846042E461E52006DB382 /* Storage in Frameworks */,
@@ -80,6 +83,7 @@
 				B4F0F7752F10A20E003E4A5C /* YouTubeiOSPlayerHelper in Frameworks */,
 				B484D3C82EBEA99C00911E17 /* RevenueCatUI in Frameworks */,
 				B48845FC2E461E52006DB382 /* Auth in Frameworks */,
+				B4E8B58C2F15701A009E54E9 /* FirebaseMessaging in Frameworks */,
 				B48846022E461E52006DB382 /* Realtime in Frameworks */,
 				B484D3CD2EBEA9D500911E17 /* StoreKit.framework in Frameworks */,
 			);
@@ -148,6 +152,8 @@
 				B484D3C52EBEA99C00911E17 /* RevenueCat */,
 				B484D3C72EBEA99C00911E17 /* RevenueCatUI */,
 				B4F0F7742F10A20E003E4A5C /* YouTubeiOSPlayerHelper */,
+				B4E8B5892F15701A009E54E9 /* FirebaseAnalytics */,
+				B4E8B58B2F15701A009E54E9 /* FirebaseMessaging */,
 			);
 			productName = LaRocaPlay;
 			productReference = B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */;
@@ -185,6 +191,7 @@
 				B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */,
 				B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				B4F0F7732F10A20E003E4A5C /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
+				B4E8B5882F15701A009E54E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B4A75FB82E3D27D0005568C4 /* Products */;
@@ -355,6 +362,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LaRocaPlay/LaRocaPlay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5VZ6Q8DGLP;
@@ -388,6 +396,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LaRocaPlay/LaRocaPlay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5VZ6Q8DGLP;
@@ -484,6 +493,14 @@
 				minimumVersion = 0.4.1;
 			};
 		};
+		B4E8B5882F15701A009E54E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
 		B4F0F7732F10A20E003E4A5C /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper.git";
@@ -554,6 +571,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B49DA9942E50A40300B0E571 /* XCRemoteSwiftPackageReference "swift-confidential-plugin" */;
 			productName = "plugin:Confidential";
+		};
+		B4E8B5892F15701A009E54E9 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B4E8B5882F15701A009E54E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		B4E8B58B2F15701A009E54E9 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B4E8B5882F15701A009E54E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		B4F0F7742F10A20E003E4A5C /* YouTubeiOSPlayerHelper */ = {
 			isa = XCSwiftPackageProductDependency;

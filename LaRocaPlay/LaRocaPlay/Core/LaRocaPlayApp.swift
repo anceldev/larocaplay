@@ -7,20 +7,53 @@
 
 import AVKit
 import ConfidentialKit
+import FirebaseCore
+import FirebaseMessaging
 import RevenueCat
 import RevenueCatUI
 import SwiftData
 import SwiftUI
+import UserNotifications
 import os
 
+class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        
+        Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
+        
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { _, _ in }
+        
+        application.registerForRemoteNotifications()
+        
+        return true
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let token = fcmToken else { return }
+        print("FCM Token actual: \(token)")
+        
+//        NotificationCenter.default.post(name: Notification.Name("FCMTokenUpdated"), object: token)
+        Task {
+            await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+        }
+    }
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+            Messaging.messaging().apnsToken = deviceToken
+        }
+}
 
 @main
 struct LaRocaPlayApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @State private var network = NetworkMonitor.shared
     @State private var authManager: AuthManager
     @State private var libManager: LibraryManager
-
+    
     let container: ModelContainer
     private let logger = Logger(subsystem: "com.anceldev.LaRocaPlay", category: "main")
     
@@ -39,7 +72,7 @@ struct LaRocaPlayApp: App {
                 Song.self
             ])
             logger.info("\(URL.documentsDirectory.path(percentEncoded: false), privacy: .public)")
-
+            
             let config = ModelConfiguration("db.v1.4.1", schema: schema, isStoredInMemoryOnly: false)
             self.container = try ModelContainer(for: schema, configurations: config)
             

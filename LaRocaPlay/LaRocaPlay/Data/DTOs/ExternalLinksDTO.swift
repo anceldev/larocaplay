@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ExternalLinkDTO: Decodable {
+struct ExternalLinkDTO: Decodable, Identifiable {
     let id: Int
     let keyLink: String
     let link: String?
@@ -18,4 +18,12 @@ struct ExternalLinkDTO: Decodable {
         case keyLink = "key_link"
         case isEnabled = "is_enabled"
     }
+}
+
+extension ExternalLinkDTO {
+    static let constants: [ExternalLinkDTO] = [
+        .init(id: 1, keyLink: "youtube", link: "https://www.youtube.com/@CentroCristianoLaRoca", isEnabled: true),
+        .init(id: 2, keyLink: "instagram", link: "https://www.instagram.com/cclaroca_va?igsh=aGplamt3cWptZnJl", isEnabled: true),
+        .init(id: 3, keyLink: "tiktok", link: "https://www.tiktok.com/@cclaroca_va", isEnabled: true)
+    ]
 }

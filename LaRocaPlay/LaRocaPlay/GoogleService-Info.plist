@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBsazx8MkYUXblzCqXvi0-zGcXk4I3fM5E</string>
+	<key>GCM_SENDER_ID</key>
+	<string>218895273182</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.anceldev.LaRocaPlay</string>
+	<key>PROJECT_ID</key>
+	<string>larocaplay-f2e51</string>
+	<key>STORAGE_BUCKET</key>
+	<string>larocaplay-f2e51.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:218895273182:ios:caa7e27b1d3d9b38c9c64f</string>
+</dict>
+</plist>

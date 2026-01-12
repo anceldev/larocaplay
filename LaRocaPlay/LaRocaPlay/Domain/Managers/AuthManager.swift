@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseMessaging
 import Observation
 import RevenueCat
 import RevenueCatUI
@@ -39,6 +40,18 @@ enum AuthError: LocalizedError, Equatable {
     }
     
 }
+
+enum AuthManagerError: Error, LocalizedError, Equatable {
+    case modelNotFound
+    case couldNotRepairProfile
+    
+    var errorDescription: String? {
+        switch self {
+        case .modelNotFound: return "No se ha encontrado el modelo del usuario"
+        case .couldNotRepairProfile: return "No se pudo reparar la información del perfil"
+        }
+    }
+}
 enum AuthNavigationState {
     case loading  // App cargando e inicializandose
     case onboarding  // WelcomeView (No hay sesión)
@@ -52,6 +65,7 @@ enum ServiceStatus {
     case serverMaintenance  // Supabase caído (Error 5xx o Timeout)
     case storeMaintenance  // RevenueCat caído
 }
+
 
 @Observable
 final class AuthManager {
@@ -108,60 +122,72 @@ final class AuthManager {
         self.navigationState = .loading
         self.isLoading = true
         defer { self.isLoading = false }
-        
-//        do {
-//            let session = try await service.getCurrentSession()
-//            self.session = session
-//            loadLocalProfile(id: session.user.id)
-//        } catch let error as Supabase.AuthError where error == .sessionMissing {
-//            log.info("No hay sesión")
-//            self.navigationState = .onboarding
-//            return
-//        } catch let error as URLError {
-//            log.error("Error de red: \(error.localizedDescription)")
-//            self.navigationState = .onboarding
-//            self.serviceStatus = .offline
-//            self.errorMessage = "Necesitas conexión a internet para empezar"
-//            return
-//        } catch {
-//            log.error("No se pudo conectar con servidor de datos: \(error.localizedDescription)")
-//            self.navigationState = .onboarding
-//            self.serviceStatus = .serverMaintenance
-//            self.errorMessage = "No se ha podido conectar con el servidor de datos. Inténtalo más tarde"
-//            return
-//        }
-        do {
-            let session = try await service.getCurrentSession()
-            self.session = session
-            loadLocalProfile(id: session.user.id)
-        } catch {
-            log.info("No hay sesión")
+        guard let currentSession = try? await service.getCurrentSession() else {
             self.navigationState = .onboarding
             return
         }
+        self.session = currentSession
         
-        do {
-            try await syncWithThirdParties()
-        } catch {
-            log.error("Error en tienda \(error)")
-            log.warning("No se pueden realizar suscripciones")
-            self.serviceStatus = .storeMaintenance
+        let local = loadLocalProfile(id: currentSession.user.id)
+        if let local {
+            self.currentUserProfile = local
+        } else if self.isAnonymous {
+            self.currentUserProfile = createTemporaryGuestProfile(for: currentSession.user)
+        } else {
+            do {
+                self.currentUserProfile = try await refreshProfile()
+                self.serviceStatus = .healthy
+            } catch {
+                handleNetworkError(error, service: .supabase)
+            }
         }
         
-        do {
-            try await refreshProfile()
-        } catch let error as AuthError where error == .profileNotFound {
-            // log.error("No se encontró el perfil en supabase")  // Si no hay perfil en supabase, el usuario no existe
-            log.warning("No se puede realizar la autenticación")
+        guard self.currentUserProfile != nil else {
             self.navigationState = .onboarding
             return
-        } catch {
-            log.error("Servidor de supabase no disponible")
-            log.warning("No se puede realizar la autenticación")
-            self.serviceStatus = .serverMaintenance
-            self.errorMessage = "No se puede conectar con el servidor de autenticación. Inténtalo más tarde"
         }
         self.navigationState = .authorized
+        
+        Task {
+            await withTaskGroup(of: Void.self) { group in
+                if let token = Messaging.messaging().fcmToken {
+                    group.addTask {
+                        await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+                    }
+                }
+                group.addTask {
+                    do {
+                        let dto = try await self.service.fetchProfile(id: self.session!.user.id)
+                        await MainActor.run {
+                            if let updated = try? self.syncProfileToLocal(dto: dto) {
+                                self.currentUserProfile = updated
+                            }
+                            if self.serviceStatus != .storeMaintenance {
+                                self.serviceStatus = .healthy
+                            }
+                        }
+                    } catch {
+                        await MainActor.run {
+                            self.handleNetworkError(error, service: .supabase)
+                        }
+                    }
+                }
+                group.addTask {
+                    do {
+                        try await self.syncWithThirdParties()
+                        await MainActor.run {
+                            if self.serviceStatus == .storeMaintenance {
+                                self.serviceStatus = .healthy
+                            }
+                        }
+                    } catch {
+                        await MainActor.run {
+                            self.handleNetworkError(error, service: .revenueCat)
+                        }
+                    }
+                }
+            }
+        }
     }
     
     @MainActor
@@ -169,12 +195,77 @@ final class AuthManager {
         self.isLoading = true
         defer { self.isLoading = false }
         do {
-            self.session = try await service.signIn(email: email, password: password)
-            loadLocalProfile(id: self.session!.user.id)
-            try await syncWithThirdParties()
-            try? await refreshProfile()
+//            let newSession = try await service.signIn(email: email, password: password)
+            
+            let newSession = try await withThrowingTaskGroup(of: Supabase.Session.self) { group in
+                        // Tarea A: La petición real
+                        group.addTask {
+                            return try await self.service.signIn(email: email, password: password)
+                        }
+                        
+                        // Tarea B: El temporizador
+                        group.addTask {
+                            try await Task.sleep(nanoseconds: 8 * 1_000_000_000) // 8 segundos
+                            throw URLError(.timedOut)
+                        }
+                        
+                        // El primero que termine gana. Si es el Timer, lanza error y cancela el SignIn.
+                        let result = try await group.next()!
+                        group.cancelAll()
+                        return result
+                    }
+            
+            self.session = newSession
+            
+            if let local = loadLocalProfile(id: newSession.user.id){
+                self.currentUserProfile = local
+            } else {
+                let dto = try await service.fetchProfile(id: newSession.user.id)
+                self.currentUserProfile = try syncProfileToLocal(dto: dto)
+            }
+            
             self.navigationState = .authorized
+//            if let token = Messaging.messaging().fcmToken {
+//                await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+//            }
+            Task {
+                await withTaskGroup(of: Void.self) { group in
+                    if let token = Messaging.messaging().fcmToken {
+                        group.addTask {
+                            await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+                        }
+                    }
+                    // Sincronizar RevenueCat
+                    group.addTask {
+                        do {
+                            try await self.syncWithThirdParties()
+                        } catch {
+                            await MainActor.run { self.serviceStatus = .storeMaintenance }
+                        }
+                    }
+                    
+                    // Refrescar perfil (por si hubo cambios externos)
+                    group.addTask {
+                        do {
+                            let dto = try await self.service.fetchProfile(id: newSession.user.id)
+                            await MainActor.run {
+                                _ = try? self.syncProfileToLocal(dto: dto)
+                            }
+                        } catch {
+                            // Aquí no hace falta handleNetworkError porque ya estamos dentro
+                            self.log.warning("No se pudo refrescar el perfil tras el login")
+                        }
+                    }
+                }
+            }
+        } catch let error as Supabase.AuthError {
+            handleSignInError(error)
+            self.navigationState = .onboarding
+        } catch let error as URLError {
+            handleNetworkError(error, service: .supabase)
+            self.navigationState = .onboarding
         } catch {
+            
             print(error)
             print(error.localizedDescription)
             handleError(.unknown("Credenciales incorrectass"))
@@ -185,21 +276,68 @@ final class AuthManager {
     func signUp(email: String, password: String, confirmPassword: String) async {
         self.isLoading = true
         self.errorMessage = nil
-        defer { isLoading = false }
+        defer { self.isLoading = false }
+        
         do {
-            //            try Validations.shared.isValidEmail(email)
+            // 1. Validaciones previas
             try checkPasswordsField(password: password, confirmPassword: confirmPassword)
             
-            if let session {
+            // 2. Creación/Actualización de cuenta en Supabase Auth
+            if self.session != nil {
                 _ = try await service.updateUser(email: email, password: password)
             } else {
                 _ = try await service.signUp(email: email, password: password)
             }
-            self.session = try await service.getCurrentSession()
-            loadLocalProfile(id: self.session!.user.id)
-            try await syncWithThirdParties()
-            try await refreshProfile()
+            
+            // 3. Obtención de la nueva sesión
+            let newSession = try await service.getCurrentSession()
+            self.session = newSession
+            
+            // 4. RUTA CRÍTICA: Perfil obligatorio
+            // En un signUp, refreshProfile es vital porque intentará obtener el perfil
+            // creado por el trigger o lo reparará/creará si no existe.
+            // refreshProfile debe devolver un ProfileDTO y manejar la lógica Sendable
+            let dto = try await service.fetchProfile(id: newSession.user.id)
+            self.currentUserProfile = try syncProfileToLocal(dto: dto)
+            
+            // 5. ENTRADA INMEDIATA
+            // Ya tenemos sesión y perfil. Autorizamos al usuario.
             self.navigationState = .authorized
+            
+            Task {
+                await withTaskGroup(of: Void.self) { group in
+                    // Tarea A: Notificaciones
+                    group.addTask {
+                        if let token = Messaging.messaging().fcmToken {
+                            await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+                        }
+                    }
+                    
+                    // Tarea B: RevenueCat
+                    group.addTask {
+                        do {
+                            try await self.syncWithThirdParties()
+                        } catch {
+                            await MainActor.run { self.serviceStatus = .storeMaintenance }
+                        }
+                    }
+                }
+            }
+            
+            // 6. TAREAS NO CRÍTICAS (Background)
+//            Task {
+//                // Sincronizamos con RevenueCat en segundo plano
+//                // No bloqueamos al usuario si la tienda tarda en responder
+//                do {
+//                    try await self.syncWithThirdParties()
+//                } catch {
+//                    await MainActor.run { self.serviceStatus = .storeMaintenance }
+//                }
+//                
+//                // Opcional: Podrías volver a refrescar el perfil por si el trigger
+//                // tardó en actualizar metadatos específicos, pero con el fetch anterior suele bastar.
+//            }
+            
         } catch let error as SignUpError {
             handleSignupError(error)
             self.navigationState = .onboarding
@@ -207,63 +345,68 @@ final class AuthManager {
             handleSignupSupabaseAuthError(error.errorCode)
             self.navigationState = .onboarding
         } catch {
+            log.error("Error inesperado en signUp: \(error.localizedDescription)")
             handleError(.unknown("No se pudo completar el registro"))
             self.navigationState = .onboarding
         }
     }
-    
     @MainActor
     func startGuestSession() async {
         self.navigationState = .loading
         self.isLoading = true
         defer { self.isLoading = false }
         do {
-            try await loginAnonymously()
+            // 1. Autenticación Anónima (Obligatorio)
+            let guestSession = try await service.signInAnonymously()
+            self.session = guestSession
+            
+            // 2. RUTA CRÍTICA: Perfil Temporal
+            // Como es invitado, no necesitamos ir a la red.
+            // Generamos un perfil "In-Memory" o local de inmediato.
+            self.currentUserProfile = createTemporaryGuestProfile(for: guestSession.user)
+            
+            // 3. ENTRADA INMEDIATA
+            // El usuario ya tiene lo mínimo para ver la RootView
             self.navigationState = .authorized
+            
+            // 4. ACTUALIZACIÓN EN SEGUNDO PLANO
+            Task {
+                // Sincronizamos con RevenueCat (para trazar al invitado)
+                try? await self.syncWithThirdParties()
+            }
+            
         } catch {
+            log.error("Error al iniciar sesión anónima: \(error.localizedDescription)")
             handleError(.networkError)
             self.navigationState = .onboarding
         }
     }
     
-    /// Inicia una sesión anonima para invitados.
-    @MainActor
-    func loginAnonymously() async throws {
-        do {
-            let session = try await service.signInAnonymously()
-            self.session = session
-            try await syncWithThirdParties()
-            try await refreshProfile()
-        } catch {
-            print(error)
-            print(error.localizedDescription)
-            throw AuthError.networkError
-        }
-    }
-    
     /// Actualiza los datos del perfil actual.
     @MainActor
-    func refreshProfile() async throws {
-        guard let user = session?.user else { return }
-        if self.isAnonymous && self.currentUserProfile == nil {
-            log.info("Usuario anónimo, usando perfil temporal")
-            self.currentUserProfile = createTemporaryGuestProfile(for: user)
-            return
+    func refreshProfile() async throws -> UserProfile {
+        guard let user = session?.user else {
+            throw Supabase.AuthError.sessionMissing
         }
+        
         do {
             let dto = try await service.fetchProfile(id: user.id)
-            syncProfileToLocal(dto: dto)
+            let userProfile = try syncProfileToLocal(dto: dto)
             self.error = nil
+            return userProfile
         } catch let error as PostgrestError {
             if error.code == "PGRST116" {
-                // print("No hay ningun perfil asociado en la DB")
                 log.info("No hay ningun perfil asociado en la DB")
-                if currentUserProfile == nil {
-                    throw AuthError.profileNotFound
+                do {
+                    let repairedProfile = try await tryToRepairProfile()
+                    return repairedProfile
+                } catch {
+                    throw AuthManagerError.couldNotRepairProfile
                 }
             }
             throw error
         } catch {
+            log.error("Error relacionado con SwiftData: \(error.localizedDescription)")
             throw error
         }
     }
@@ -282,12 +425,12 @@ final class AuthManager {
     /// - Parameters:
     ///   - user: Usuario de backend.
     private func createTemporaryGuestProfile(for user: Supabase.User) -> UserProfile {
-       UserProfile(
+        UserProfile(
             userId: user.id,
             displayName: "Invitado",
             profileRole: .member
         )
-//        self.currentUserProfile = guest
+        //        self.currentUserProfile = guest
     }
     
     /// Cierra la sesión actual.
@@ -295,6 +438,7 @@ final class AuthManager {
     func signOut() async {
         self.isLoading = true
         defer { self.isLoading = false }
+        await PushNotificationService.shared.removeDeviceToken()
         do {
             try await service.signout()
             _ = try await Purchases.shared.logOut()
@@ -334,13 +478,11 @@ final class AuthManager {
     /// Carga el perfil de la cache local, si existe.
     /// - Parameters:
     ///   - id: id del perfil que se tiene que cargar.
-    private func loadLocalProfile(id: UUID) {
+    private func loadLocalProfile(id: UUID) -> UserProfile? {
         guard let modelContext = modelContext else {
-            // print("Error: ModelContext no configurado en AuthManager")
             log.error("ModelContext no configurado en AuthManager")
-            return
+            return nil
         }
-        //        let descriptor = FetchDescriptor<UserProfile>(predicate: #Predicate<UserProfile>{ $0.userId == userId })
         let targetID = id
         let descriptor = FetchDescriptor<UserProfile>(
             predicate: #Predicate<UserProfile> { profile in
@@ -348,28 +490,22 @@ final class AuthManager {
             }
         )
         do {
-            let results = try modelContext.fetch(descriptor)
-            let localModel = results.first
-            self.currentUserProfile = localModel
+            let localProfile = try modelContext.fetch(descriptor).first
+            return localProfile
         } catch {
-            // print("DEBUG: Todavía no hay perfil local")
-            log.warning("Todavía no hay perfil local")
-            // print(error)
-            //      log.error(error.localizedDescription)
             log.error("\(error.localizedDescription, privacy: .public)")
-            
+            return nil
         }
     }
     
     /// Vincula la cuenta del backend al cache local. Si existe lo actualiza, si no lo crea.
     /// - Parameters:
     ///   - dto: Perfil del backend.
-    private func syncProfileToLocal(dto: ProfileDTO) {
-        // TODO: Guardar el perfil en SwiftData de manera local.
+    @MainActor
+    private func syncProfileToLocal(dto: ProfileDTO) throws -> UserProfile {
         guard let context = modelContext else {
-            // print("Error: ModelContext no configurado en AuthManager")
             log.error("ModelContext no configurado en AuthManager")
-            return
+            throw SwiftDataError.missingModelContext
         }
         let targetUUID = dto.id
         let descriptor = FetchDescriptor<UserProfile>(
@@ -383,31 +519,28 @@ final class AuthManager {
                 profile.displayName = dto.displayName ?? "Usuario"
                 profile.email = dto.email
                 profile.avatarId = dto.avatarId
-                // print("Perfil local actualizado correctamente")
             } else {
                 let newProfile = dto.toModel()
                 context.insert(newProfile)
-                // print("Prefil creado correctamente")
             }
             try context.save()
-            self.currentUserProfile = try context.fetch(descriptor).first
+            let userProfile = try context.fetch(descriptor).first
+            
+            guard let userProfile else {
+                throw AuthManagerError.modelNotFound
+            }
+            return userProfile
         } catch {
-            print(error)
+            log.error("Error crítico en SwiftData: \(error.localizedDescription, privacy: .public)")
+            throw error
         }
     }
     
     /// Vincula la cuenta actual con la de RevenueCat correspondiente
     private func syncWithThirdParties() async throws {
         guard let userId = session?.user.id.uuidString.lowercased() else { return }
-        do {
-            let (customerInfo, _) = try await Purchases.shared.logIn(userId)
-            self.customerInfo = customerInfo
-        } catch {
-            // print("Error vinculando con RevenueCat: \(error)")
-            log.error("Error vinculando con RevenueCat: \(error)")
-            print(type(of: error))
-            throw error
-        }
+        let (customerInfo, _) = try await Purchases.shared.logIn(userId)
+        self.customerInfo = customerInfo
     }
     
     /// Manejo de errores.
@@ -464,14 +597,26 @@ final class AuthManager {
             self.navigationState = .onboarding
         }
     }
+    @MainActor
+    private func tryToRepairProfile() async throws -> UserProfile {
+        log.info("Iniciando reparación del perfil...")
+        guard let user = self.service.user else {
+            throw Supabase.AuthError.sessionMissing
+        }
+        let newProfileDTO = try await service.createInitialProfile(id: user.id, email: user.email!)
+        let newProfile = try syncProfileToLocal(dto: newProfileDTO)
+        return newProfile
+    }
 }
 
 extension AuthManager {
-    private enum ServiceType { case supabase, revenueCat }
+    private enum ServiceType { case supabase, revenueCat, vimeo }
+    
     private func handleNetworkError(_ error: Error, service: ServiceType) {
         // 1. ¿Es un error de conexión física?
         if let urlError = error as? URLError, urlError.code == .notConnectedToInternet {
             self.serviceStatus = .offline
+            self.errorMessage = "No hay conexión a internet"
             return
         }
         
@@ -482,11 +627,24 @@ extension AuthManager {
         if isServerIssue || isTimeout {
             if service == .supabase {
                 self.serviceStatus = .serverMaintenance
+                self.errorMessage = "Error de conexión con el servidor.\nInténtalo más tarde"
             } else {
                 self.serviceStatus = .storeMaintenance
+                self.errorMessage = "Error de conexiópn con la tienda.\nNo se pueden hacer compras"
             }
         }
     }
+    
+    private func handleSignInError(_ error: Supabase.AuthError) {
+        switch error.errorCode {
+        case .invalidCredentials: self.errorMessage = "Correo electrónico o contraseña inválidos"
+        case .userNotFound: self.errorMessage = "El email no existe en la base de datos"
+        case .overRequestRateLimit: self.errorMessage = "Demasiados intentos fallidos. Inténtalo más tarde"
+        default: self.errorMessage = "Error en sistema de autenticación"
+        }
+    }
+    
+    
     
     private func handleSignupError(_ error: SignUpError) {
         switch error {
