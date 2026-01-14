@@ -32,18 +32,29 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         return true
     }
     
+    // FCM Token recibido
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
-        print("FCM Token actual: \(token)")
-        
-//        NotificationCenter.default.post(name: Notification.Name("FCMTokenUpdated"), object: token)
-        Task {
-            await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
-        }
+        // Enviamos el token a Supabase a través de nuestro Manager
+        NotificationManager.shared.updateTokenInSupabase(token: token)
     }
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-            Messaging.messaging().apnsToken = deviceToken
-        }
+    
+//    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+//        guard let token = fcmToken else { return }
+//        print("FCM Token actual: \(token)")
+//        
+//        Task {
+//            await PushNotificationService.shared.updateDeviceToken(fcmToken: token)
+//        }
+//    }
+//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+//            Messaging.messaging().apnsToken = deviceToken
+//        }
+//    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+//        let userInfo = response.notification.request.content.userInfo
+//        PushNotificationService.shared.handleNotification(userInfo: userInfo)
+//        completionHandler()
+//    }
 }
 
 @main
@@ -53,6 +64,7 @@ struct LaRocaPlayApp: App {
     @State private var network = NetworkMonitor.shared
     @State private var authManager: AuthManager
     @State private var libManager: LibraryManager
+//    @State private var notificationManager: NotificationManager
     
     let container: ModelContainer
     private let logger = Logger(subsystem: "com.anceldev.LaRocaPlay", category: "main")
@@ -73,7 +85,7 @@ struct LaRocaPlayApp: App {
             ])
             logger.info("\(URL.documentsDirectory.path(percentEncoded: false), privacy: .public)")
             
-            let config = ModelConfiguration("db.v1.4.1", schema: schema, isStoredInMemoryOnly: false)
+            let config = ModelConfiguration("db.v1.4.2", schema: schema, isStoredInMemoryOnly: false)
             self.container = try ModelContainer(for: schema, configurations: config)
             
             let manager = AuthManager(service: AuthService())
@@ -83,6 +95,10 @@ struct LaRocaPlayApp: App {
             let libManager = LibraryManager(
                 service: LibraryService(), context: self.container.mainContext)
             self._libManager = State(initialValue: libManager)
+            
+//            let notificationManager = NotificationManager(service: NotificationService())
+//            self._notificationManager = State(initialValue: notificationManager)
+            
             do {
                 try audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
                 try audioSession.setActive(true)
@@ -117,6 +133,7 @@ struct LaRocaPlayApp: App {
                 .environment(authManager)
                 .environment(libManager)
                 .environment(network)
+//                .environment(notificationManager)
                 .modelContainer(container)
             }
             .supportOfflineMode(isConnected: network.isConnected)

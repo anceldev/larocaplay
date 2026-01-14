@@ -35,7 +35,7 @@ final class AuthService {
     func fetchProfile(id: UUID) async throws -> ProfileDTO {
         try await supabaseClient
             .from("profiles")
-            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscriptions(*)")
+            .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
             .eq("user_id", value: id)
             .single()
             .execute()
@@ -117,11 +117,6 @@ final class AuthService {
             .single()
             .execute()
             .value
-        
-        //        print(try JSONSerialization.jsonObject(with: profile.data))
-        //        let porf = try JSONDecoder.supabaseDateDecoder.decode(ProfileDTO.self, from: profile.data)
-        //        return porf
-        //        return profile
     }
     func createInitialProfile(id: UUID, email: String) async throws -> ProfileDTO {
         try await supabaseClient

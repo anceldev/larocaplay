@@ -65,7 +65,7 @@ struct CollectionDetailScreen: View {
                         }
                         if !collection.items.isEmpty {
                             CollectionItemsView(
-                                collectionId: collectionId,
+//                                collectionId: collectionId,
                                 collectionItems: collection.items,
                                 order: listOrder
                             )

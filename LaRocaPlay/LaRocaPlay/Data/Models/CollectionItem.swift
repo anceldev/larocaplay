@@ -14,11 +14,22 @@ final class CollectionItem {
     var position: Int
     var collection: Collection?
     var preach: Preach?
+    var createdAt: Date
+    var updatedAt: Date
     
-    init(id: Int, position: Int, collection: Collection? = nil, preach: Preach? = nil) {
+    init(id: Int, position: Int, collection: Collection? = nil, preach: Preach? = nil, createdAt: Date, updatedAt: Date) {
         self.id = id
         self.position = position
         self.collection = collection
         self.preach = preach
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+    
+    func update(from: CollectionItemResponseDTO) {
+        self.position = from.position ?? 0
+        self.preach = from.preach.toModel()
+        self.createdAt = from.createdAt
+        self.updatedAt = from.updatedAt
     }
 }

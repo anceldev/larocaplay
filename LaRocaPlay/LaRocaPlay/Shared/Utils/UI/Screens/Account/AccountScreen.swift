@@ -121,7 +121,7 @@ struct AccountScreen: View {
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     }
-                                    Link(destination: URL(string: "https://google.es")!) {
+                                    Link(destination: URL(string: "https://elite-acrylic-f12.notion.site/Pol-tica-de-Privacidad-de-LaRocaPlay-2e880028ca1a80f29ad2e293bcd7b704?source=copy_link")!) {
                                         HStack {
                                             Image(.lock)
                                             Text("Política de privacidad")
@@ -163,32 +163,32 @@ struct AccountScreen: View {
                                 .background(.black.opacity(0.45))
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
-                            VStack(spacing: 10) {
-                                Text("Cuenta")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .font(.system(size: 16))
-                                    .fontWeight(.semibold)
-                                    .padding(.leading, 6)
-                                VStack(spacing: 16) {
-                                    
-                                    Button {
-                                        withAnimation(.easeOut) {
-                                            showDeleteAccountDialog.toggle()
-                                        }
-                                    } label: {
-                                        HStack {
-                                            Image(.trash)
-                                                .foregroundStyle(.white)
-                                            Text("Eliminar mi cuenta")
-                                                .foregroundStyle(.white)
-                                        }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    }
-                                }
-                                .padding()
-                                .background(.red.opacity(0.5))
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                            }
+//                            VStack(spacing: 10) {
+//                                Text("Cuenta")
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                                    .font(.system(size: 16))
+//                                    .fontWeight(.semibold)
+//                                    .padding(.leading, 6)
+//                                VStack(spacing: 16) {
+//                                    
+//                                    Button {
+//                                        withAnimation(.easeOut) {
+//                                            showDeleteAccountDialog.toggle()
+//                                        }
+//                                    } label: {
+//                                        HStack {
+//                                            Image(.trash)
+//                                                .foregroundStyle(.white)
+//                                            Text("Eliminar mi cuenta")
+//                                                .foregroundStyle(.white)
+//                                        }
+//                                        .frame(maxWidth: .infinity, alignment: .leading)
+//                                    }
+//                                }
+//                                .padding()
+//                                .background(.red.opacity(0.5))
+//                                .clipShape(RoundedRectangle(cornerRadius: 20))
+//                            }
                         }
                         if let error = errorMessage {
                             Text(error)

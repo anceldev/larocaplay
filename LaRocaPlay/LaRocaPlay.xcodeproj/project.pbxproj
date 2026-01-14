@@ -360,7 +360,7 @@
 		B4A75FC32E3D27D1005568C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = larocaplayicon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LaRocaPlay/LaRocaPlay.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -394,7 +394,7 @@
 		B4A75FC42E3D27D1005568C4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = larocaplayicon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LaRocaPlay/LaRocaPlay.entitlements;
 				CODE_SIGN_STYLE = Automatic;

@@ -12,7 +12,7 @@ import SwiftUI
 typealias AppRouter = Router<AppTab, Destination, Sheet>
 
 struct MainScreen: View {
-    
+    @Environment(NotificationManager.self) private var notifManager
     @State private var router = AppRouter(initialTab: .home)
     
     @ObserveInjection var forceRedraw
@@ -67,8 +67,8 @@ struct MainScreen: View {
     @ViewBuilder
     private func destinationView(for destination: Destination) -> some View {
         switch destination {
-        case .preach(let item):
-            PreachScreen(preach: item)
+        case .preachDetail(let id, let isDeepLink):
+            PreachContainerView(itemId: id, isDeepLink: isDeepLink)
         case .preacher(let preacher):
             PreacherScreen(preacher: preacher)
         case .list:

@@ -9,7 +9,8 @@ import AppRouter
 import SwiftUI
 
 enum Destination: DestinationType {
-    case preach(preach: Preach)
+//    case preach(preach: Preach)
+    case preachDetail(id: Int, isDeepLink: Bool = false)
     case preacher(preacher: PreacherDTO)
     case list
     case account

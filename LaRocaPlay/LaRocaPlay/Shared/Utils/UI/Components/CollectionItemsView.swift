@@ -10,15 +10,15 @@ import SwiftUI
 
 struct CollectionItemsView: View {
     @State private var searchQuery = ""
-    @State var collectionId: Int
+//    @State var collectionId: Int
     @State private var cols: Int = 1
     @State private var listView: ListView = .grid
     @State private var image: UIImage?
     var collectionItems: [CollectionItem]
     var order: ItemsListOrder
     
-    init(collectionId: Int, collectionItems: [CollectionItem], order: ItemsListOrder) {
-        self._collectionId = State(initialValue: collectionId)
+    init(collectionItems: [CollectionItem], order: ItemsListOrder) {
+//        self._collectionId = State(initialValue: collectionId)
         self.collectionItems = collectionItems
         self.order = order
     }

@@ -51,8 +51,7 @@ struct HomeView: View {
                                             .foregroundStyle(.dirtyWhite)
                                     }
                                     Button {
-                                        //                                        router.navigateTo(.preach(preach: mainCollection.items[0].preach!))
-                                        router.navigateTo(.preach(preach: mainCollection.itemsSortedByDate[0].preach!))
+                                        router.navigateTo(.preachDetail(id: mainCollection.id, isDeepLink: false))
                                     } label: {
                                         PreachGridItem(item: mainCollection.itemsSortedByDate[0], aspect: 1, titleAlignment: .center)
                                     }

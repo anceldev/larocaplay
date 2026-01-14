@@ -122,11 +122,15 @@ final class AuthManager {
         self.navigationState = .loading
         self.isLoading = true
         defer { self.isLoading = false }
-        guard let currentSession = try? await service.getCurrentSession() else {
+        
+        let currentSession: Session
+        do {
+            currentSession = try await service.getCurrentSession()
+            self.session = currentSession
+        } catch {
             self.navigationState = .onboarding
             return
         }
-        self.session = currentSession
         
         let local = loadLocalProfile(id: currentSession.user.id)
         if let local {
@@ -138,7 +142,8 @@ final class AuthManager {
                 self.currentUserProfile = try await refreshProfile()
                 self.serviceStatus = .healthy
             } catch {
-                handleNetworkError(error, service: .supabase)
+                log.info("Error: \(error)")
+                self.errorMessage = "No se ha podido recuperar la información de su perfil."
             }
         }
         
@@ -152,7 +157,7 @@ final class AuthManager {
             await withTaskGroup(of: Void.self) { group in
                 if let token = Messaging.messaging().fcmToken {
                     group.addTask {
-                        await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+                        await PushNotificationService.shared.updateDeviceToken(fcmToken: token)
                     }
                 }
                 group.addTask {
@@ -195,25 +200,18 @@ final class AuthManager {
         self.isLoading = true
         defer { self.isLoading = false }
         do {
-//            let newSession = try await service.signIn(email: email, password: password)
-            
             let newSession = try await withThrowingTaskGroup(of: Supabase.Session.self) { group in
-                        // Tarea A: La petición real
-                        group.addTask {
-                            return try await self.service.signIn(email: email, password: password)
-                        }
-                        
-                        // Tarea B: El temporizador
-                        group.addTask {
-                            try await Task.sleep(nanoseconds: 8 * 1_000_000_000) // 8 segundos
-                            throw URLError(.timedOut)
-                        }
-                        
-                        // El primero que termine gana. Si es el Timer, lanza error y cancela el SignIn.
-                        let result = try await group.next()!
-                        group.cancelAll()
-                        return result
-                    }
+                group.addTask {
+                    return try await self.service.signIn(email: email, password: password)
+                }
+                group.addTask {
+                    try await Task.sleep(nanoseconds: 8 * 1_000_000_000) // 8 segundos
+                    throw URLError(.timedOut)
+                }
+                let result = try await group.next()!
+                group.cancelAll()
+                return result
+            }
             
             self.session = newSession
             
@@ -225,17 +223,14 @@ final class AuthManager {
             }
             
             self.navigationState = .authorized
-//            if let token = Messaging.messaging().fcmToken {
-//                await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
-//            }
+
             Task {
                 await withTaskGroup(of: Void.self) { group in
                     if let token = Messaging.messaging().fcmToken {
                         group.addTask {
-                            await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+                            await PushNotificationService.shared.updateDeviceToken(fcmToken: token)
                         }
                     }
-                    // Sincronizar RevenueCat
                     group.addTask {
                         do {
                             try await self.syncWithThirdParties()
@@ -243,8 +238,6 @@ final class AuthManager {
                             await MainActor.run { self.serviceStatus = .storeMaintenance }
                         }
                     }
-                    
-                    // Refrescar perfil (por si hubo cambios externos)
                     group.addTask {
                         do {
                             let dto = try await self.service.fetchProfile(id: newSession.user.id)
@@ -252,7 +245,6 @@ final class AuthManager {
                                 _ = try? self.syncProfileToLocal(dto: dto)
                             }
                         } catch {
-                            // Aquí no hace falta handleNetworkError porque ya estamos dentro
                             self.log.warning("No se pudo refrescar el perfil tras el login")
                         }
                     }
@@ -309,7 +301,7 @@ final class AuthManager {
                     // Tarea A: Notificaciones
                     group.addTask {
                         if let token = Messaging.messaging().fcmToken {
-                            await PushNotificationService.shared.updateDeviceToken(fcmToekn: token)
+                            await PushNotificationService.shared.updateDeviceToken(fcmToken: token)
                         }
                     }
                     
@@ -323,25 +315,11 @@ final class AuthManager {
                     }
                 }
             }
-            
-            // 6. TAREAS NO CRÍTICAS (Background)
-//            Task {
-//                // Sincronizamos con RevenueCat en segundo plano
-//                // No bloqueamos al usuario si la tienda tarda en responder
-//                do {
-//                    try await self.syncWithThirdParties()
-//                } catch {
-//                    await MainActor.run { self.serviceStatus = .storeMaintenance }
-//                }
-//                
-//                // Opcional: Podrías volver a refrescar el perfil por si el trigger
-//                // tardó en actualizar metadatos específicos, pero con el fetch anterior suele bastar.
-//            }
-            
         } catch let error as SignUpError {
             handleSignupError(error)
             self.navigationState = .onboarding
         } catch let error as Supabase.AuthError {
+            log.error("Error en autenticación: \(error)")
             handleSignupSupabaseAuthError(error.errorCode)
             self.navigationState = .onboarding
         } catch {
@@ -404,6 +382,20 @@ final class AuthManager {
                     throw AuthManagerError.couldNotRepairProfile
                 }
             }
+            throw error
+        } catch let error as URLError {
+            switch error.code {
+            case .notConnectedToInternet:
+                log.error("No hay conexión a internet")
+            case .timedOut:
+                log.error("La solicitud expiró. Supabase podría estar lento o caído")
+            default:
+                log.error("Error de red: \(error.localizedDescription)")
+            }
+            handleNetworkError(error, service: .supabase)
+            throw error
+        } catch let error as AuthManagerError {
+            log.error("No se ha podido obtener modelo de cache local: \(error.localizedDescription)")
             throw error
         } catch {
             log.error("Error relacionado con SwiftData: \(error.localizedDescription)")
@@ -630,7 +622,7 @@ extension AuthManager {
                 self.errorMessage = "Error de conexión con el servidor.\nInténtalo más tarde"
             } else {
                 self.serviceStatus = .storeMaintenance
-                self.errorMessage = "Error de conexiópn con la tienda.\nNo se pueden hacer compras"
+                self.errorMessage = "Error de conexión con la tienda.\nNo se pueden hacer compras"
             }
         }
     }

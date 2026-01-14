@@ -12,12 +12,19 @@ import MediaPlayer
 import Supabase
 import os
 
+enum LibManagerError: Error, LocalizedError {
+    case noCollectionItemFound(String)
+}
+
 @Observable
 final class LibraryManager {
     private let service: LibraryService
     private let context: ModelContext
     
     var isFetching = false
+    
+    
+    
     private let mainCollectionId: Int = 1
     private let logger = Logger(subsystem: "com.anceldev.LaRocaPlay", category: "LibraryManager")
     
@@ -187,7 +194,12 @@ final class LibraryManager {
                 link.position = dto.position ?? 0
                 link.preach = targetPreach
             } else {
-                let newLink = CollectionItem(id: dto.id, position: dto.position ?? 0)
+                let newLink = CollectionItem(
+                    id: dto.id,
+                    position: dto.position ?? 0,
+                    createdAt: dto.createdAt,
+                    updatedAt: dto.updatedAt
+                )
                 newLink.collection = collection
                 newLink.preach = targetPreach
                 context.insert(newLink)
@@ -253,6 +265,50 @@ final class LibraryManager {
                 context.insert(song)
             }
             try context.save()
+    }
+
+    @MainActor
+    func getCollectionItem(id: Int, isDeepLink: Bool) async throws -> Preach {
+        let targetID = id
+        if isDeepLink {
+            let item = try await fetchAndSyncFromSupabase(collectionId: targetID)
+            guard let preach = item.preach else {
+                throw LibManagerError.noCollectionItemFound("No se encontro el item en la base de datos")
+            }
+            return preach
+        }
+        let descriptor = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.id == targetID })
+        if let local = try? context.fetch(descriptor).first {
+            guard let preach = local.preach else {
+                throw LibManagerError.noCollectionItemFound("No se encontro el item en la memoria caché")
+            }
+            return preach
+        }
+        
+        let item = try await fetchAndSyncFromSupabase(collectionId: id)
+        guard let preach = item.preach else {
+            throw LibManagerError.noCollectionItemFound("No se encontro el item de la base de datos")
+        }
+        return preach
+    }
+    
+    private func fetchAndSyncFromSupabase(collectionId: Int) async throws -> CollectionItem {
+        let dto = try await service.fetchCollectionItem(id: collectionId)
+        let descriptor = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{$0.id == collectionId })
+        let existing = try? context.fetch(descriptor).first
+        
+        if let existing {
+            if dto.updatedAt > existing.updatedAt {
+                existing.update(from: dto)
+                try context.save()
+            }
+            return existing
+        } else {
+            let new = dto.toModel()
+            context.insert(new)
+            try context.save()
+            return new
+        }
     }
 }
 

@@ -19,7 +19,7 @@ final class PushNotificationService {
     private let logger = Logger(subsystem: "com.anceldev.LaRocaPlay", category: "notifications")
     
     @MainActor
-    func updateDeviceToken(fcmToekn: String) async {
+    func updateDeviceToken(fcmToken: String) async {
         guard let userId = try? await supabase.auth.session.user.id else {
 //            print("No hay usuario autenticado. No se guarda el token")
             logger.notice("No hay usuario autenticado. No se guarda el token")
@@ -30,7 +30,7 @@ final class PushNotificationService {
         
         let deviceData: [String: AnyJSON] = [
             "user_id": .string(userId.uuidString),
-            "fcm_token": .string(fcmToekn),
+            "fcm_token": .string(fcmToken),
             "device_name": .string(deviceName),
             "device_type": .string(deviceType),
         ]
@@ -60,5 +60,21 @@ final class PushNotificationService {
         } catch {
             logger.error("[PushService] Error al eliminar el dispositivo: \(error)")
         }
+    }
+    
+    func handleNotification(userInfo: [AnyHashable: Any]) {
+        if let type = userInfo ["type"] as? String, type == "new_preach" {
+            let preachPath = handleNewPreach(data: userInfo)
+            return
+        }
+    }
+    private func handleNewPreach(data: [AnyHashable:Any]) -> CollectionItemFromNotification? {
+        guard let preachIdString = data["preach_id"] as? String,
+              let collectionIdString = data["collection_id"] as? String,
+              let preachId = Int(preachIdString),
+              let collectionId = Int(collectionIdString) else {
+            return nil
+        }
+        return .init(preachId: preachId, collectionId: collectionId)
     }
 }

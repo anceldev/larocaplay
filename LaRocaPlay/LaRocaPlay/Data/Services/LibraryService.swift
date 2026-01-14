@@ -131,4 +131,20 @@ final class LibraryService {
             .execute()
             .value
     }
+    
+    func fetchPreach(id: Int) async throws -> PreachDTO {
+        try await supabaseClient
+            .from("preach")
+            .select("*")
+            .execute()
+            .value
+    }
+    func fetchCollectionItem(id: Int) async throws -> CollectionItemResponseDTO {
+        try await supabaseClient
+            .from("collection_item")
+            .select()
+            .eq("id", value: id)
+            .execute()
+            .value
+    }
 }
