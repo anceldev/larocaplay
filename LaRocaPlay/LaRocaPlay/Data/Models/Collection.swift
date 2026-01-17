@@ -67,5 +67,8 @@ extension Collection {
             return itemA.preach!.date > itemB.preach!.date
         }
     }
+    var itemsSortedByPosition: [CollectionItem] {
+        return items.sorted { $0.position < $1.position }
+    }
 }
 

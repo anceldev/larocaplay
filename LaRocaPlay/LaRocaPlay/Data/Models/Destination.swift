@@ -9,7 +9,6 @@ import AppRouter
 import SwiftUI
 
 enum Destination: DestinationType {
-//    case preach(preach: Preach)
     case preachDetail(id: Int, isDeepLink: Bool = false)
     case preacher(preacher: PreacherDTO)
     case list
@@ -17,46 +16,44 @@ enum Destination: DestinationType {
     case userDetails(UserProfile)
     case postDetail(id: String)     // Different from generic detail
     case collections(String, String)
-    case collection(id: Int)
+    case collection(id: Int, isDeepLink: Bool = false)
     case resetPassword
     case aboutUs
-    //    case auth(user: User)
-    //    case auth(user: User?)
     
-//    static func from(path: String, fullPath: [String], parameters: [String : String]) -> Destination? {
-//        guard let currenIndex = fullPath.firstIndex(of: path) else {
-//            return nil
-//        }
-//        let previousComponent = currenIndex > 0 ? fullPath[currenIndex - 1] : nil
+    static func from(path: String, fullPath: [String], parameters: [String:String]) -> Destination? {
+//        guard let currentIndex = fullPath.firstIndex(of: path) else { return nil }
+//        let previousComponent = currentIndex > 0 ? fullPath[currentIndex - 1] : nil
 //        
 //        switch (previousComponent, path) {
-//        case ("users", "preach"):
-//            let id = parameters["id"] ?? "unknown"
-////            return .userDetails
-//            return .account
-//        case ("posts", "preach"):
-//            let id = parameters["id"] ?? "unknown"
-//            return .postDetail(id: id)
-//            // Standard routing
-//        case (_, "preach"):
-//            let id = parameters["id"] ?? "default"
-//            return .preach(preach: Preach(id: 299, title: "asd", date: .now, videoId: "asd"))
-//        case (_, "list"):
-//            return .list
-//        case (_, "account"):
-//            let userId = parameters["userId"] ?? "unknown"
-//            return .account
-//        case (nil, "users"), (nil, "posts"):
-//            return nil // These are path segments, not destinations
+//        case (nil, "collection"):
+//            let id = parameters["id"] ?? parameters["collectionId"] ?? "0"
+//            return .collection(id: Int(id) ?? 0, isDeepLink: true)
+//        case ("collection", "preach"):
+//            let id = parameters["id"] ?? ""
+//            return .preachDetail(id: Int(id) ?? 0, isDeepLink: true)
 //        default:
 //            return nil
 //        }
-//    }
-    
-}
-extension Destination {
-    static func from(path: String, fullPath: [String], parameters: [String : String]) -> Destination? {
-        return nil
+        guard let currentIndex = fullPath.firstIndex(of: path) else { return nil }
+            
+            // El ID ahora es simplemente el siguiente elemento en el path
+            // Ejemplo: si el path es "collection", el ID está en currentIndex + 1
+            var idValue: Int {
+                let idIndex = currentIndex + 1
+                if idIndex < fullPath.count {
+                    return Int(fullPath[idIndex]) ?? 0
+                }
+                return 0
+            }
+
+            switch path {
+            case "collection":
+                return .collection(id: idValue, isDeepLink: true)
+            case "preach":
+                return .preachDetail(id: idValue, isDeepLink: true)
+            default:
+                return nil
+            }
     }
 }
 

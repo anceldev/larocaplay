@@ -22,9 +22,7 @@ struct SignInForm: View {
     }
     
     @FocusState private var focusedField: FocusedField?
-    
-//    @State private var email: String = ""
-//    @State private var password: String = ""
+
     @Binding var authMode: AuthMode
     
     var isFormValid: Bool {
@@ -49,6 +47,7 @@ struct SignInForm: View {
                             .foregroundStyle(.dirtyWhite)
                     }
                 }
+                .padding(.top, 24)
                 VStack(spacing: 24) {
                     VStack(spacing: 16) {
                         VStack(alignment: .leading) {

@@ -41,7 +41,7 @@ struct CollectionsScreen: View {
                 .scrollIndicators(.hidden)
             } else {
                 EmptyContent {
-                    Text("Todavía no hay datos añadidos")
+                    Text("No hay ninguna serie disponible.")
                         .font(.system(size: 18, weight: .regular, design: .rounded))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 16)
@@ -57,7 +57,4 @@ struct CollectionsScreen: View {
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
-    private func getCollections() async {
-    }
 }

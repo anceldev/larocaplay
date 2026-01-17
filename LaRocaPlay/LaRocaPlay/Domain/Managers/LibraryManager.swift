@@ -95,7 +95,6 @@ final class LibraryManager {
         let descriptor = FetchDescriptor<Collection>()
         let localCollections = try context.fetch(descriptor)
         
-        // Borrado de colecciones que no están en el server
         let serverIds = Set(allIds)
         var activeCollectionsDict: [Int : Collection] = [:]
         
@@ -109,9 +108,6 @@ final class LibraryManager {
         
         for dto in dtos {
             if let existing = activeCollectionsDict[dto.id] {
-                //                if let serverDate = dto.updatedAt,
-                //                   let localDate = existing.updatedAt,
-                //                   serverDate > localDate {
                 if dto.updatedAt > existing.updatedAt {
                     existing.update(from: dto)
                     existing.needItemsSync = true
@@ -139,8 +135,6 @@ final class LibraryManager {
         
         let collectionDescriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.id == collectionId })
         let collection = try context.fetch(collectionDescriptor).first
-        
-        print(collection)
         
         guard let collection, !preachersDict.isEmpty else {
             print("DEBUG: No hay preachers o colección todavia")
@@ -174,9 +168,6 @@ final class LibraryManager {
         for dto in dtos {
             let targetPreach: Preach
             if let localPreach = preachesDict[dto.preach.id] {
-                //                if let remoteDate = dto.preach.updatedAt,
-                //                   let localDate = localPreach.updatedAt,
-                //                   remoteDate > localDate {
                 if dto.preach.updatedAt > localPreach.updatedAt {
                     localPreach.update(from: dto.preach)
                 }
@@ -268,31 +259,41 @@ final class LibraryManager {
     }
 
     @MainActor
-    func getCollectionItem(id: Int, isDeepLink: Bool) async throws -> Preach {
+//    func getCollectionItem(id: Int, isDeepLink: Bool) async throws -> Preach {
+    func getCollectionItem(id: Int, isDeepLink: Bool) async throws -> CollectionItem {
         let targetID = id
         if isDeepLink {
-            let item = try await fetchAndSyncFromSupabase(collectionId: targetID)
+            let item = try await fetchAndSyncCollectionItemsFromSupabase(collectionId: targetID)
             guard let preach = item.preach else {
                 throw LibManagerError.noCollectionItemFound("No se encontro el item en la base de datos")
             }
-            return preach
+//            return preach
+            return item
         }
         let descriptor = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.id == targetID })
         if let local = try? context.fetch(descriptor).first {
             guard let preach = local.preach else {
                 throw LibManagerError.noCollectionItemFound("No se encontro el item en la memoria caché")
             }
-            return preach
+            Task {
+                do {
+                    _ = try await fetchAndSyncCollectionItemsFromSupabase(collectionId: targetID)
+                } catch {
+                    logger.error("Fallo el refreso en segundo plano: \(error)")
+                }
+            }
+//            return preach
+            return local
         }
         
-        let item = try await fetchAndSyncFromSupabase(collectionId: id)
+        let item = try await fetchAndSyncCollectionItemsFromSupabase(collectionId: id)
         guard let preach = item.preach else {
             throw LibManagerError.noCollectionItemFound("No se encontro el item de la base de datos")
         }
-        return preach
+//        return preach
+        return item
     }
-    
-    private func fetchAndSyncFromSupabase(collectionId: Int) async throws -> CollectionItem {
+    private func fetchAndSyncCollectionItemsFromSupabase(collectionId: Int) async throws -> CollectionItem {
         let dto = try await service.fetchCollectionItem(id: collectionId)
         let descriptor = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{$0.id == collectionId })
         let existing = try? context.fetch(descriptor).first
@@ -310,6 +311,52 @@ final class LibraryManager {
             return new
         }
     }
+    
+    @MainActor
+    func getCollection(id: Int, isDeepLink: Bool) async throws -> Collection {
+        let targetID = id
+        
+        // Si viene por una notificacion o un enlace compartido.
+        if isDeepLink {
+            return try await fetchAndSyncColllectionFromSupabase(collectionId: targetID)
+//            return collection
+        }
+        let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.id == targetID })
+        let local = try? context.fetch(descriptor).first
+        
+        if let local {
+            Task {
+                do {
+                    _ = try await fetchAndSyncColllectionFromSupabase(collectionId: targetID)
+                } catch {
+                    logger.error("Error en refresco silencioso: \(error)")
+                }
+            }
+            return local
+        }
+        let collection = try await fetchAndSyncColllectionFromSupabase(collectionId: targetID)
+        return collection
+    }
+    
+    private func fetchAndSyncColllectionFromSupabase(collectionId: Int) async throws -> Collection {
+        let dto = try await service.fetchCollection(id: collectionId)
+        let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.id == collectionId })
+        let existing = try? context.fetch(descriptor).first
+        
+        if let existing {
+            if dto.updatedAt > existing.updatedAt {
+                existing.update(from: dto)
+                try context.save()
+            }
+            return existing
+        } else {
+            let new = dto.toModel()
+            context.insert(new)
+            try context.save()
+            return new
+        }
+    }
+
 }
 
 extension LibraryManager {

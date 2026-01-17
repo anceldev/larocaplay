@@ -155,6 +155,7 @@ struct SignUpForm: View {
                     }
                     .buttonStyle(.capsuleButton(color: isFormValid ? Theme.Button.normal : Theme.Button.disabled))
                     .disabled(!isFormValid)
+                    .animation(.easeInOut, value: isFormValid)
                     VStack(spacing: 16) {
                         VStack {
                             Text("Ya tengo cuenta")

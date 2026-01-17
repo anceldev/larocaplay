@@ -21,6 +21,20 @@ struct CollectionItemResponseDTO: Decodable {
         case updatedAt = "updated_at"
     }
     
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        self.preach = try container.decode(PreachDTO.self, forKey: .preach)
+        self.position = try container.decodeIfPresent(Int.self, forKey: .position)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+//        let createdString = try container.decode(String.self, forKey: .createdAt)
+//        guard let decodedCreatedDate = DateFormatter.decodedSupabaseDate(createdString)else {
+//            throw DecodingError.dataCorruptedError(forKey: .createdAt, in: container, debugDescription: "wrong created_at format")
+//        }
+//        self.createdAt = decodedCreatedDate
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+    }
+    
     
     func toModel() -> CollectionItem {
         CollectionItem(

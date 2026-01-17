@@ -30,6 +30,26 @@ final class LibraryService {
             .execute()
             .value
     }
+    func fetchCollection(id: Int) async throws -> CollectionDTO {
+        try await supabaseClient
+            .from("collection")
+            .select("""
+                id,
+                title,
+                description,
+                image_id,
+                collection_type_id(id, name),
+                is_public,
+                is_home_screen,
+                created_at,
+                updated_at
+                """)
+            .eq("id", value: id)
+            .single()
+            .execute()
+            .value
+            
+    }
     
     func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
@@ -49,12 +69,13 @@ final class LibraryService {
                         name,
                         preacher_role_id(id, name),
                         image_id,
-                        created_at,
                         updated_at
                         )
                 ),
                 position,
-                id
+                id,
+                created_at,
+                updated_at
                 """)
             .eq("collection_id", value: collectionId)
             .order("preach(date)", ascending: false)
@@ -84,7 +105,9 @@ final class LibraryService {
                         )
                 ),
                 position,
-                id
+                id,
+                created_at,
+                updated_at
                 """)
             .eq("collection_id", value: collectionId)
             .execute()
@@ -121,7 +144,7 @@ final class LibraryService {
             options: FunctionInvokeOptions(
                 method: .post,
                 body: ["videoId": videoId]
-//                body: ["videoId": "1234"]
+                //                body: ["videoId": "1234"]
             ))
     }
     func fetchSongs() async throws -> [SongDTO] {
@@ -142,8 +165,31 @@ final class LibraryService {
     func fetchCollectionItem(id: Int) async throws -> CollectionItemResponseDTO {
         try await supabaseClient
             .from("collection_item")
-            .select()
+            .select("""
+                preach: preach_id (
+                id,
+                title,
+                description,
+                date,
+                image_id,
+                video_id,
+                created_at,
+                updated_at,
+                preacher: preacher_id (
+                    id,
+                    name,
+                    preacher_role_id(id, name),
+                    image_id,
+                    updated_at
+                    )
+                ),
+                position,
+                id,
+                created_at,
+                updated_at
+                """)
             .eq("id", value: id)
+            .single()
             .execute()
             .value
     }

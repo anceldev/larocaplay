@@ -28,7 +28,6 @@ struct DiscipleshipListScreen: View {
                             Button {
                                 router.navigateTo(.collection(id: discipleship.id))
                             } label: {
-                                //                            DiscipleshipCard(title: discipleship.title, image: Image(.preview2))
                                 CollectionCard(collection: discipleship)
                             }
                         }

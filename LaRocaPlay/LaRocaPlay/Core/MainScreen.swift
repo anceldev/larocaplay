@@ -12,7 +12,8 @@ import SwiftUI
 typealias AppRouter = Router<AppTab, Destination, Sheet>
 
 struct MainScreen: View {
-    @Environment(NotificationManager.self) private var notifManager
+    //    @Environment(NotificationManager.self) private var notifManager
+    @Environment(AuthManager.self) var authManager
     @State private var router = AppRouter(initialTab: .home)
     
     @ObserveInjection var forceRedraw
@@ -27,15 +28,14 @@ struct MainScreen: View {
                             case .home:
                                 HomeView()
                             case .preaches:
-                                CollectionDetailScreen(
+                                CollectionContainerView(
                                     collectionId: 1,
-                                    order: .date,
-                                    backButton: false
+                                    isDeepLink: false
                                 )
+                                
                             case .training:
                                 DiscipleshipListScreen()
                             case .karaoke:
-                                //                Text("Music screen")
                                 MusicScreen()
                                 
                             }
@@ -59,16 +59,33 @@ struct MainScreen: View {
         }
         .background(.customBlack)
         .environment(router)
+        .onAppear {
+            if let pendingUrl = authManager.pendingDeepLink {
+                router.navigate(to: pendingUrl)
+                authManager.pendingDeepLink = nil
+//                handleDeepLink(pendingUrl)
+            }
+        }
+        .onOpenURL { url in
+            if url.scheme == "larocaplayapp" {
+                router.navigate(to: url)
+//                handleDeepLink(url)
+            }
+        }
 #if DEBUG
         .enableInjection()
 #endif
     }
+}
+
+extension MainScreen {
     
     @ViewBuilder
     private func destinationView(for destination: Destination) -> some View {
         switch destination {
         case .preachDetail(let id, let isDeepLink):
             PreachContainerView(itemId: id, isDeepLink: isDeepLink)
+                .navigationBarBackButtonHidden()
         case .preacher(let preacher):
             PreacherScreen(preacher: preacher)
         case .list:
@@ -84,8 +101,9 @@ struct MainScreen: View {
         case .collections(let typeName, let title):
             CollectionsScreen(typeName: typeName, title: title)
                 .navigationBarBackButtonHidden()
-        case .collection(let id):
-            CollectionDetailScreen(collectionId: id, order: .position)
+        case .collection(let id, let isDeepLink):
+            //            CollectionDetailScreen(collectionId: id, isDeepLink:  order: .position)
+            CollectionContainerView(collectionId: id, isDeepLink: isDeepLink)
                 .navigationBarBackButtonHidden()
         case .resetPassword:
             ResetPasswordScreen(authMode: .constant(.resetPassword))
@@ -94,7 +112,6 @@ struct MainScreen: View {
                 .navigationBarBackButtonHidden()
         }
     }
-    
     @ViewBuilder
     private func sheetView(for sheet: Sheet) -> some View {
         switch sheet {

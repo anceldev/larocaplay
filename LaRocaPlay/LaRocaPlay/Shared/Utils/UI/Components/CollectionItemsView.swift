@@ -10,24 +10,17 @@ import SwiftUI
 
 struct CollectionItemsView: View {
     @State private var searchQuery = ""
-//    @State var collectionId: Int
     @State private var cols: Int = 1
     @State private var listView: ListView = .grid
     @State private var image: UIImage?
-    var collectionItems: [CollectionItem]
-    var order: ItemsListOrder
-    
-    init(collectionItems: [CollectionItem], order: ItemsListOrder) {
-//        self._collectionId = State(initialValue: collectionId)
-        self.collectionItems = collectionItems
-        self.order = order
-    }
-    
+
+    var items: [CollectionItem]
+
     var filteredItems: [CollectionItem] {
         if searchQuery.isEmpty {
-            return self.collectionItems
+            return self.items
         } else {
-            return self.collectionItems.filter { $0.preach?.title.lowercased().contains(searchQuery.lowercased()) ?? false }
+            return self.items.filter { $0.preach?.title.lowercased().contains(searchQuery.lowercased()) ?? false }
         }
     }
     
@@ -49,14 +42,7 @@ struct CollectionItemsView: View {
             
             VStack(spacing: 0) {
                 CollectionItemsList(
-                    items: filteredItems.sorted(by: {
-                        switch order {
-                        case .position:
-                            $0.position <= $1.position
-                        case .date:
-                            $0.preach!.date >= $1.preach!.date
-                        }
-                    }),
+                    items: items,
                     listView: listView
                 )
             }

@@ -41,13 +41,6 @@ struct MusicScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .sheet(item: $selectedSong, content: { song in
-//            VStack {
-//                YouTubePlayerView(videoID: song.videoId)
-//                    .aspectRatio(16/9, contentMode: .fit)
-//                    .mask(RoundedRectangle(cornerRadius: 30))
-//                Spacer()
-//            }
-//            .padding(18)
             YoutubeContainerView(videoId: song.videoId)
         })
         .padding(.horizontal, 18)

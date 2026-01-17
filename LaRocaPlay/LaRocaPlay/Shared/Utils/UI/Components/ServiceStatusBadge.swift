@@ -30,7 +30,6 @@ struct ServiceStatusBadge: View {
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 2)
-//            .background(.yellow.opacity(0.5))
             .background(.white.opacity(0.2))
             .background(.white)
             .mask(RoundedRectangle(cornerRadius: 50))

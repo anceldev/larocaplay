@@ -43,7 +43,8 @@ enum ListView {
     var subtitleSize: CGFloat {
         switch self {
         case .single:   14
-        case .grid:     12
+//        case .grid:     12
+        case .grid:     10
         case .list:     12
         }
     }
@@ -57,7 +58,7 @@ enum ListView {
     var textPadding: CGFloat {
         switch self {
         case .single:   8
-        case .grid:     4
+        case .grid:     8
         case .list:     0
         }
     }

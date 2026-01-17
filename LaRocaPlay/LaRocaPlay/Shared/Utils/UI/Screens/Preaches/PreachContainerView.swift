@@ -22,8 +22,9 @@ struct PreachContainerView: View {
                 switch state {
                 case .loading:
                     ProgressView()
-                case .succes(let preach):
-                    PreachDetailView(preach: preach)
+                case .succes(let item):
+//                    PreachDetailView(item: preach)
+                    PreachDetailView(item: item)
                 case .error(let errorMessage):
                     Text(errorMessage)
                 }
@@ -32,6 +33,8 @@ struct PreachContainerView: View {
                 await loadPreach()
             }
         }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.customBlack)
         .enableInjection()
@@ -41,8 +44,14 @@ struct PreachContainerView: View {
 #endif
     private func loadPreach() async {
         do {
-            let preach = try await libManager.getCollectionItem(id: itemId, isDeepLink: isDeepLink)
-            state = .succes(preach)
+//            let preach = try await libManager.getCollectionItem(id: itemId, isDeepLink: isDeepLink)
+            let item = try await libManager.getCollectionItem(id: itemId, isDeepLink: isDeepLink)
+            guard let preach = item.preach, let collection = item.collection else {
+                state = .error("No se encontro la enseñanza asociada a la serie")
+                return
+            }
+//            state = .succes(preach)
+            state = .succes(item)
         } catch let error as LibManagerError {
             switch error {
             case .noCollectionItemFound(let message):
@@ -50,6 +59,7 @@ struct PreachContainerView: View {
             }
             return
         } catch {
+            print(error)
             state = .error("No se pudo cargar la prediación")
         }
     }
@@ -58,7 +68,8 @@ struct PreachContainerView: View {
 extension PreachContainerView {
     enum ViewState {
         case loading
-        case succes(Preach)
+//        case succes(Preach)
+        case succes(CollectionItem)
         case error(String)
     }
 }

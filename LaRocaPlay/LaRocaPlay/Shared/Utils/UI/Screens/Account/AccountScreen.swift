@@ -77,7 +77,6 @@ struct AccountScreen: View {
                                     .font(.system(size: 16))
                                     .fontWeight(.semibold)
                                 VStack(spacing: 16) {
-//                                    Link(destination: URL(string:"https://www.google.com")!) {
                                     Button {
                                         openMail()
                                     } label: {
@@ -87,18 +86,6 @@ struct AccountScreen: View {
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     }
-//                                    Link(destination: URL(string: "https://google.es")!) {
-//                                        HStack {
-//                                            Image(.lock)
-//                                            Text("Política de privacidad")
-//                                        }
-//                                        .frame(maxWidth: .infinity, alignment: .leading)
-//                                    }
-//                                    HStack {
-//                                        Image(.windowPointer)
-//                                        Text(appVersion)
-//                                    }
-//                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                                 .padding()
                                 .background(.black.opacity(0.45))
@@ -163,32 +150,6 @@ struct AccountScreen: View {
                                 .background(.black.opacity(0.45))
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
-//                            VStack(spacing: 10) {
-//                                Text("Cuenta")
-//                                    .frame(maxWidth: .infinity, alignment: .leading)
-//                                    .font(.system(size: 16))
-//                                    .fontWeight(.semibold)
-//                                    .padding(.leading, 6)
-//                                VStack(spacing: 16) {
-//                                    
-//                                    Button {
-//                                        withAnimation(.easeOut) {
-//                                            showDeleteAccountDialog.toggle()
-//                                        }
-//                                    } label: {
-//                                        HStack {
-//                                            Image(.trash)
-//                                                .foregroundStyle(.white)
-//                                            Text("Eliminar mi cuenta")
-//                                                .foregroundStyle(.white)
-//                                        }
-//                                        .frame(maxWidth: .infinity, alignment: .leading)
-//                                    }
-//                                }
-//                                .padding()
-//                                .background(.red.opacity(0.5))
-//                                .clipShape(RoundedRectangle(cornerRadius: 20))
-//                            }
                         }
                         if let error = errorMessage {
                             Text(error)
@@ -200,7 +161,6 @@ struct AccountScreen: View {
                     .foregroundStyle(.dirtyWhite)
                     
                     .sheet(isPresented: $showPaywall) {
-//                        PaywallView()
                         PaywallView()
                             .onPurchaseCompleted { customerInfo in
                                 authManager.customerInfo = customerInfo

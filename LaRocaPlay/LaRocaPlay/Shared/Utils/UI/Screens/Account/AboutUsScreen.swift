@@ -7,9 +7,6 @@
 
 import SwiftUI
 
-
-
-
 struct AboutUsScreen: View {
     var body: some View {
         VStack {

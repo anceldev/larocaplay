@@ -16,7 +16,7 @@ struct CollectionCard: View {
       Button {
         router.navigateTo(.collection(id: collection.id))
       } label: {
-        if let imageId = collection.imageId {
+        if collection.imageId != nil{
           ThumbImageLoader(
             title: collection.title, storageCollection: .collections(collection.imageId))
         } else {

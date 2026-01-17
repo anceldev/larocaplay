@@ -11,9 +11,16 @@ import SwiftUI
 
 struct ResetPasswordForm: View {
     @Environment(AuthManager.self) var authManager
-    @Binding var email: String
-    @State private var showPopover = false
+//    @Environment(ToastManager.self) var toasts
+    @Environment(\.dismiss) var dismiss
     
+    @State private var showPopover = false
+    @State private var formModel = ResetPasswordFormModel()
+    
+    
+    var isFormValid: Bool {
+        !authManager.isLoading && formModel.isValid
+    }
 
     var body: some View {
         VStack(spacing: 32) {
@@ -37,14 +44,15 @@ struct ResetPasswordForm: View {
                         .foregroundStyle(.customRed)
                 }
                 .font(.system(size: 14))
-                TextField("email", text: $email, prompt:Text("Correo electrónico")
+                TextField("email", text: $formModel.email, prompt:Text("Correo electrónico")
                     .foregroundStyle(.dirtyWhite.opacity(0.3)))
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .foregroundStyle(.white)
                     .tint(.white)
                     .submitLabel(.send)
-                    .customCapsule(!email.isEmpty)
+                    .customCapsule(!formModel.email.isEmpty)
+                    .withValidation(formModel.$email)
  
             }
             VStack {
@@ -53,16 +61,18 @@ struct ResetPasswordForm: View {
                 } label: {
                     Text("Enviar correo")
                 }
-                .buttonStyle(.capsuleButton(color: .customRed))
-                .disabled(self.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .buttonStyle(.capsuleButton(color: isFormValid ? Theme.Button.normal : Theme.Button.disabled))
+                .disabled(!isFormValid)
+                .animation(.easeIn, value: isFormValid)
             }
         }
+        
         .popView(
             isPresented: $showPopover,
             content: {
                 CustomDialog(
                     show: $showPopover,
-                    dialogType: .resetPassword,
+                    dialogType: .updatePassword,
                     onAccept: sendResetPasswordLink
                 )
         })
@@ -72,15 +82,9 @@ struct ResetPasswordForm: View {
 @ObserveInjection var forceRedraw
 #endif
     private func sendResetPasswordLink() async {
-        if self.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return
-        }
         Task {
-            await authManager.resetPassword(for: email)
+            await authManager.resetPassword(for: formModel.email)
+            dismiss()
         }
-    }
-    private func cancelResetPassword() {
-        self.email = ""
-        self.showPopover = false
     }
 }

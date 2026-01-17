@@ -9,29 +9,32 @@ import SwiftUI
 
 enum DialogType {
     case updateInfo
-    case resetPassword
+    case updatePassword
     case deleteAccount
     
     var title: String {
         switch self {
         case .updateInfo: "Actualizar información"
-        case .resetPassword: "Restablecer contraseña"
+        case .updatePassword: "Restablecer contraseña"
         case .deleteAccount: "Eliminar cuenta"
         }
     }
     var question: String {
         switch self {
-        case .updateInfo: "¿Cambiar email?"
-        case .resetPassword: "¿Restablecer contraseña?"
+        case .updateInfo: "¿Cambiar Nombre?"
+        case .updatePassword: "¿Cambiar contraseña?"
         case .deleteAccount: "¿Eliminar permanentemente esta cuenta?"
         }
     }
+
     var actionDetails: String {
         switch self {
-        case .updateInfo, .resetPassword:
-            "Se cerrarán todas las sesiones activas en este y otros dispositivos."
+        case .updateInfo:
+            "Se cambiará el nombre asociado a tu cuenta."
+        case .updatePassword:
+            "Se te enviará un correo de restablecimiento de contraseña.\nPara proteger tu cuenta, cerraremos todas las sesiones activas al solicitar el cambio."
         case .deleteAccount:
-            "Esta acción no se puede deshacer. Se borrará tu perfil y los datos asociados a tu cuenta. *IMPORTANTE* Eliminar tu cuenta *NO* cancela automáticamente tu suscripción de Apple. Para evitar futuros cobros, debes cancelarla manualmente en los Ajustes de tu iPhone (Suscripciones)"
+            "Esta acción no se puede deshacer. Se borrará tu perfil y los datos asociados a tu cuenta. *IMPORTANTE* Eliminar tu cuenta *NO* cancela automáticamente tu suscripción de Apple. Para evitar futuros cobros, debes cancelarl tu suscripción manualmente en los Ajustes de tu iPhone (Suscripciones)"
         }
     }
     
@@ -48,7 +51,9 @@ struct CustomDialog: View {
     @Binding var show: Bool
 
     let dialogType: DialogType
-    var onAccept: () async -> Void
+//    var onAccept: () async -> Void
+    var onAccept: (() async -> Void)? = nil
+    var onCancel: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 20) {
@@ -57,8 +62,13 @@ struct CustomDialog: View {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.white.opacity(0.3))
+                        Circle()
+                            .fill(.white.opacity(0.4))
+                            .frame(width: 28)
+                            .overlay(alignment: .center) {
+                                Image(systemName: "xmark")
+                                    .foregroundStyle(.white)
+                            }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -91,35 +101,56 @@ struct CustomDialog: View {
             .foregroundStyle(.white)
             
             HStack(spacing: 16) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Cancelar")
-                        .frame(maxWidth: .infinity)
-                        .foregroundStyle(.customBlack)
-                }
-                .buttonStyle(.capsuleButton(color: .white, textColor: .customBlack, buttonSize: .small))
-                .tint(.white)
-                
-                Button {
-                    Task {
-                        await onAccept()
+                if let onCancelAction = onCancel {
+                    Button {
+                        onCancelAction()
+                        show = false
+                        dismiss()
+                    } label: {
+                        Text("Cancelar")
+                            .frame(maxWidth: .infinity)
+                            .foregroundStyle(.customBlack)
                     }
-                    dismiss()
-                } label: {
-                    Text("Accept")
-                        .frame(maxWidth: .infinity)
+                    .buttonStyle(.capsuleButton(color: .white, textColor: .customBlack, buttonSize: .small))
+                    .tint(.white)
+                } else if onAccept == nil {
+                    Button {
+                        show = false
+                        dismiss()
+                    } label: {
+                        Text("Entendido")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.capsuleButton(color: .white, textColor: .customBlack, buttonSize: .small))
                 }
-                .buttonStyle(.capsuleButton(color: .customRed, textColor: .bw20, buttonSize: .small))
+                
+                if let onAcceptAction = onAccept {
+                    Button {
+                        Task {
+                            await onAcceptAction()
+                            show = false
+                            dismiss()
+                        }
+                        dismiss()
+                    } label: {
+                        Text("Aceptar")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.capsuleButton(color: .customRed, textColor: .bw20, buttonSize: .small))
+                }
             }
         }
         .padding(24)
         .frame(maxWidth: 300)
         .background(.customBlack)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.player)
+                .stroke(.white.opacity(0.3), lineWidth: 1)
+        }
     }
 }
 
 #Preview {
-    CustomDialog(show: .constant(true), dialogType: .resetPassword, onAccept: {})
+    CustomDialog(show: .constant(true), dialogType: .updatePassword, onAccept: {})
 }

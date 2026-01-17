@@ -13,7 +13,7 @@ struct ResetPasswordScreen: View {
     @Binding var authMode: AuthMode
     var body: some View {
         VStack(spacing: 32) {
-            ResetPasswordForm(email: $email)
+            ResetPasswordForm()
             VStack(spacing: 16) {
                 VStack {
                     Button {

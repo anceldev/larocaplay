@@ -16,6 +16,7 @@ struct RootView: View {
             .task {
                 await libManager.initialSync()
             }
+        
     }
 #if DEBUG
 @ObserveInjection var forceRedraw

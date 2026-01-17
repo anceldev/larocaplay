@@ -58,7 +58,7 @@ struct UserDetailsScreen: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                     VStack(spacing: 10) {
-                        Text("Cuenta")
+                        Text("Seguridad")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.system(size: 16))
                             .fontWeight(.semibold)
@@ -67,13 +67,37 @@ struct UserDetailsScreen: View {
                             
                             Button {
                                 withAnimation(.easeOut) {
+                                    showResetPasswordForm = true
+                                }
+                            } label: {
+                                HStack {
+                                    Image(.vault3)
+                                    Text("Cambiar contraseña")
+                                }
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                        .padding()
+                        .background(.black.opacity(0.45))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                    }
+                    VStack(spacing: 10) {
+                        Text("Cuenta")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.system(size: 16))
+                            .fontWeight(.semibold)
+                            .padding(.leading, 6)
+                        VStack(spacing: 16) {
+                            Button {
+                                withAnimation(.easeOut) {
                                     showDeleteAccountDialog.toggle()
                                 }
                             } label: {
                                 HStack {
                                     Image(.trash)
                                         .foregroundStyle(.customRed)
-                                    Text("Eliminar mi cuenta")
+                                    Text("Eliminar cuenta")
                                         .foregroundStyle(.white)
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -84,6 +108,7 @@ struct UserDetailsScreen: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                 }
+                
             }
             .scrollIndicators(.hidden)
             Spacer()
@@ -97,11 +122,15 @@ struct UserDetailsScreen: View {
                 CustomDialog(
                     show: $showDeleteAccountDialog,
                     dialogType: .deleteAccount,
-                    onAccept: deleteAccount
+                    onAccept: deleteAccount,
+                    onCancel: {}
                 )
         })
         .sheet(isPresented: $showResetPasswordForm, content: {
-            ResetPasswordForm(email: $email)
+            VStack {
+                ResetPasswordForm()
+            }
+            .padding(.horizontal, 18)
                 .presentationDragIndicator(.visible)
                 .presentationDetents([.medium])
         })

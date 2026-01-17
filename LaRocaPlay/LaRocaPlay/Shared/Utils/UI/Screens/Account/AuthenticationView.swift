@@ -16,8 +16,6 @@ enum AuthMode {
 }
 
 struct AuthenticationView: View {
-    
-//    @Environment(AuthService.self) var auth
     @Environment(AuthManager.self) var authManager
     @Environment(\.dismiss) private var dismiss
 
