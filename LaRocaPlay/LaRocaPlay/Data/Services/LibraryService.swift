@@ -8,6 +8,7 @@
 import Foundation
 import Supabase
 
+
 final class LibraryService {
     private let supabaseClient = SupabaseClientInstance.shared.publicClient
     
@@ -149,7 +150,7 @@ final class LibraryService {
     }
     func fetchSongs() async throws -> [SongDTO] {
         try await supabaseClient
-            .from("songs")
+            .from("song")
             .select("*")
             .execute()
             .value

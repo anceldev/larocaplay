@@ -12,7 +12,6 @@ import SwiftUI
 typealias AppRouter = Router<AppTab, Destination, Sheet>
 
 struct MainScreen: View {
-    //    @Environment(NotificationManager.self) private var notifManager
     @Environment(AuthManager.self) var authManager
     @State private var router = AppRouter(initialTab: .home)
     
@@ -88,16 +87,12 @@ extension MainScreen {
                 .navigationBarBackButtonHidden()
         case .preacher(let preacher):
             PreacherScreen(preacher: preacher)
-        case .list:
-            Text("List view")
         case .account:
             AccountScreen()
                 .navigationBarBackButtonHidden()
         case .userDetails(let profile):
             UserDetailsScreen(userProfile: profile)
                 .navigationBarBackButtonHidden()
-        case .postDetail(let id):
-            Text("Post details view: \(id)")
         case .collections(let typeName, let title):
             CollectionsScreen(typeName: typeName, title: title)
                 .navigationBarBackButtonHidden()

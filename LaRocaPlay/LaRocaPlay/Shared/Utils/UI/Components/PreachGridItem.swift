@@ -8,33 +8,36 @@
 import SwiftUI
 
 struct PreachGridItem: View {
-  let item: CollectionItem
-  let listView: ListView
-  let aspect: CGFloat
-
-  init(
-    item: CollectionItem, listView: ListView = .single, aspect: CGFloat = 16 / 9,
-    titleAlignment: TextAlignment = .leading
-  ) {
-    self.listView = listView
-    self.aspect = aspect
-    self.item = item
-  }
-  var body: some View {
-    VStack {
-      if let teach = item.preach {
-        switch listView {
-        case .single:
-            TeachingCard(teach: teach, listView: listView, aspect: aspect)
-        case .grid:
-            TeachingCard(teach: teach, listView: listView, aspect: aspect, radius: Theme.Radius.medium)
-        case .list:
-          TeachingRow(teach: teach, position: item.position, listView: listView)
-        }
-      }
+    let item: CollectionItem
+    let listView: ListView
+    let aspect: CGFloat
+    
+    init(
+        item: CollectionItem, listView: ListView = .single, aspect: CGFloat = 16 / 9,
+        titleAlignment: TextAlignment = .leading
+    ) {
+        self.listView = listView
+        self.aspect = aspect
+        self.item = item
     }
-  }
-  #if DEBUG
+    var body: some View {
+        VStack {
+            if let teach = item.preach {
+                switch listView {
+                case .single:
+                    TeachingCard(teach: teach, listView: listView, aspect: aspect)
+                case .grid:
+                    TeachingCard(teach: teach, listView: listView, aspect: aspect, radius: Theme.Radius.medium)
+                case .list:
+                    TeachingRow(teach: teach, position: item.position, listView: listView)
+                }
+            }
+        }
+        .onAppear {
+            print(item.preach?.title)
+        }
+    }
+#if DEBUG
     @ObserveInjection var forceRedraw
-  #endif
+#endif
 }

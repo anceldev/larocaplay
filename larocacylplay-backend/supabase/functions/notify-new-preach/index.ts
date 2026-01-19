@@ -62,7 +62,7 @@ serve(async (req) => {
         .single(),
       supabase
         .rpc(
-          "get_tokens_for_collection_notification",
+          "get_tokens_for_collection_item",
           { p_collection_id: record.collection_id }
         )
     ])

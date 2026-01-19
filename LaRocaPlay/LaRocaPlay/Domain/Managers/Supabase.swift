@@ -22,8 +22,8 @@ final class SupabaseClientInstance {
         
         publicClient = .init(
 //            supabaseURL: URL(string: projectUrl)!,
+//            supabaseURL: URL(string: "http://172.20.10.2:54321")!,
             supabaseURL: URL(string: "http://192.168.1.17:54321")!,
-//            supabaseURL: URL(string: "http://192.168.1.160:54321")!,
 //            supabaseURL: projectUrl,
             supabaseKey: anonKey
         )

@@ -21,7 +21,7 @@ final class AuthService {
     }
     func fetchProfile(id: UUID) async throws -> ProfileDTO {
         try await supabaseClient
-            .from("profiles")
+            .from("profile")
             .select("user_id, display_name, email, avatar_id, locale, profile_role")
             .eq("user_id", value: id)
             .single()
@@ -68,7 +68,7 @@ final class AuthService {
     
     func getProfile(for userId: UUID) async throws -> ProfileDTO {
         try await supabaseClient
-            .from("profiles")
+            .from("profile")
             .select("user_id, display_name, email, avatar_id, locale, profile_role, subscription(*)")
             .eq("user_id", value: userId)
             .single()
@@ -77,7 +77,7 @@ final class AuthService {
     }
     func createInitialProfile(id: UUID, email: String) async throws -> ProfileDTO {
         try await supabaseClient
-            .from("profiles")
+            .from("profile")
             .upsert(["user_id": id.uuidString, "email": email], onConflict: "user_id")
             .select("*")
             .execute()

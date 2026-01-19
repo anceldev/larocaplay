@@ -11,29 +11,14 @@ import SwiftUI
 enum Destination: DestinationType {
     case preachDetail(id: Int, isDeepLink: Bool = false)
     case preacher(preacher: PreacherDTO)
-    case list
     case account
     case userDetails(UserProfile)
-    case postDetail(id: String)     // Different from generic detail
     case collections(String, String)
     case collection(id: Int, isDeepLink: Bool = false)
     case resetPassword
     case aboutUs
     
     static func from(path: String, fullPath: [String], parameters: [String:String]) -> Destination? {
-//        guard let currentIndex = fullPath.firstIndex(of: path) else { return nil }
-//        let previousComponent = currentIndex > 0 ? fullPath[currentIndex - 1] : nil
-//        
-//        switch (previousComponent, path) {
-//        case (nil, "collection"):
-//            let id = parameters["id"] ?? parameters["collectionId"] ?? "0"
-//            return .collection(id: Int(id) ?? 0, isDeepLink: true)
-//        case ("collection", "preach"):
-//            let id = parameters["id"] ?? ""
-//            return .preachDetail(id: Int(id) ?? 0, isDeepLink: true)
-//        default:
-//            return nil
-//        }
         guard let currentIndex = fullPath.firstIndex(of: path) else { return nil }
             
             // El ID ahora es simplemente el siguiente elemento en el path

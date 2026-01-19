@@ -15,6 +15,7 @@ enum ItemsListOrder {
 
 struct CollectionDetailView: View {
     @Environment(LibraryManager.self) var libManager
+    @State private var state: Self.ViewState = .loading
 
     let collection: Collection
     var listOrder: ItemsListOrder
@@ -59,7 +60,7 @@ struct CollectionDetailView: View {
                             CollectionItemsView(items: listOrder == .date ? collection.itemsSortedByDate : collection.itemsSortedByPosition)
                         } else {
                             EmptyContent {
-                                Text("Todavía no hay para esta colección.")
+                                Text("Todavía no hay contenido para esta colección.")
                                     .font(.system(size: 18, weight: .regular, design: .rounded))
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal, 16)
@@ -88,5 +89,11 @@ extension CollectionDetailView {
             print(error)
             print(error.localizedDescription)
         }
+    }
+    enum ViewState {
+        case loading
+        case succes(CollectionItem)
+        case empty
+        case error(String)
     }
 }

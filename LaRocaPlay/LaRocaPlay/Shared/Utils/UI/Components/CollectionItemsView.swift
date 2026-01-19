@@ -20,6 +20,8 @@ struct CollectionItemsView: View {
         if searchQuery.isEmpty {
             return self.items
         } else {
+            print(searchQuery)
+            
             return self.items.filter { $0.preach?.title.lowercased().contains(searchQuery.lowercased()) ?? false }
         }
     }
@@ -42,13 +44,24 @@ struct CollectionItemsView: View {
             
             VStack(spacing: 0) {
                 CollectionItemsList(
-                    items: items,
+                    items: filteredItems,
                     listView: listView
                 )
             }
         }
         .background(.customBlack)
         .enableInjection()
+        .onChange(of: searchQuery, { oldValue, newValue in
+            print(newValue)
+            filteredItems.forEach { item in
+                print(item.preach?.title ?? "NO-TITLE")
+            }
+        })
+//        .onAppear {
+//            items.forEach { item in
+//                print(item.preach?.title ?? "NO-TITLE")
+//            }
+//        }
     }
     
 #if DEBUG

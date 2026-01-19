@@ -6,7 +6,7 @@ import { Preach, ShortPreach } from "@/lib/types";
 
 export async function getPreaches(): Promise<Preach[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase.from('preaches').select('*');
+  const { data, error } = await supabase.from('preach').select('*');
   if (error) {
     throw error;
   }

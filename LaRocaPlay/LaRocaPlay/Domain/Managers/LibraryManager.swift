@@ -39,7 +39,6 @@ final class LibraryManager {
         defer { self.isFetching = false }
         do {
             let preachersDTOs = try await service.fetchAllPreachers()
-            //            preachersDTOs.forEach { context.insert($0.toModel()) }
             try await syncPreachers(dtos: preachersDTOs)
             
             let collectionTypesDTOS = try await service.fetchCollectionTypes()
@@ -49,7 +48,7 @@ final class LibraryManager {
             try await syncCollections(dtos: collectionDTOs)
             
             let preachesDTOs = try await service.fetchTeachings(collectionId: mainCollectionId, limit: 5, offset: 0)
-            try syncPreaches(dtos: preachesDTOs, into: mainCollectionId)
+            _ = try syncPreaches(dtos: preachesDTOs, into: mainCollectionId)
         } catch let error as PostgrestError {
             print("ERROR: Error de postgrest: \(error.localizedDescription)")
         } catch {
@@ -71,7 +70,6 @@ final class LibraryManager {
             print("")
             return
         }
-        //        let allIds = dtos.map { $0.id }
         let localPreachers = try context.fetch(FetchDescriptor<Preacher>())
         
         let preachersDictionary: [Int: Preacher] = Dictionary(uniqueKeysWithValues: localPreachers.map({ ($0.id, $0 )}))
@@ -87,7 +85,6 @@ final class LibraryManager {
         }
         if context.hasChanges{ try context.save() }
     }
-    
     
     @MainActor
     func syncCollections(dtos: [CollectionDTO]) async throws {
@@ -125,9 +122,6 @@ final class LibraryManager {
     
     @MainActor
     private func syncPreaches(dtos: [CollectionItemResponseDTO], into collectionId: Int) throws {
-        for preach in dtos {
-            print(preach.preach.date)
-        }
         if dtos.isEmpty { return }
         let preacherDescriptor = FetchDescriptor<Preacher>()
         let allPreachers = try context.fetch(preacherDescriptor)
@@ -135,7 +129,6 @@ final class LibraryManager {
         
         let collectionDescriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.id == collectionId })
         let collection = try context.fetch(collectionDescriptor).first
-        
         guard let collection, !preachersDict.isEmpty else {
             print("DEBUG: No hay preachers o colección todavia")
             return
@@ -178,6 +171,7 @@ final class LibraryManager {
             }
             
             targetPreach.preacher = preachersDict[dto.preach.preacher.id]
+            try context.save()
             
             
             // MAnejo de links
@@ -233,6 +227,7 @@ final class LibraryManager {
         let targetID = collection.id
         let itemDTOs = try await service.fetchTeachingsWithoutLimit(collectionId: targetID)
         try syncPreaches(dtos: itemDTOs, into: targetID)
+        let itemsDescriptos = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.collection?.id == targetID})
         collection.needItemsSync = false
         try context.save()
     }

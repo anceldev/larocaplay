@@ -1,0 +1,11 @@
+{
+    "Simulator Target Bundle": "com.anceldev.LaRocaPlay",
+    "aps": {
+        "alert": {
+            "title": "Nueva predicación",
+            "body": "Se ha añadido una nueva predicación a la colección celebraciones"
+        },
+        "sound": "default"
+    },
+    "url": "larocaplayapp://collection/2/preach/19"
+}

@@ -48,6 +48,7 @@ struct ResetPasswordForm: View {
                     .foregroundStyle(.dirtyWhite.opacity(0.3)))
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .keyboardType(.emailAddress)
                     .foregroundStyle(.white)
                     .tint(.white)
                     .submitLabel(.send)

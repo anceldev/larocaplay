@@ -61,6 +61,7 @@ struct SignInForm: View {
                             TextField("email", text: $formModel.email, prompt:Text("Correo electrónico").foregroundStyle(.dirtyWhite.opacity(0.3)))
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
+                                .keyboardType(.emailAddress)
                                 .customCapsule(focusedField == .email || !formModel.email.isEmpty)
                                 .focused($focusedField, equals: .email)
                                 .foregroundStyle(.white)
