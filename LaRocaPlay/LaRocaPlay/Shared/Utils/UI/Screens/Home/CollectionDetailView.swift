@@ -15,8 +15,7 @@ enum ItemsListOrder {
 
 struct CollectionDetailView: View {
     @Environment(LibraryManager.self) var libManager
-    @State private var state: Self.ViewState = .loading
-
+    
     let collection: Collection
     var listOrder: ItemsListOrder
     var backButton: Bool
@@ -26,74 +25,52 @@ struct CollectionDetailView: View {
         self.listOrder = order
         self.backButton = backButton
     }
-
+    
     
     var body: some View {
         VStack(spacing: 0) {
             TopBarScreen(title: collection.title, backButton)
-                ScrollView(.vertical) {
-                    VStack(spacing: 12) {
-                        VStack(spacing: 14) {
-                            if let imageId = collection.imageId {
-                                if #available(iOS 26.0, *) {
-                                    HeaderView(storageCollection: .collections(imageId))
-                                        .glassEffect(in: RoundedRectangle(cornerRadius: Theme.Radius.player))
-                                } else {
-                                    HeaderView(storageCollection: .collections(imageId))
-                                }
-                            } else {
-                                Color.gray
-                                    .aspectRatio(16/9, contentMode: .fit)
-                                    .mask(RoundedRectangle(cornerRadius: Theme.Radius.player))
-                            }
-                            VStack(spacing: 8) {
-                                Text(collection.title)
-                                    .font(.system(size: 24, weight: .bold, design: .default))
-                                if let description = collection.desc {
-                                    ExpandableDescription(descriptionText: description)
-                                }
-                            }
-                            
-                        }
-                        if !collection.items.isEmpty {
-
-                            CollectionItemsView(items: listOrder == .date ? collection.itemsSortedByDate : collection.itemsSortedByPosition)
+            VStack(spacing: 12) {
+                VStack(spacing: 14) {
+                    if let imageId = collection.imageId {
+                        if #available(iOS 26.0, *) {
+                            HeaderView(storageCollection: .collections(imageId))
+                                .glassEffect(in: RoundedRectangle(cornerRadius: Theme.Radius.player))
                         } else {
-                            EmptyContent {
-                                Text("Todavía no hay contenido para esta colección.")
-                                    .font(.system(size: 18, weight: .regular, design: .rounded))
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 16)
-                            }
+                            HeaderView(storageCollection: .collections(imageId))
+                        }
+                    } else {
+                        Color.gray
+                            .aspectRatio(16/9, contentMode: .fit)
+                            .mask(RoundedRectangle(cornerRadius: Theme.Radius.player))
+                    }
+                    VStack(spacing: 8) {
+                        Text(collection.title)
+                            .font(.system(size: 24, weight: .bold, design: .default))
+                        if let description = collection.desc {
+                            ExpandableDescription(descriptionText: description)
                         }
                     }
+                    
                 }
-                .scrollIndicators(.hidden)
+                if !collection.items.isEmpty {
+                    
+                    CollectionItemsView(items: listOrder == .date ? collection.itemsSortedByDate : collection.itemsSortedByPosition)
+                } else {
+                    EmptyContent {
+                        Text("Todavía no hay contenido para esta colección.")
+                            .font(.system(size: 18, weight: .regular, design: .rounded))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 16)
+                    }
+                }
+            }
         }
         .background(.customBlack)
         .enableInjection()
-        .task {
-            await loadCollectionItems()
-        }
     }
     
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-}
-extension CollectionDetailView {
-    private func loadCollectionItems() async {
-        do {
-            try await libManager.syncCollectionItems(for: collection)
-        } catch {
-            print(error)
-            print(error.localizedDescription)
-        }
-    }
-    enum ViewState {
-        case loading
-        case succes(CollectionItem)
-        case empty
-        case error(String)
-    }
 }

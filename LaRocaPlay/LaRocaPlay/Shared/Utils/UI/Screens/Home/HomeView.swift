@@ -10,6 +10,7 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(AppRouter.self) var router
+    @Environment(LibraryManager.self) var libManager
     @Environment(\.modelContext) var context
     
     @State private var searchQuery: String = ""
@@ -60,7 +61,6 @@ struct HomeView: View {
                             HStack {
                                 Button {
                                     withAnimation(.easeIn) {
-                                        print("Tapped ver todas las predicaciones")
                                         router.selectedTab = .preaches
                                     }
                                 } label: {
@@ -77,7 +77,7 @@ struct HomeView: View {
                         
                         if homeCollections.count > 0 {
                             VStack {
-                                ForEach(homeCollections) { homeCollection in
+                                ForEach(homeCollections.sorted(by: { $0.createdAt > $1.createdAt })) { homeCollection in
                                     Button {
                                         router.navigateTo(.collection(id: homeCollection.id))
                                     } label: {
@@ -95,6 +95,9 @@ struct HomeView: View {
                     }
                 }
                 .scrollIndicators(.hidden)
+                .refreshable {
+                    await libManager.refreshInitialSync()
+                }
             }
         }
         .padding()

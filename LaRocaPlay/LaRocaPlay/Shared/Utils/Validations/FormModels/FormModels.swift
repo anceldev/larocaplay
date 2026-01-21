@@ -16,7 +16,6 @@ struct UpdatePasswordFormModel {
     @Validate(
         .required("Confirma la contraseña."),
         .regularExpression(.password, "Formato erroneo de contraseña."),
-//        .matches({ password }, "Las contraseñas no coniciden")
     ) var confirmPassword: String = ""
     
     var isValid: Bool {

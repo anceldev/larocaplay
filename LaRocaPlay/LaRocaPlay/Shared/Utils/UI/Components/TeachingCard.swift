@@ -31,23 +31,6 @@ struct TeachingCard: View {
     
     
     var body: some View {
-//        VStack(spacing: 8) {
-//            ThumbImageLoader(storageCollection: .preaches(teach.imageId),aspect: aspect ,radius: radius)
-//            VStack(alignment: listView.hAlignment, spacing: 0) {
-//                Text(teach.title)
-//                    .foregroundStyle(.white)
-//                    .font(.system(size: listView.titleSize, weight: .medium, design: .default))
-//                    .multilineTextAlignment(listView.tAlignment)
-//                    .frame(maxWidth: .infinity, alignment: listView.textAlignment)
-//                Text(preacherAndDate)
-//                    .font(.system(size: listView.subtitleSize, design: .rounded))
-//                    .foregroundStyle(.gray.opacity(0.7))
-//                    .multilineTextAlignment(listView.tAlignment)
-//                    .frame(maxWidth: .infinity, alignment: listView.textAlignment)
-//            }
-//            .padding(.horizontal, listView.textPadding)
-//            .frame(maxWidth: .infinity, alignment: listView.textAlignment)
-//        }
         VStack(spacing: 8) {
             ThumbImageLoader(storageCollection: .preaches(teach.imageId),aspect: aspect ,radius: radius)
                 .overlay(alignment: .bottom) {

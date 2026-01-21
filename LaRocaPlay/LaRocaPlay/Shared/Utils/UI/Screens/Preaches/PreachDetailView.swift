@@ -41,7 +41,7 @@ struct PreachDetailView: View {
         VStack(spacing: 0) {
             if let preach = item.preach {
                 TopBarScreen(title: preach.title, true)
-                ScrollView(.vertical) {
+//                ScrollView(.vertical) {
                     VStack(spacing: 16) {
                         ZStack(alignment: .center) {
                             if authManager.isSubscriptionActive {
@@ -109,14 +109,6 @@ struct PreachDetailView: View {
                                                 .frame(width: 24)
                                                 .foregroundStyle(.white)
                                                 .padding(8)
-//                                                .mask {
-//                                                    Circle()
-//                                                        .border(.white.opacity(0.3), width: 1)
-//                                                }
-//                                                .overlay {
-//                                                    Circle()
-//                                                        .stroke(.white.opacity(0.3), lineWidth: 1)
-//                                                }
                                         }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -124,11 +116,6 @@ struct PreachDetailView: View {
                         }
                         .frame(maxWidth: .infinity)
                     }
-                }
-                .scrollIndicators(.hidden)
-                .refreshable {
-                    loadVideoURL()
-                }
                 .sheet(
                     isPresented: $showVideo,
                     content: {
@@ -162,6 +149,7 @@ struct PreachDetailView: View {
     private func loadVideoURL() {
         guard authManager.isSubscriptionActive else { return }
         guard let preach = item.preach else { return }
+        print(preach.videoId)
         isLoading = true
         defer { isLoading = false }
         Task {
@@ -186,8 +174,6 @@ struct SubscriptionCard: View {
                 .aspectRatio(16/9, contentMode: .fill)
             VStack(spacing: 18) {
                 VStack(spacing: 8) {
-//                    Text("Sin suscripción")
-//                        .bold()
                     Text(authManager.isSubscriptionActive ? "Plan Premium" : "Plan Gratuito")
                         .padding(.horizontal, 16)
                         .padding(.vertical, 4)

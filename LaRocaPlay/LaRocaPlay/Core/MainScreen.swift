@@ -31,12 +31,10 @@ struct MainScreen: View {
                                     collectionId: 1,
                                     isDeepLink: false
                                 )
-                                
                             case .training:
                                 DiscipleshipListScreen()
                             case .karaoke:
                                 MusicScreen()
-                                
                             }
                         }
                         .navigationDestination(for: Destination.self) { destination in
@@ -62,13 +60,11 @@ struct MainScreen: View {
             if let pendingUrl = authManager.pendingDeepLink {
                 router.navigate(to: pendingUrl)
                 authManager.pendingDeepLink = nil
-//                handleDeepLink(pendingUrl)
             }
         }
         .onOpenURL { url in
             if url.scheme == "larocaplayapp" {
                 router.navigate(to: url)
-//                handleDeepLink(url)
             }
         }
 #if DEBUG

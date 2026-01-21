@@ -70,6 +70,7 @@ final class LibraryService {
                         name,
                         preacher_role_id(id, name),
                         image_id,
+                        created_at,
                         updated_at
                         )
                 ),
@@ -80,6 +81,8 @@ final class LibraryService {
                 """)
             .eq("collection_id", value: collectionId)
             .order("preach(date)", ascending: false)
+//            .limit(limit)
+            .range(from: 0, to: limit)
             .execute()
             .value
     }

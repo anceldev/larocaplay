@@ -13,41 +13,44 @@ struct CollectionContainerView: View {
     
     let collectionId: Int
     let isDeepLink: Bool
-//    let backButton: Bool
     
     init(collectionId: Int, isDeepLink: Bool, backButton: Bool = true) {
         self.collectionId = collectionId
         self.isDeepLink = isDeepLink
-//        self.backButton = backButton
     }
     
     var body: some View {
         VStack {
-            Group {
-                switch state {
-                case .loading:
-                    ProgressView()
-                case .succes(let collection):
-                    CollectionDetailView(
-                        collection: collection,
-                        order: collectionId == 1 ? .date : .position
-                    )
-                case .error(let message):
-                    Text(message)
+            ScrollView(.vertical) {
+                
+                Group {
+                    switch state {
+                    case .loading:
+                        ProgressView()
+                    case .succes(let collection):
+                        CollectionDetailView(
+                            collection: collection,
+                            order: collectionId == 1 ? .date : .position
+                        )
+                    case .error(let message):
+                        Text(message)
+                    }
                 }
+                
+                .scrollIndicators(.hidden)
             }
+            .refreshable {
+                await refreshCollection()
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 18)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.customBlack)
             .task {
-                await loadCollection()
+                await prepareCollection(for: collectionId)
             }
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 18)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
         .enableInjection()
-        .onAppear {
-            print(collectionId)
-        }
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
@@ -55,13 +58,29 @@ struct CollectionContainerView: View {
 }
 
 extension CollectionContainerView {
-    private func loadCollection() async {
+    private func prepareCollection(for collectionId: Int) async {
         do {
-            let collection = try await libManager.getCollection(id: collectionId, isDeepLink: isDeepLink)
-            state = .succes(collection)
+            if collectionId == Constants.mainCollectionId {
+                // TODO: Aqui hay que hacer métodos específicos con paginación para que los utilice la colección principal
+                print("Función diferente si se trata de main collection, aqui tiene que haber pagination")
+            } else {
+                let collection = try await libManager.getCollection(id: collectionId, isDeepLink: isDeepLink)
+                state = .succes(collection)
+            }
         } catch {
             print(error)
-            state = .error("No se pudo cargar la serie")
+            state = .error("Error al cargar la serie: \(error)")
+        }
+    }
+    private func refreshCollection() async {
+        do {
+            let collection = try await libManager.refreshCollection(id: collectionId)
+            state = .succes(collection)
+            
+        } catch {
+            guard !Task.isCancelled else { return }
+            print(error)
+            state = .error("No se pudo actualizar la colección: \(error)")
         }
     }
     enum CollectionViewState {

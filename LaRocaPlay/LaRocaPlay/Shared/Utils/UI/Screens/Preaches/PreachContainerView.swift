@@ -18,39 +18,47 @@ struct PreachContainerView: View {
     
     var body: some View {
         VStack {
-            Group {
-                switch state {
-                case .loading:
-                    ProgressView()
-                case .succes(let item):
-//                    PreachDetailView(item: preach)
-                    PreachDetailView(item: item)
-                case .error(let errorMessage):
-                    Text(errorMessage)
+            ScrollView(.vertical) {
+                
+                Group {
+                    switch state {
+                    case .loading:
+                        ProgressView()
+                    case .succes(let item):
+                        PreachDetailView(item: item)
+                    case .error(let errorMessage):
+                        Text(errorMessage)
+                    }
                 }
             }
-            .task {
-                await loadPreach()
+            .scrollIndicators(.hidden)
+            .refreshable {
+                await refreshCollecitonItem()
             }
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.customBlack)
+        .task {
+            await loadCollectionItem()
+        }
         .enableInjection()
     }
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    private func loadPreach() async {
+    
+}
+
+extension PreachContainerView {
+    private func loadCollectionItem() async {
         do {
-//            let preach = try await libManager.getCollectionItem(id: itemId, isDeepLink: isDeepLink)
-            let item = try await libManager.getCollectionItem(id: itemId, isDeepLink: isDeepLink)
+            let item = try await libManager.getCollectionItem(itemId: itemId, isDeepLink: isDeepLink)
             guard let preach = item.preach, let collection = item.collection else {
                 state = .error("No se encontro la enseñanza asociada a la serie")
                 return
             }
-//            state = .succes(preach)
             state = .succes(item)
         } catch let error as LibManagerError {
             switch error {
@@ -63,12 +71,24 @@ struct PreachContainerView: View {
             state = .error("No se pudo cargar la prediación")
         }
     }
-}
-
-extension PreachContainerView {
+    private func refreshCollecitonItem() async {
+        do {
+            let item = try await libManager.refreshCollectinoItem(itemId: itemId)
+            print(item.preach?.videoId ?? "NO-VIDEO-LINK")
+            state = .succes(item)
+        } catch let error as LibManagerError {
+            switch error {
+            case .noCollectionItemFound(let message):
+                state = .error(message)
+            }
+            return
+        } catch {
+            print(error)
+            state = .error("No se pudo cargar la prediación")
+        }
+    }
     enum ViewState {
         case loading
-//        case succes(Preach)
         case succes(CollectionItem)
         case error(String)
     }

@@ -33,9 +33,6 @@ struct PreachGridItem: View {
                 }
             }
         }
-        .onAppear {
-            print(item.preach?.title)
-        }
     }
 #if DEBUG
     @ObserveInjection var forceRedraw

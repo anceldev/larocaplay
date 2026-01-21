@@ -72,7 +72,6 @@ struct OnboardingScreen: View {
                 }
                 
                 Button {
-                    /// Don't forgot to cancel the timer before leaving!
                     timer.upstream.connect().cancel()
                     showAuthView.toggle()
                     //// YOUR CODE
@@ -137,7 +136,6 @@ struct OnboardingScreen: View {
             
             ZStack {
                 ForEach(cards) { card in
-                    /// You can use downsized image for this, but for the video tutorial purpose, I'm going to use the actual Image!
                     Image(card.image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)

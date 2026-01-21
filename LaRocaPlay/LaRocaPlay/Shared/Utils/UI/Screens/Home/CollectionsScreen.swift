@@ -12,7 +12,7 @@ struct CollectionsScreen: View {
     @Environment(AppRouter.self) var router
     
     @State private var errorMessage: String? = nil
-    @Query private var series: [Collection]
+    @Query private var collections: [Collection]
     let title: String
     
     init(typeName: String = "Serie", title: String = "Series") {
@@ -20,16 +20,16 @@ struct CollectionsScreen: View {
             collection.typeName == typeName
         }
         self.title = title
-        self._series = Query(filter: predicate, sort: \Collection.title, order: .forward)
+        self._collections = Query(filter: predicate, sort: \Collection.title, order: .forward)
     }
     
     var body: some View {
         VStack(spacing: 0) {
             TopBarScreen(title: title, true)
-            if !series.isEmpty {
+            if !collections.isEmpty {
                 ScrollView(.vertical) {
                     VStack(spacing: 24) {
-                        ForEach(series) { serie in
+                        ForEach(collections) { serie in
                             Button {
                                 router.navigateTo(.collection(id: serie.id))
                             } label: {
