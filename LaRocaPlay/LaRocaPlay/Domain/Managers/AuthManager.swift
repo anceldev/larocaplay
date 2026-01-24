@@ -149,6 +149,7 @@ final class AuthManager {
             self.navigationState = .onboarding
             return
         }
+        await NotificationManager.shared.fetchAndSyncSettings(userId: currentUserProfile.userId, context: modelContext)
         self.navigationState = .authorized
         
         Task {
@@ -218,6 +219,7 @@ final class AuthManager {
                 self.currentUserProfile = try syncProfileToLocal(dto: dto)
             }
             
+            await NotificationManager.shared.fetchAndSyncSettings(userId: self.session!.user.id, context: modelContext)
             self.navigationState = .authorized
 
             Task {
@@ -277,6 +279,7 @@ final class AuthManager {
             
             let dto = try await service.fetchProfile(id: newSession.user.id)
             self.currentUserProfile = try syncProfileToLocal(dto: dto)
+            await NotificationManager.shared.fetchAndSyncSettings(userId: self.session!.user.id, context: modelContext)
             self.navigationState = .authorized
             
             Task {

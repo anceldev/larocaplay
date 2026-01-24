@@ -101,6 +101,11 @@ extension MainScreen {
         case .aboutUs:
             AboutUsScreen()
                 .navigationBarBackButtonHidden()
+        case .notificationSettings:
+            UserNotificationSettingsScreen()
+                .navigationBarBackButtonHidden()
+        case .myNotifications:
+            Text("Mis notificaciones")
         }
     }
     @ViewBuilder

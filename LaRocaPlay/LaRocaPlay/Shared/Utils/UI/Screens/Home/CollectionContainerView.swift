@@ -37,8 +37,8 @@ struct CollectionContainerView: View {
                     }
                 }
                 
-                .scrollIndicators(.hidden)
             }
+            .scrollIndicators(.hidden)
             .refreshable {
                 await refreshCollection()
             }

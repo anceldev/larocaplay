@@ -41,4 +41,20 @@ final class NotificationService {
             .eq("device_id", value: deviceId)
             .execute()
     }
+    
+    func getNotificationSettings(for userId: UUID) async throws -> UserNotificationSettingsDTO {
+        try await supabase
+            .from("user_notification_settings")
+            .select()
+            .eq("user_id", value: userId)
+            .single()
+            .execute()
+            .value
+    }
+    func saveSettings(_ settings: UserNotificationSettingsDTO) async throws {
+        try await supabase
+            .from("user_notification_settings")
+            .upsert(settings)
+            .execute()
+    }
 }

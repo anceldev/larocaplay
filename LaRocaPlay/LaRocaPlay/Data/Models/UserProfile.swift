@@ -18,6 +18,8 @@ final class UserProfile {
     var locale: String?
     var profileRole: ProfileRole
     
+    @Relationship(deleteRule: .cascade, inverse: \UserNotificationSettings.user) var notificationSettings: UserNotificationSettings?
+    
     init(userId: UUID, displayName: String? = nil, email: String? = nil, avatarURL: String? = nil, avatarId: String? = nil, locale: String? = nil, profileRole: ProfileRole = .member) {
         self.userId = userId
         self.displayName = displayName
@@ -27,4 +29,5 @@ final class UserProfile {
         self.locale = locale
         self.profileRole = profileRole
     }
+    
 }

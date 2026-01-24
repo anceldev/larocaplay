@@ -17,6 +17,8 @@ enum Destination: DestinationType {
     case collection(id: Int, isDeepLink: Bool = false)
     case resetPassword
     case aboutUs
+    case notificationSettings
+    case myNotifications
     
     static func from(path: String, fullPath: [String], parameters: [String:String]) -> Destination? {
         guard let currentIndex = fullPath.firstIndex(of: path) else { return nil }

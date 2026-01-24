@@ -92,11 +92,12 @@ struct LaRocaPlayApp: App {
                 CollectionType.self,
                 CollectionItem.self,
                 ExternalLink.self,
-                Song.self
+                Song.self,
+                UserNotificationSettings.self
             ])
             logger.info("\(URL.documentsDirectory.path(percentEncoded: false), privacy: .public)")
             
-            let config = ModelConfiguration("db.v1.4.2", schema: schema, isStoredInMemoryOnly: false)
+            let config = ModelConfiguration("db.v1.4.31", schema: schema, isStoredInMemoryOnly: false)
             self.container = try ModelContainer(for: schema, configurations: config)
             
             let manager = AuthManager(service: AuthService())

@@ -10,9 +10,9 @@ import RevenueCat
 import RevenueCatUI
 
 struct AccountScreen: View {
-    @Environment(AppRouter.self) var router
+    @Environment(AppRouter.self) private var router
     
-    @Environment(AuthManager.self) var authManager
+    @Environment(AuthManager.self) private var authManager
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
     
@@ -61,6 +61,28 @@ struct AccountScreen: View {
                                         HStack {
                                             Image(.sparkle3)
                                             Text(authManager.isSubscriptionActive ? "Gestionar Plan" : "Ver planes Premium")
+                                            Spacer()
+                                        }
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .padding()
+                                .background(.black.opacity(0.45))
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                            }
+                            VStack(spacing: 10) {
+                                Text("Preferencias")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .font(.system(size: 16))
+                                    .fontWeight(.semibold)
+                                    .padding(.leading, 6)
+                                VStack(spacing: 16) {
+                                    Button {
+                                        router.navigateTo(.notificationSettings)
+                                    } label: {
+                                        HStack {
+                                            Image(.bell)
+                                            Text("Notificaciones")
                                             Spacer()
                                         }
                                     }

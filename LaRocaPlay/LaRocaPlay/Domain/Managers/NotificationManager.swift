@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseMessaging
+import SwiftData
 import UIKit
 import os
 
@@ -94,6 +95,36 @@ final class NotificationManager: NSObject {
             DispatchQueue.main.async {
                 UIApplication.shared.open(url)
             }
+        }
+    }
+    
+    @MainActor
+    func fetchAndSyncSettings(userId: UUID, context: ModelContext?) async {
+        guard let context else { return }
+        do {
+            let dto = try await service.getNotificationSettings(for: userId)
+            let settings = dto.toModel()
+            context.insert(settings)
+            var descriptor = FetchDescriptor<UserProfile>(predicate: #Predicate<UserProfile> { $0.userId == userId })
+            descriptor.fetchLimit = 1
+            if let profile = try context.fetch(descriptor).first {
+//                let settings = dto.toModel()
+////                settings.userId = userId
+//                context.insert(settings)
+                profile.notificationSettings = settings
+                try context.save()
+            }
+        } catch {
+            logger.error("Error en sincronización de ajustes: \(error)")
+        }
+    }
+    
+    func saveSettingsToServer(_ settings: UserNotificationSettings) async {
+        do {
+            print(settings)
+            try await service.saveSettings(settings.toDTO())
+        } catch {
+            logger.error("No se guardaron los ajustes; \(error)")
         }
     }
 }
