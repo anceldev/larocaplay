@@ -19,29 +19,29 @@ struct UserNotificationSettingsScreen: View {
                    let settings = user.notificationSettings {
                     @Bindable var bindableSettings = settings
                     VStack(spacing: 24) {
-                        VStack(spacing: 10) {
-                            Text("Mis Notificaciones")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .font(.system(size: 16))
-                                .fontWeight(.semibold)
-                                .padding(.leading, 6)
-                            VStack(spacing: 16) {
-                                Button {
-                                    router.navigateTo(.myNotifications)
-                                } label: {
-                                    HStack {
-                                        Image(.bell)
-                                        Text("Notificaciones")
-                                        Spacer()
-                                    }
-                                    .foregroundStyle(.white)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            .padding()
-                            .background(.black.opacity(0.45))
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                        }
+//                        VStack(spacing: 10) {
+//                            Text("Mis Notificaciones")
+//                                .frame(maxWidth: .infinity, alignment: .leading)
+//                                .font(.system(size: 16))
+//                                .fontWeight(.semibold)
+//                                .padding(.leading, 6)
+//                            VStack(spacing: 16) {
+//                                Button {
+//                                    router.navigateTo(.myNotifications)
+//                                } label: {
+//                                    HStack {
+//                                        Image(.bell)
+//                                        Text("Notificaciones")
+//                                        Spacer()
+//                                    }
+//                                    .foregroundStyle(.white)
+//                                }
+//                                .frame(maxWidth: .infinity, alignment: .leading)
+//                            }
+//                            .padding()
+//                            .background(.black.opacity(0.45))
+//                            .clipShape(RoundedRectangle(cornerRadius: 20))
+//                        }
                         VStack(spacing: 10) {
                             Text("Preferencias")
                                 .frame(maxWidth: .infinity, alignment: .leading)

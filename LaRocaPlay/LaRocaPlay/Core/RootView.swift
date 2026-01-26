@@ -9,7 +9,8 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
-    @Environment(LibraryManager.self) var libManager
+    @Environment(LibraryManager.self) private var libManager
+    @Environment(AuthManager.self) private var authManager
     var body: some View {
         MainScreen()
             .enableInjection()

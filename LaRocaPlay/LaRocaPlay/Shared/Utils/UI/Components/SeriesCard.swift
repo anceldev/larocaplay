@@ -16,6 +16,7 @@ struct SeriesCard: View {
             Image(.bgSeries)
                 .resizable()
                 .scaledToFill()
+                .frame(height: 100)
                 .blur(radius: 2)
                 .overlay {
                     Text("Series")
@@ -28,6 +29,7 @@ struct SeriesCard: View {
         .frame(height: 100)
         .background(.brown)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
+
         .enableInjection()
     }
 #if DEBUG

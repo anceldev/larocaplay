@@ -8,11 +8,15 @@
 import SwiftUI
 import RevenueCat
 import RevenueCatUI
+import SwiftData
 
 struct AccountScreen: View {
     @Environment(AppRouter.self) private var router
     
     @Environment(AuthManager.self) private var authManager
+    @Environment(LibraryManager.self) private var libManager
+    @Environment(\.modelContext) private var context
+    
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
     
@@ -210,6 +214,9 @@ struct AccountScreen: View {
     
     private func signout() {
         Task {
+//            let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.isPublic == false })
+//            let privateCollections = try? context.fetch(descriptor)
+//            await authManager.signOut(privateCollections)
             await authManager.signOut()
         }
     }

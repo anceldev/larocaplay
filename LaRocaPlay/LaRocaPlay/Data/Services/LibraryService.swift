@@ -119,6 +119,40 @@ final class LibraryService {
         
     }
     
+    func fetchTeachingsWithLimit(collectionId: Int, from: Int, to: Int) async throws -> [CollectionItemResponseDTO] {
+        try await supabaseClient
+            .from("collection_item")
+            .select("""
+                preach: preach_id (
+                    id,
+                    title,
+                    description,
+                    date,
+                    image_id,
+                    video_id,
+                    created_at,
+                    updated_at,
+                    preacher: preacher_id (
+                        id,
+                        name,
+                        preacher_role_id(id, name),
+                        image_id,
+                        created_at,
+                        updated_at
+                        )
+                ),
+                position,
+                id,
+                created_at,
+                updated_at
+                """) // El string con preach(...), preacher(...), etc.
+            .eq("collection_id", value: collectionId)
+            .order("updated_at", ascending: false) // <--- CRUCIAL: Lo último tocado sale primero
+            .range(from: from, to: to)
+            .execute()
+            .value
+    }
+    
     func fetchAllPreachers() async throws -> [PreacherDTO] {
         try await supabaseClient
             .from("preacher")

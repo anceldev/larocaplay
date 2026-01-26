@@ -33,7 +33,6 @@ enum AuthError: LocalizedError, Equatable {
         case .unknown(let message): return message
         }
     }
-    
 }
 
 enum AuthManagerError: Error, LocalizedError, Equatable {
@@ -144,7 +143,7 @@ final class AuthManager {
             }
         }
         
-//        guard self.currentUserProfile != nil else {
+
         guard let currentUserProfile else {
             self.navigationState = .onboarding
             return
@@ -279,7 +278,10 @@ final class AuthManager {
             
             let dto = try await service.fetchProfile(id: newSession.user.id)
             self.currentUserProfile = try syncProfileToLocal(dto: dto)
+
             await NotificationManager.shared.fetchAndSyncSettings(userId: self.session!.user.id, context: modelContext)
+//            await NotificationManager.shared.setupNotificationTopics()
+
             self.navigationState = .authorized
             
             Task {
@@ -450,10 +452,12 @@ final class AuthManager {
     
     /// Cierra la sesión actual.
     @MainActor
+//    func signOut(_ collections: [Collection]) async {
     func signOut() async {
         self.isLoading = true
         defer { self.isLoading = false }
-        await NotificationManager.shared.removeDeviceOnLogout()
+//        await NotificationManager.shared.removeDeviceOnLogout(collections: collections)
+//        await NotificationManager.shared.desubscriptTopicsOnLogout()
         do {
             try await service.signout()
             _ = try await Purchases.shared.logOut()
@@ -555,7 +559,7 @@ final class AuthManager {
         do {
             // Borrado en el servidor de supabase
             try await service.deleteAccount()
-            await NotificationManager.shared.removeDeviceOnLogout()
+//            await NotificationManager.shared.removeDeviceOnLogout()
             // Cerramos sesión en RevenueCat (esperamos que termine)
             _ = try? await Purchases.shared.logOut()
             // Cerramos sesión en supabase

@@ -147,7 +147,6 @@ final class LibraryManager {
     }
     
     
-    
     @MainActor
     private func syncPreaches(dtos: [CollectionItemResponseDTO], into collectionId: Int) throws {
         if dtos.isEmpty { return }
@@ -259,6 +258,37 @@ final class LibraryManager {
         collection.needItemsSync = false
         try context.save()
     }
+    
+    @MainActor
+    func syncCollectionItemsHybrid(for collection: Collection, loadMore: Bool = false) async throws {
+        // 1. Definimos el rango: si es loadMore empezamos desde el total local, si no desde 0.
+        let batchSize = 30
+        let start = loadMore ? (collection.items.count) : 0
+        let end = start + batchSize - 1
+        
+        // 2. Fetch de Supabase
+        let itemDTOs = try await service.fetchTeachingsWithLimit(
+            collectionId: collection.id,
+            from: start,
+            to: end
+        )
+        
+        guard !itemDTOs.isEmpty else { return }
+        
+        // 3. Tu función syncPreaches ya hace el trabajo de Upsert.
+        // Solo la llamamos con los nuevos DTOs.
+        try syncPreaches(dtos: itemDTOs, into: collection.id)
+        
+        // 4. Marcamos la colección como sincronizada si fue la carga inicial
+        if !loadMore {
+            collection.needItemsSync = false
+        }
+        
+        if context.hasChanges {
+            try context.save()
+        }
+    }
+    
     
     @MainActor
     func syncMainCollectionItems(for mainCollection: Collection) async throws {

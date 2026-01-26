@@ -17,6 +17,7 @@ final class UserNotificationSettings {
     var newPublicCollectionItem: Bool
     var newPrivateCollectionItem: Bool
     var youtubeLive: Bool
+    var updatedAt: Date
     
     var user: UserProfile?
     
@@ -27,7 +28,8 @@ final class UserNotificationSettings {
         newPrivateCollection: Bool = true,
         newPublicCollectionItem: Bool = true,
         newPrivateCollectionItem: Bool = true,
-        youtubeLive: Bool = true
+        youtubeLive: Bool = true,
+        updatedAt: Date
     ) {
         self.userId = userId
         self.newMainCollectionItem = newMainCollectionItem
@@ -36,17 +38,30 @@ final class UserNotificationSettings {
         self.newPublicCollectionItem = newPublicCollectionItem
         self.newPrivateCollectionItem = newPrivateCollectionItem
         self.youtubeLive = youtubeLive
+        self.updatedAt = updatedAt
     }
     
-    func toDTO() -> UserNotificationSettingsDTO {
-        .init(
-            userId: self.userId,
-            newMainCollectionItem: self.newMainCollectionItem,
-            newPublicCollection: self.newPublicCollection,
-            newPrivateCollection: self.newPrivateCollection,
-            newPublicCollectionItem: self.newPublicCollectionItem,
-            newPrivateCollectionItem: self.newPrivateCollectionItem,
-            youtubeLive: self.youtubeLive
-        )
+    func update(from dto: UserNotificationSettingsDTO) {
+        self.newMainCollectionItem = dto.newMainCollectionItem
+        self.newPublicCollection = dto.newPublicCollection
+        self.newPrivateCollection = dto.newPrivateCollection
+        self.newPublicCollectionItem = dto.newPublicCollectionItem
+        self.newPrivateCollectionItem = dto.newPrivateCollectionItem
+        self.youtubeLive = dto.youtubeLive
+        self.updatedAt = dto.updatedAt
     }
+    
+//    func toDTO() -> UserNotificationSettingsDTO {
+//        
+////        .init(
+////            userId: self.userId,
+////            newMainCollectionItem: self.newMainCollectionItem,
+////            newPublicCollection: self.newPublicCollection,
+////            newPrivateCollection: self.newPrivateCollection,
+////            newPublicCollectionItem: self.newPublicCollectionItem,
+////            newPrivateCollectionItem: self.newPrivateCollectionItem,
+////            youtubeLive: self.youtubeLive
+////        )
+//    }
+    
 }

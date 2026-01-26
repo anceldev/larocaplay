@@ -33,6 +33,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         
         return true
     }
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        // Esto es lo que vincula el token físico del iPhone con Firebase
+        Messaging.messaging().apnsToken = deviceToken
+    }
     
     // FCM Token recibido
     func messaging(
@@ -43,10 +47,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         // Enviamos el token a Supabase a través de nuestro Manager
         NotificationManager.shared.updateTokenInSupabase(token: token)
     }
-//    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-//        NotificationManager.shared.updateTokenInSupabase()
-//    }
-    
     
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
@@ -64,6 +64,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([.banner, .badge, .sound])
+    }
+    func applicationDidBecomeActive(_ application: UIApplication) {
+//        // En iOS 18 esto es instantáneo y muy fiable
+//        UNUserNotificationCenter.current().setBadgeCount(0) { error in
+//            if let error = error {
+//                print("No se pudo limpiar el badge: \(error)")
+//            }
+//        }
+        UNUserNotificationCenter.current().setBadgeCount(0)
     }
     
 }
@@ -97,7 +106,7 @@ struct LaRocaPlayApp: App {
             ])
             logger.info("\(URL.documentsDirectory.path(percentEncoded: false), privacy: .public)")
             
-            let config = ModelConfiguration("db.v1.4.31", schema: schema, isStoredInMemoryOnly: false)
+            let config = ModelConfiguration("db.v1.4.32", schema: schema, isStoredInMemoryOnly: false)
             self.container = try ModelContainer(for: schema, configurations: config)
             
             let manager = AuthManager(service: AuthService())
@@ -107,10 +116,7 @@ struct LaRocaPlayApp: App {
             let libManager = LibraryManager(
                 service: LibraryService(), context: self.container.mainContext)
             self._libManager = State(initialValue: libManager)
-            
-            
-//            let notificationManager = NotificationManager(service: NotificationService())
-//            self._notificationManager = State(initialValue: notificationManager)
+
             
             do {
                 try audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
@@ -136,11 +142,9 @@ struct LaRocaPlayApp: App {
                         .tint(.customRed)
                     case .onboarding:
                         OnboardingScreen()
-                        
                     case .authorized:
                         RootView()
                     case .updatePassword:
-//                        UpdatePasswordForm()
                         UpdatePasswordScreen()
                     }
                 }

@@ -74,7 +74,6 @@ extension PreachContainerView {
     private func refreshCollecitonItem() async {
         do {
             let item = try await libManager.refreshCollectinoItem(itemId: itemId)
-            print(item.preach?.videoId ?? "NO-VIDEO-LINK")
             state = .succes(item)
         } catch let error as LibManagerError {
             switch error {

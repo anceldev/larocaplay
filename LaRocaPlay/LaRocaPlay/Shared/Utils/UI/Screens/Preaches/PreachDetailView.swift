@@ -18,6 +18,7 @@ struct PreachDetailView: View {
     @State private var isLoading = false
     @State private var showVideo = false
     @State private var isDescriptionExpanded = false
+    @State private var showAuthForm = false
     
 //    let preach: Preach
     let item: CollectionItem
@@ -54,7 +55,7 @@ struct PreachDetailView: View {
                                         }
                                     }
                             } else {
-                                SubscriptionCard(button: $showPaywall)
+                                SubscriptionCard(showPaywall: $showPaywall, showAuthForm: $showAuthForm)
                                     .frame(maxWidth: .infinity)
                                     .aspectRatio(16/9, contentMode: .fill)
                                     .frame(height: nil)
@@ -134,6 +135,9 @@ struct PreachDetailView: View {
                             loadVideoURL()
                         }
                 })
+                .sheet(isPresented: $showAuthForm) {
+                    AuthenticationView()
+                }
             } else {
                 Text("Error desconocido al cargar la enseñanza")
             }
@@ -166,7 +170,8 @@ struct PreachDetailView: View {
 
 struct SubscriptionCard: View {
     @Environment(AuthManager.self) var authManager
-    @Binding var button: Bool
+    @Binding var showPaywall: Bool
+    @Binding var showAuthForm: Bool
     var body: some View {
         ZStack {
             Rectangle()
@@ -184,19 +189,44 @@ struct SubscriptionCard: View {
                         .font(.system(size: 12))
                         .multilineTextAlignment(.center)
                 }
-                Button {
-                    button = true
-                } label: {
-                    Text("Suscribirme")
-//                        .underline()
-                        .font(.system(size: 12, design: .rounded))
-                        .foregroundStyle(.customRed.opacity(0.8))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .overlay {
-                            Capsule()
-                                .stroke(.customRed.opacity(0.8), lineWidth: 1)
+                if authManager.isAnonymous {
+                    VStack {
+                        Text("Necesitas registrarte en la app para poder suscribirte")
+//                            .padding(.horizontal, 32)
+                            .font(.system(size: 14))
+                            .foregroundStyle(.dirtyWhite)
+                            .multilineTextAlignment(.center)
+                        Button {
+                            showAuthForm = true
+                        } label: {
+                            Text("Registrarme")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+//                                .foregroundStyle(.customRed.opacity(0.8))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .underline()
+//                                .overlay {
+//                                    Capsule()
+//                                        .stroke(.customRed.opacity(0.8), lineWidth: 1)
+//                                }
                         }
+                    }
+                } else {
+                    Button {
+                        showPaywall = true
+                    } label: {
+                        Text("Cambiar plan")
+                        //                        .underline()
+                            .font(.system(size: 12, design: .rounded))
+                            .foregroundStyle(.customRed.opacity(0.8))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .overlay {
+                                Capsule()
+                                    .stroke(.customRed.opacity(0.8), lineWidth: 1)
+                            }
+                    }
                 }
             }
         }

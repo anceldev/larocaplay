@@ -47,6 +47,7 @@ struct CollectionDetailView: View {
                     VStack(spacing: 8) {
                         Text(collection.title)
                             .font(.system(size: 24, weight: .bold, design: .default))
+                            .multilineTextAlignment(.center)
                         if let description = collection.desc {
                             ExpandableDescription(descriptionText: description)
                         }
