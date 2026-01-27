@@ -7,6 +7,8 @@
 
 import Foundation
 
+
+
 struct CollectionDTO: Codable, Identifiable, Hashable {
     var id: Int
     var title: String

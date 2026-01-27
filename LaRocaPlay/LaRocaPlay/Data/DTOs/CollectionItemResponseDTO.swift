@@ -8,6 +8,18 @@
 import Foundation
 import SwiftData
 
+struct ShortCollectionItemResponseDTO: Decodable {
+    var id: Int
+    var preach: ShortPreachDTO
+    var updatedAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id, preach
+        case updatedAt = "updated_at"
+    }
+    
+}
+
 struct CollectionItemResponseDTO: Decodable {
     let id: Int
     let preach: PreachDTO

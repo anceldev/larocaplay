@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct UserNotificationSettingsDTO: Codable {
     var userId: UUID
     var newMainCollectionItem: Bool

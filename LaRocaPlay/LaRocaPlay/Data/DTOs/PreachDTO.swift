@@ -21,6 +21,17 @@ protocol PreachProtocol: Identifiable, Codable {
     
 }
 
+struct ShortPreachDTO: Decodable {
+    var id: Int
+    var date: Date
+//    var updatedAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id, date
+//        case updatedAt = "updated_at"
+    }
+}
+
 struct PreachDTO: PreachProtocol, Hashable {
     var id: Int
     var title: String

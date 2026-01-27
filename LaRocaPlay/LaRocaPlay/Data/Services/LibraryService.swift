@@ -8,10 +8,24 @@
 import Foundation
 import Supabase
 
+enum SupabaseTable: String {
+    case collection
+    case collectionItem = "collection_item"
+}
+
+
 
 final class LibraryService {
     private let supabaseClient = SupabaseClientInstance.shared.publicClient
     
+    
+    func fetchShortData<T:Decodable>(for table: SupabaseTable) async throws -> [T] {
+        try await supabaseClient
+            .from(table.rawValue)
+            .select("id, updatedAt")
+            .execute()
+            .value
+    }
     
     func fetchCollections() async throws -> [CollectionDTO] {
         try await supabaseClient
@@ -27,6 +41,26 @@ final class LibraryService {
                 created_at,
                 updated_at
                 """)
+            .order("created_at", ascending: true)
+            .execute()
+            .value
+    }
+    
+    func fetchCollections(with ids: [Int]) async throws -> [CollectionDTO] {
+        try await supabaseClient
+            .from("collection")
+            .select("""
+                id,
+                title,
+                description,
+                image_id,
+                collection_type_id(id, name),
+                is_public,
+                is_home_screen,
+                created_at,
+                updated_at
+                """)
+            .eq("id", value: ids)
             .order("created_at", ascending: true)
             .execute()
             .value
@@ -86,6 +120,57 @@ final class LibraryService {
             .execute()
             .value
     }
+    
+    
+    
+    func fetchShortTeachings(colId: Int, limit: Int, offset: Int) async throws -> [ShortCollectionItemResponseDTO] {
+        try await supabaseClient
+            .from("collection_item")
+            .select("""
+                preach: preach_id (
+                id,
+                date
+                ),
+                id,
+                updated_at
+                """)
+            .eq("collection_id", value: colId)
+            .order("preach(date)", ascending: false)
+            .range(from: 0, to: limit)
+            .execute()
+            .value
+    }
+    
+//    func fetchTeachings(colId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
+//        try await supabaseClient
+//            .from("collection_item")
+//            .select("""
+//                preach: preach_id (
+//                    id,
+//                    title,
+//                    description,
+//                    date,
+//                    image_id,
+//                    video_id,
+//                    created_at,
+//                    updated_at,
+//                    preacher: preacher_id (
+//                        id,
+//                        name,
+//                        preacher_role_id(id, name),
+//                        image_id,
+//                        created_at,
+//                        updated_at
+//                        )
+//                ),
+//                position,
+//                id,
+//                created_at,
+//                updated_at
+//                """)
+//            .eq("collection_id", value: colId)
+//    }
+    
     func fetchTeachingsWithoutLimit(collectionId: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
@@ -114,6 +199,38 @@ final class LibraryService {
                 updated_at
                 """)
             .eq("collection_id", value: collectionId)
+            .execute()
+            .value
+        
+    }
+    func fetchCollecitonItemsWithIds(for ids: [Int]) async throws -> [CollectionItemResponseDTO] {
+        try await supabaseClient
+            .from("collection_item")
+            .select("""
+                preach: preach_id (
+                    id,
+                    title,
+                    description,
+                    date,
+                    image_id,
+                    video_id,
+                    created_at,
+                    updated_at,
+                    preacher: preacher_id (
+                        id,
+                        name,
+                        preacher_role_id(id, name),
+                        image_id,
+                        created_at,
+                        updated_at
+                        )
+                ),
+                position,
+                id,
+                created_at,
+                updated_at
+                """)
+            .eq("id", value: ids)
             .execute()
             .value
         
