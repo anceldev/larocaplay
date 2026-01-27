@@ -57,8 +57,6 @@ final class LibraryManager {
             let shortCollectionItemDTOs: [ShortCollectionItemResponseDTO] = try await service.fetchShortTeachings(colId: Constants.mainCollectionId, limit: 1, offset: 0)
             _ = try await syncCollectionItems2(dtos: shortCollectionItemDTOs, into: Constants.mainCollectionId)
             
-            
-            
         } catch let error as PostgrestError {
             //            print("ERROR: Error de postgrest: \(error.localizedDescription)")
             logger.error("ERROR: Error de postgrest: \(error)")
@@ -167,6 +165,11 @@ final class LibraryManager {
             }
         }
         if context.hasChanges { try context.save() }
+        
+        let privateCollDescriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ !$0.isPublic })
+        if let privateCollections = try? context.fetch(privateCollDescriptor) {
+            await NotificationManager.shared.subscribeToPrivateCollections(collections: privateCollections.map({ $0.id }), context: context)
+        }
     }
     
     @MainActor
@@ -400,8 +403,10 @@ final class LibraryManager {
     func syncCollectionItems(for collection: Collection) async throws {
         guard collection.needItemsSync else { return }
         let targetID = collection.id
-        let itemDTOs = try await service.fetchTeachingsWithoutLimit(collectionId: targetID)
-        try syncPreaches(dtos: itemDTOs, into: targetID)
+//        let itemDTOs = try await service.fetchTeachingsWithoutLimit(collectionId: targetID)
+//        try syncPreaches(dtos: itemDTOs, into: targetID)
+        let itemDTOs = try await service.fetchShortTeachingsWithoutLimit(collectionId: collection.id)
+        try await syncCollectionItems2(dtos: itemDTOs, into: collection.id)
         //        let itemsDescriptos = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.collection?.id == targetID})
         collection.needItemsSync = false
         try context.save()

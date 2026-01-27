@@ -69,6 +69,7 @@ struct AccountScreen: View {
                                         }
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .disabled(authManager.isLoading)
                                 }
                                 .padding()
                                 .background(.black.opacity(0.45))
@@ -91,6 +92,7 @@ struct AccountScreen: View {
                                         }
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .disabled(authManager.isLoading)
                                 }
                                 .padding()
                                 .background(.black.opacity(0.45))
@@ -112,6 +114,7 @@ struct AccountScreen: View {
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     }
+                                    .disabled(authManager.isLoading)
                                 }
                                 .padding()
                                 .background(.black.opacity(0.45))
@@ -134,6 +137,7 @@ struct AccountScreen: View {
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     }
+                                    .disabled(authManager.isLoading)
                                     Link(destination: URL(string: "https://elite-acrylic-f12.notion.site/Pol-tica-de-Privacidad-de-LaRocaPlay-2e880028ca1a80f29ad2e293bcd7b704?source=copy_link")!) {
                                         HStack {
                                             Image(.lock)
@@ -141,6 +145,7 @@ struct AccountScreen: View {
                                         }
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     }
+                                    .disabled(authManager.isLoading)
                                     HStack {
                                         Image(.windowPointer)
                                         Text(appVersion)
@@ -164,13 +169,22 @@ struct AccountScreen: View {
                                             signout()
                                         }
                                     } label: {
-                                        HStack {
-                                            Image(.arrowDoorOut3)
-                                                .foregroundStyle(.customRed)
-                                            Text("Cerrar sesión")
+                                        if authManager.isLoading {
+                                            HStack {
+                                                ProgressView()
+                                                    .tint(.white)
+                                            }
+                                            .frame(maxWidth: .infinity, alignment: .center)
+                                        } else {
+                                            HStack {
+                                                Image(.arrowDoorOut3)
+                                                    .foregroundStyle(.customRed)
+                                                Text("Cerrar sesión")
+                                            }
+                                            .frame(maxWidth: .infinity, alignment: .leading)
                                         }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     }
+                                    .disabled(authManager.isLoading)
                                 }
                                 .padding()
                                 .background(.black.opacity(0.45))
@@ -214,9 +228,7 @@ struct AccountScreen: View {
     
     private func signout() {
         Task {
-//            let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.isPublic == false })
-//            let privateCollections = try? context.fetch(descriptor)
-//            await authManager.signOut(privateCollections)
+            await NotificationManager.shared.unsuscribeFromPrivateCollections(context: context)
             await authManager.signOut()
         }
     }

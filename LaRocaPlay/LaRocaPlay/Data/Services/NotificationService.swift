@@ -32,6 +32,7 @@ final class NotificationService {
         try await supabase
             .from("user_devices")
             .upsert(device)
+            .eq("user_id", value: device.userId)
             .execute()
     }
     func deleteDevice(deviceId: String) async throws {

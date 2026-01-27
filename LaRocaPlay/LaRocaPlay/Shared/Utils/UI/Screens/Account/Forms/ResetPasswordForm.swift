@@ -11,6 +11,7 @@ import SwiftUI
 
 struct ResetPasswordForm: View {
     @Environment(AuthManager.self) var authManager
+    @Environment(\.modelContext) private var context
 //    @Environment(ToastManager.self) var toasts
     @Environment(\.dismiss) var dismiss
     
@@ -20,6 +21,10 @@ struct ResetPasswordForm: View {
     
     var isFormValid: Bool {
         !authManager.isLoading && formModel.isValid
+    }
+    
+    var userExists: Bool {
+        authManager.currentUserProfile != nil ? true : false
     }
 
     var body: some View {
@@ -54,6 +59,7 @@ struct ResetPasswordForm: View {
                     .submitLabel(.send)
                     .customCapsule(!formModel.email.isEmpty)
                     .withValidation(formModel.$email)
+                    .disabled(userExists)
  
             }
             VStack {
@@ -67,7 +73,11 @@ struct ResetPasswordForm: View {
                 .animation(.easeIn, value: isFormValid)
             }
         }
-        
+        .onAppear(perform: {
+            if userExists {
+                formModel.email = authManager.currentUserProfile!.email!
+            }
+        })
         .popView(
             isPresented: $showPopover,
             content: {
@@ -84,7 +94,8 @@ struct ResetPasswordForm: View {
 #endif
     private func sendResetPasswordLink() async {
         Task {
-            await authManager.resetPassword(for: formModel.email)
+            await NotificationManager.shared.unsuscribeFromPrivateCollections(context: context)
+            await authManager.ressetPasswordRequest(for: formModel.email)
             dismiss()
         }
     }

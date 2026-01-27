@@ -61,28 +61,28 @@ struct UserNotificationSettingsScreen: View {
                                 
                                 Toggle(isOn: $bindableSettings.newPublicCollection) {
                                     HStack {
-                                        Text("Nueva colección")
+                                        Text("Nueva serie")
                                         Spacer()
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 Toggle(isOn: $bindableSettings.newPrivateCollection){
                                     HStack {
-                                        Text("Nueva colección privada")
+                                        Text("Nueva serie privada")
                                         Spacer()
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 Toggle(isOn: $bindableSettings.newPublicCollectionItem){
                                     HStack {
-                                        Text("Nueva predicación en colección pública")
+                                        Text("Nueva predicación en serie")
                                         Spacer()
                                     }
                                 }
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Toggle(isOn: $bindableSettings.newPrivateCollectionItem){
                                         HStack {
-                                            Text("Nueva predicación en colección privada")
+                                            Text("Nueva predicación en serie privada")
                                             Spacer()
                                         }
                                 }
@@ -107,6 +107,7 @@ struct UserNotificationSettingsScreen: View {
             }
             .scrollIndicators(.hidden)
         }
+        
         .padding(18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.customBlack)

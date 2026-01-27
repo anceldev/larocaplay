@@ -22,7 +22,7 @@ final class LibraryService {
     func fetchShortData<T:Decodable>(for table: SupabaseTable) async throws -> [T] {
         try await supabaseClient
             .from(table.rawValue)
-            .select("id, updatedAt")
+            .select("id, updated_at")
             .execute()
             .value
     }
@@ -60,7 +60,8 @@ final class LibraryService {
                 created_at,
                 updated_at
                 """)
-            .eq("id", value: ids)
+//            .eq("id", value: ids)
+            .in("id", values: ids)
             .order("created_at", ascending: true)
             .execute()
             .value
@@ -139,6 +140,23 @@ final class LibraryService {
             .range(from: 0, to: limit)
             .execute()
             .value
+    }
+    func fetchShortTeachingsWithoutLimit(collectionId: Int) async throws -> [ShortCollectionItemResponseDTO] {
+        try await supabaseClient
+            .from("collection_item")
+            .select("""
+                preach: preach_id (
+                    id,
+                    date
+                ),
+                id,
+                updated_at
+                """)
+            .eq("collection_id", value: collectionId)
+            .order("preach(date)", ascending: false)
+            .execute()
+            .value
+        
     }
     
 //    func fetchTeachings(colId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
@@ -230,7 +248,8 @@ final class LibraryService {
                 created_at,
                 updated_at
                 """)
-            .eq("id", value: ids)
+//            .eq("id", value: ids)
+            .in("id", values: ids)
             .execute()
             .value
         

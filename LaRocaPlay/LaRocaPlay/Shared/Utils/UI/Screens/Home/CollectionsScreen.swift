@@ -8,12 +8,32 @@
 import SwiftUI
 import SwiftData
 
+fileprivate enum CollectionFilter: String, CaseIterable, Identifiable {
+    case all = "Todas"
+    case allPublics = "Publicas"
+    case allPrivates = "Privadas"
+    
+    var id: Self { self }
+}
+
+
 struct CollectionsScreen: View {
     @Environment(AppRouter.self) var router
+    
+    @State private var filterView: CollectionFilter = .all
     
     @State private var errorMessage: String? = nil
     @Query private var collections: [Collection]
     let title: String
+    
+    var filteredCollections: [Collection] {
+        switch filterView {
+        case .all: return collections
+        case .allPublics: return collections.filter { $0.isPublic }
+        case .allPrivates: return collections.filter { !$0.isPublic }
+        }
+    }
+    
     
     init(typeName: String = "Serie", title: String = "Series") {
         let predicate = #Predicate<Collection> { collection in
@@ -25,11 +45,30 @@ struct CollectionsScreen: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            TopBarScreen(title: title, true)
-            if !collections.isEmpty {
+            ZStack(alignment: .center) {
+                TopBarScreen(title: title, true)
+                HStack {
+                    Menu {
+                        ForEach(CollectionFilter.allCases) { filter in
+                            Button {
+                                filterView = filter
+                            } label: {
+                                Text(filter.rawValue)
+                            }
+                        }
+                    } label: {
+                        Text(filterView.rawValue)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .bottomTrailing)
+
+            }
+            if !filteredCollections.isEmpty {
                 ScrollView(.vertical) {
                     VStack(spacing: 24) {
-                        ForEach(collections) { serie in
+                        ForEach(filteredCollections) { serie in
                             Button {
                                 router.navigateTo(.collection(id: serie.id))
                             } label: {
@@ -49,6 +88,7 @@ struct CollectionsScreen: View {
             }
             Spacer()
         }
+        .animation(.smooth, value: filterView)
         .padding(.horizontal)
         .background(.customBlack)
         .enableInjection()

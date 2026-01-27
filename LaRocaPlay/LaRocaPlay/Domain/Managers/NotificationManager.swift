@@ -16,9 +16,9 @@ enum NotificationTopic: String, CaseIterable {
     case notCollection = "new_collection" // Nueva colección pública
     case notPrivateCollection = "new_private_collection" // Nueva colección priada
     case notPublicCollectionItem = "new_public_collection_item" // Nuevo contenido en colección
-    case notPrivateCollecitonItem = "new_private_collection_item" // Nuevo contenido en colección privada
+    //    case notPrivateCollecitonItem = "new_private_collection_item" // Nuevo contenido en colección privada
     case notStreaming = "new_streaming"
-
+    
 }
 
 
@@ -28,7 +28,7 @@ final class NotificationManager: NSObject {
     
     private let logger = Logger(subsystem: "com.anceldev.LaRocaPlay", category: "notifications")
     
-
+    
     private let service: NotificationService
     var unreadCount: Int = 0
     
@@ -36,25 +36,27 @@ final class NotificationManager: NSObject {
         self.service = service
     }
     
-    
-    func updateTokenInSupabase(token: String? = nil) {
+    /**
+     Actualiza el token en FCM sólo si es necesario.
+     */
+    func updateTokenInSupabase(token: String? = nil, context: ModelContext? = nil) {
         guard let fcmToken = token ?? Messaging.messaging().fcmToken else {
+            logger.warning("No hay token")
             return
         }
         logger.info("Enviando FCM token a Supabase: \(fcmToken)")
         Task {
             guard let session = try? await service.getCurrentSession() else { return }
             let userId = session.user.id
-            
             let lastToken = UserDefaults.standard.string(forKey: "lastTokenKey")
             let lastUser = UserDefaults.standard.string(forKey: "lastUserKey")
             
             if fcmToken == lastToken && userId.uuidString == lastUser {
-                logger.info("Token y usuario identocos, saltando update en Supabase")
+                logger.info("Token y usuario idénticos, saltando update en Supabase")
                 return
             }
-            await registerDevice(userId: userId, token: fcmToken)
             
+            await registerDevice(userId: userId, token: fcmToken)
         }
     }
     
@@ -81,22 +83,18 @@ final class NotificationManager: NSObject {
         }
     }
     
-    func removeDeviceOnLogout(collections: [Collection]) async {
+    func removeDeviceOnLogout() async {
         guard let deviceId = await UIDevice.current.deviceId else {
             return
         }
         do {
             try await service.deleteDevice(deviceId: deviceId)
-            await unsubscriptTopicsOnLogout()
+            //            await unsubscriptTopicsOnLogout()
+            try await unsubscribeFromPublicTopics()
             
-            let privateCollectionTopics: [String] = collections.compactMap { collection in
-                "new_pci_cId_\(collection.id)"
-            }
-            await addOrRemovePrivateCollectionTopic(topics: privateCollectionTopics, subscribe: false)
-
             UserDefaults.standard.removeObject(forKey: "lastTokenKey")
             UserDefaults.standard.removeObject(forKey: "lastUserKey")
-
+            
             logger.info("Dispositivo eliminado por logout")
         } catch {
             logger.error("No se pudo eliminar el dispositivo")
@@ -158,11 +156,69 @@ final class NotificationManager: NSObject {
             logger.info("Desuscrito de: \(topic.rawValue)")
         }
     }
+    
+    //    @MainActor
+    func unsubscribeFromPublicTopics() async throws {
+        for topic in NotificationTopic.allCases {
+            try await Messaging.messaging().unsubscribe(fromTopic: topic.rawValue)
+            logger.info("Desuscrito de: \(topic.rawValue)")
+        }
+    }
+    
     @MainActor
-    func subscribeToTopics(topics: [NotificationTopic]) async throws {
+    func subscribeToPublicTopics(topics: [NotificationTopic]) async throws {
         for topic in topics {
             try await Messaging.messaging().subscribe(toTopic: topic.rawValue)
             logger.info("Suscrito a: \(topic.rawValue)")
+        }
+    }
+    
+    @MainActor
+    func unsuscribeFromPrivateCollections(context: ModelContext?) async {
+        guard let context else {
+            logger.info("No hay contexto")
+            return
+        }
+        
+        let descriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ !$0.isPublic })
+        guard let collections = try? context.fetch(descriptor) else {
+            logger.info("No tiene colecciones privadas")
+            return
+        }
+        do {
+                for collection in collections {
+                    let topicName = "new_pci_colId_\(collection.id)"
+                    try await Messaging.messaging().unsubscribe(fromTopic: topicName)
+                    logger.info("Desuscritor de topic privado: \(topicName)")
+                }
+        
+        } catch {
+            logger.error("No se ha desuscrito de coleccion: \(error)")
+        }
+        
+    }
+    
+    @MainActor
+    func subscribeToPrivateCollections(collections: [Int], context: ModelContext?) async {
+        do {
+            guard let session = try? await service.getCurrentSession(),
+                  !session.user.isAnonymous,
+                  let context else {
+                logger.info("No hay sesion o contexto")
+                return
+            }
+            let settingsDescriptor = FetchDescriptor<UserNotificationSettings>(predicate: #Predicate<UserNotificationSettings>{ $0.userId == session.user.id })
+            guard let settings = try? context.fetch(settingsDescriptor).first else { return }
+            
+            if settings.newPrivateCollectionItem {
+                for collection in collections {
+                    let topicName = "new_pci_colId_\(collection)"
+                    try await Messaging.messaging().subscribe(toTopic: topicName)
+                    logger.info("Suscrito a: \(collection)")
+                }
+            }
+        } catch {
+            logger.error("No se pudo suscribir a colección privada: \(error)")
         }
     }
     
@@ -174,65 +230,58 @@ final class NotificationManager: NSObject {
             
             var userDescriptor = FetchDescriptor<UserProfile>(predicate: #Predicate<UserProfile>{ $0.userId == userId })
             userDescriptor.fetchLimit = 1
-            guard let profile = try context.fetch(userDescriptor).first else {
-                logger.error("No se encontró el perfil para vincular los settings")
+            guard let profile = try? context.fetch(userDescriptor).first else {
+                logger.warning("No se encontró el perfil para vincular los settings")
                 return
             }
+            var descriptor = FetchDescriptor<UserNotificationSettings>(predicate: #Predicate<UserNotificationSettings>{ $0.userId == userId })
+            descriptor.fetchLimit = 1
             
-            if let existingSettings = profile.notificationSettings {
+            let userNotiticationsSettings = try? context.fetch(descriptor).first
+            
+            if let existingSettings = userNotiticationsSettings {
                 if existingSettings.updatedAt > dto.updatedAt {
-                    try await service.saveSettings(.init(from: existingSettings))
+                    Task {
+                        try await service.saveSettings(.init(from: existingSettings))
+                    }
                 } else if existingSettings.updatedAt < dto.updatedAt{
                     existingSettings.update(from: dto)
                 }
-                try await setupTopics(settings: existingSettings)
+                try await setupPublicTopics(settings: existingSettings)
             } else {
                 let newSettings = dto.toModel()
                 context.insert(newSettings)
                 profile.notificationSettings = newSettings
-                try await setupTopics(settings: newSettings)
+                try await setupPublicTopics(settings: newSettings)
             }
-            try context.save()
+            if context.hasChanges { try context.save() }
         } catch {
             logger.error("Error en sincronización de ajustes: \(error)")
         }
     }
     
-    private func setupTopics(settings: UserNotificationSettings) async throws {
-        let topics = syncCurrentNotificationTopics(settings: settings)
-        try await subscribeToTopics(topics: topics)
+    private func setupPublicTopics(settings: UserNotificationSettings) async throws {
+        let topics = getCurrentNotificationTopics(settings: settings)
+        try await subscribeToPublicTopics(topics: topics)
     }
     @MainActor
     func saveSettingsToServer(_ settings: UserNotificationSettings) async {
         do {
             try await service.saveSettings(UserNotificationSettingsDTO(from: settings))
-//            let topics = syncCurrentNotificationTopics(settings: settings)
-//            try await subscribeToTopics(topics: topics)
-//            try await unsuscribeFromTopics(topics: topics)
+            //            let topics = getCurrentNotificationTopics(settings: settings)
+            //            try await subscribeToTopics(topics: topics)
+            //            try await unsuscribeFromTopics(topics: topics)
         } catch {
             logger.error("No se guardaron los ajustes; \(error)")
         }
     }
-    private func syncCurrentNotificationTopics(settings: UserNotificationSettings) -> [NotificationTopic] {
+    private func getCurrentNotificationTopics(settings: UserNotificationSettings) -> [NotificationTopic] {
         var topics: [NotificationTopic] = []
-        if settings.newMainCollectionItem {
-            topics.append(.notPreach)
-        }
-        if settings.newPublicCollection {
-            topics.append(.notCollection)
-        }
-        if settings.newPrivateCollection {
-            topics.append(.notPrivateCollection)
-        }
-        if settings.newPublicCollectionItem {
-            topics.append(.notPublicCollectionItem)
-        }
-        if settings.newPrivateCollectionItem {
-            topics.append(.notPrivateCollecitonItem)
-        }
-        if settings.youtubeLive {
-            topics.append(.notStreaming)
-        }
+        if settings.newMainCollectionItem { topics.append(.notPreach) }
+        if settings.newPublicCollection { topics.append(.notCollection) }
+        if settings.newPrivateCollection { topics.append(.notPrivateCollection) }
+        if settings.newPublicCollectionItem { topics.append(.notPublicCollectionItem) }
+        if settings.youtubeLive { topics.append(.notStreaming) }
         return topics
     }
 }

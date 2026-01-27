@@ -66,12 +66,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         completionHandler([.banner, .badge, .sound])
     }
     func applicationDidBecomeActive(_ application: UIApplication) {
-//        // En iOS 18 esto es instantáneo y muy fiable
-//        UNUserNotificationCenter.current().setBadgeCount(0) { error in
-//            if let error = error {
-//                print("No se pudo limpiar el badge: \(error)")
-//            }
-//        }
         UNUserNotificationCenter.current().setBadgeCount(0)
     }
     
@@ -135,13 +129,8 @@ struct LaRocaPlayApp: App {
             VStack {
                 Group {
                     switch authManager.navigationState {
-                    case .loading:
-                        ProgressView {
-                            Text("Cargando")
-                        }
-                        .tint(.customRed)
-                    case .onboarding:
-                        OnboardingScreen()
+                    case .loading, .onboarding:
+                        OnboardingScreen(navigationState: authManager.navigationState)
                     case .authorized:
                         RootView()
                     case .updatePassword:

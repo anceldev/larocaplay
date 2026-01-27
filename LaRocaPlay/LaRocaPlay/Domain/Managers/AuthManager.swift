@@ -148,13 +148,16 @@ final class AuthManager {
             self.navigationState = .onboarding
             return
         }
-        await NotificationManager.shared.fetchAndSyncSettings(userId: currentUserProfile.userId, context: modelContext)
+//        await NotificationManager.shared.fetchAndSyncSettings(userId: currentUserProfile.userId, context: modelContext)
         self.navigationState = .authorized
         
         Task {
             await withTaskGroup(of: Void.self) { group in
                 group.addTask {
                     NotificationManager.shared.updateTokenInSupabase()
+                }
+                group.addTask {
+                    await NotificationManager.shared.fetchAndSyncSettings(userId: currentUserProfile.userId, context: self.modelContext)
                 }
                 group.addTask {
                     do {
@@ -218,7 +221,7 @@ final class AuthManager {
                 self.currentUserProfile = try syncProfileToLocal(dto: dto)
             }
             
-            await NotificationManager.shared.fetchAndSyncSettings(userId: self.session!.user.id, context: modelContext)
+//            await NotificationManager.shared.fetchAndSyncSettings(userId: self.session!.user.id, context: modelContext)
             self.navigationState = .authorized
 
             Task {
@@ -243,6 +246,9 @@ final class AuthManager {
                     group.addTask {
                         self.registerToken()
                     }
+                    group.addTask {
+                        await NotificationManager.shared.fetchAndSyncSettings(userId: newSession.user.id, context: self.modelContext)
+                    }
                 }
             }
         } catch let error as Supabase.AuthError {
@@ -252,9 +258,7 @@ final class AuthManager {
             handleNetworkError(error, service: .supabase)
             self.navigationState = .onboarding
         } catch {
-            
-            print(error)
-            print(error.localizedDescription)
+            logger.error("Error en signin: \(error)")
             handleError(.unknown("Credenciales incorrectass"))
             self.navigationState = .onboarding
         }
@@ -280,7 +284,6 @@ final class AuthManager {
             self.currentUserProfile = try syncProfileToLocal(dto: dto)
 
             await NotificationManager.shared.fetchAndSyncSettings(userId: self.session!.user.id, context: modelContext)
-//            await NotificationManager.shared.setupNotificationTopics()
 
             self.navigationState = .authorized
             
@@ -339,6 +342,7 @@ final class AuthManager {
         )
         //        self.currentUserProfile = guest
     }
+    
     @MainActor
     func refreshProfile() async throws -> UserProfile {
         guard let user = session?.user else {
@@ -456,7 +460,7 @@ final class AuthManager {
     func signOut() async {
         self.isLoading = true
         defer { self.isLoading = false }
-//        await NotificationManager.shared.removeDeviceOnLogout(collections: collections)
+        await NotificationManager.shared.removeDeviceOnLogout()
 //        await NotificationManager.shared.desubscriptTopicsOnLogout()
         do {
             try await service.signout()
@@ -480,13 +484,16 @@ final class AuthManager {
     }
     
     @MainActor
-    func resetPassword(for email: String) async {
+    func ressetPasswordRequest(for email: String) async {
         do {
             try await service.sendResetPasswordEmail(to: email)
             guard let session else { return }
             await signOutAllSessions()
             await signOut()
+            try await NotificationManager.shared.unsubscribeFromPublicTopics()
+            await NotificationManager.shared.removeDeviceOnLogout()
             NotificationManager.shared.clearLocalCache()
+            self.navigationState = .onboarding
         } catch {
             logger.error("Error al enviar correo de recuperación: \(error)")
             print(error.localizedDescription)
@@ -496,7 +503,7 @@ final class AuthManager {
     @MainActor
     func getSesssionFromUrlCode(url: URL) {
         guard url.host == "reset-password" else {
-            if url.scheme == "larocaplay" {
+            if url.scheme == "larocaplayapp" {
                 self.pendingDeepLink = url
             }
             return
@@ -506,14 +513,17 @@ final class AuthManager {
             return
         }
         Task {
+            self.isLoading = true
             do {
                 self.session = try await service.getSessionFromCode(code: code)
+                
                 try await syncWithThirdParties()
                 self.navigationState = .updatePassword
             } catch {
                 logger.error("Error al obtener sesion con el code: \(error)")
                 self.navigationState = .onboarding
             }
+            self.isLoading = false
         }
     }
     @MainActor
@@ -541,8 +551,8 @@ final class AuthManager {
             }
             Task {
                 registerToken()
+                await NotificationManager.shared.fetchAndSyncSettings(userId: currentSession.user.id, context: modelContext)
             }
-            
             self.navigationState = .authorized
         } catch {
             print(error)
@@ -559,7 +569,7 @@ final class AuthManager {
         do {
             // Borrado en el servidor de supabase
             try await service.deleteAccount()
-//            await NotificationManager.shared.removeDeviceOnLogout()
+            await NotificationManager.shared.removeDeviceOnLogout()
             // Cerramos sesión en RevenueCat (esperamos que termine)
             _ = try? await Purchases.shared.logOut()
             // Cerramos sesión en supabase

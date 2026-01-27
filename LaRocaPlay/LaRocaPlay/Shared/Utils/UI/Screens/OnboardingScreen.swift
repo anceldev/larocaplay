@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct OnboardingScreen: View {
-    @Environment(AuthManager.self) var authManager
-    @Environment(NetworkMonitor.self) var network
+    @Environment(AuthManager.self) private var authManager
+    @Environment(NetworkMonitor.self) private var network
     @State private var activeCard: Card? = cards.first
     @State private var scrollView: UIScrollView?
     @State private var timer = Timer.publish(every: 0.01, on: .current, in: .default).autoconnect()
     @State private var initialAnimation: Bool = false
     @State private var titleProgress: CGFloat = 0
     @State private var showAuthView = false
+    var navigationState: AuthNavigationState
     var isServerDisabled: Bool {
         authManager.serviceStatus == .serverMaintenance
     }
@@ -70,21 +71,25 @@ struct OnboardingScreen: View {
                         .foregroundStyle(.white.secondary)
                         .blurOpacityEffect(initialAnimation)
                 }
-                
-                Button {
-                    timer.upstream.connect().cancel()
-                    showAuthView.toggle()
-                    //// YOUR CODE
-                } label: {
-                    Text("Empezar")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.black)
-                        .padding(.horizontal, 25)
-                        .padding(.vertical, 12)
-                        .background(.white, in: .capsule)
+                if navigationState == .onboarding {
+                    Button {
+                        timer.upstream.connect().cancel()
+                        showAuthView.toggle()
+                        //// YOUR CODE
+                    } label: {
+                        Text("Empezar")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.black)
+                            .padding(.horizontal, 25)
+                            .padding(.vertical, 12)
+                            .background(.white, in: .capsule)
+                    }
+                    .blurOpacityEffect(initialAnimation)
+                    .disabled(!network.isConnected)
+                } else {
+                    ProgressView("Cargando perfil")
+                        .tint(.white)
                 }
-                .blurOpacityEffect(initialAnimation)
-                .disabled(!network.isConnected)
                 
                 if !network.isConnected, let errorMessage = authManager.errorMessage {
                     Text(errorMessage)

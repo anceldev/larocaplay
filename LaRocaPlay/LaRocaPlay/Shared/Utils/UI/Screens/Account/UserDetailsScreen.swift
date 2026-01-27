@@ -15,6 +15,7 @@ private enum EditFieldState {
 struct UserDetailsScreen: View {
     @Environment(AppRouter.self) var router
     @Environment(AuthManager.self) var authManager
+    @Environment(\.modelContext) private var context
     @State private var showDeleteAccountDialog = false
     @State private var showResetPasswordForm = false
     var userProfile: UserProfile
@@ -140,6 +141,7 @@ struct UserDetailsScreen: View {
     @ObserveInjection var forceRedraw
 #endif
     private func deleteAccount() async {
+        await NotificationManager.shared.unsuscribeFromPrivateCollections(context: context)
         await authManager.deleteAccount()
     }
     private func sendResetLink() {

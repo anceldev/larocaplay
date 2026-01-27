@@ -61,8 +61,10 @@ extension CollectionContainerView {
     private func prepareCollection(for collectionId: Int) async {
         do {
             if collectionId == Constants.mainCollectionId {
-                // TODO: Aqui hay que hacer métodos específicos con paginación para que los utilice la colección principal
-                print("Función diferente si se trata de main collection, aqui tiene que haber pagination")
+//                // TODO: Aqui hay que hacer métodos específicos con paginación para que los utilice la colección principal
+//                print("Función diferente si se trata de main collection, aqui tiene que haber pagination")
+                let collection = try await libManager.getCollection(id: collectionId, isDeepLink: isDeepLink)
+                state = .succes(collection)
             } else {
                 let collection = try await libManager.getCollection(id: collectionId, isDeepLink: isDeepLink)
                 state = .succes(collection)
