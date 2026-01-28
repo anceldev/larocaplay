@@ -14,7 +14,17 @@
 				<string>larocaplayapp</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.218895273182-badvkslb7jo535010u548069od1t0d7a</string>
+			</array>
+		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>218895273182-badvkslb7jo535010u548069od1t0d7a.apps.googleusercontent.com</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

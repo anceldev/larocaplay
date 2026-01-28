@@ -8,7 +8,7 @@
 //import GoogleSignInSwift
 import FirebaseMessaging
 import SwiftUI
-
+import GoogleSignIn
 // TODO: Añadir validadores a los texfields, para que se vean errores cuando no cumplen el regex.
 
 struct SignInForm: View {
@@ -22,7 +22,7 @@ struct SignInForm: View {
     }
     
     @FocusState private var focusedField: FocusedField?
-
+    
     @Binding var authMode: AuthMode
     
     var isFormValid: Bool {
@@ -153,6 +153,10 @@ struct SignInForm: View {
                             }
                             Button {
                                 print("Google signin")
+                                Task {
+                                    await signInWithGoogle()
+                                }
+                                    
                             } label: {
                                 Image(.iosNeutralRdNa)
                                     .resizable()
@@ -227,6 +231,28 @@ struct SignInForm: View {
                 dismiss()
             }
         }
+    }
+    private func signInWithGoogle() async {
+//        Task {
+            guard let presentingVC = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first?.windows
+                .first?.rootViewController else {
+                print("Error obteniendo VC")
+                return
+            }
+            do {
+                let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC)
+                guard let idToken = result.user.idToken?.tokenString else {
+                    print("Error obteniendo token")
+                    return
+                }
+                let accessToken = result.user.accessToken.tokenString
+                try await authManager.signInWithGoogle(idToken: idToken, accessToken: accessToken)
+            } catch {
+                print("Error en google signin: \(error)")
+            }
+//        }
     }
     private func signinAsGuest() {
         Task {

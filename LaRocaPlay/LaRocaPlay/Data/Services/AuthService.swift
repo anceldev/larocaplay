@@ -31,6 +31,16 @@ final class AuthService {
     func signInAnonymously() async throws -> Session {
         try await supabaseClient.auth.signInAnonymously()
     }
+    func signInWithGoogle(idToken: String, accessToken: String) async throws -> Session {
+        try await supabaseClient.auth
+            .signInWithIdToken(
+                credentials: OpenIDConnectCredentials(
+                    provider: .google,
+                    idToken: idToken,
+                    accessToken: accessToken
+                )
+            )
+    }
     
     func sendResetPasswordEmail(to email: String) async throws {
         try await supabaseClient.auth.resetPasswordForEmail(

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B44248D32E7325350061FA5E /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = B44248D22E7325350061FA5E /* Inject */; };
+		B469A7272F2A9FE30011E43A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = B469A7262F2A9FE30011E43A /* GoogleSignIn */; };
+		B469A7292F2A9FE30011E43A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = B469A7282F2A9FE30011E43A /* GoogleSignInSwift */; };
 		B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */ = {isa = PBXBuildFile; productRef = B4747F422E4BA1B200F6ACE5 /* AppRouter */; };
 		B484D3C62EBEA99C00911E17 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = B484D3C52EBEA99C00911E17 /* RevenueCat */; };
 		B484D3C82EBEA99C00911E17 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = B484D3C72EBEA99C00911E17 /* RevenueCatUI */; };
@@ -72,6 +74,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4E8B58A2F15701A009E54E9 /* FirebaseAnalytics in Frameworks */,
+				B469A7272F2A9FE30011E43A /* GoogleSignIn in Frameworks */,
 				B49DA99E2E50A88800B0E571 /* ConfidentialKit in Frameworks */,
 				B48846062E461E52006DB382 /* Supabase in Frameworks */,
 				B48846042E461E52006DB382 /* Storage in Frameworks */,
@@ -79,6 +82,7 @@
 				B484D3C62EBEA99C00911E17 /* RevenueCat in Frameworks */,
 				B4747F432E4BA1B200F6ACE5 /* AppRouter in Frameworks */,
 				B44248D32E7325350061FA5E /* Inject in Frameworks */,
+				B469A7292F2A9FE30011E43A /* GoogleSignInSwift in Frameworks */,
 				B48845FE2E461E52006DB382 /* Functions in Frameworks */,
 				B4F0F7752F10A20E003E4A5C /* YouTubeiOSPlayerHelper in Frameworks */,
 				B484D3C82EBEA99C00911E17 /* RevenueCatUI in Frameworks */,
@@ -154,6 +158,8 @@
 				B4F0F7742F10A20E003E4A5C /* YouTubeiOSPlayerHelper */,
 				B4E8B5892F15701A009E54E9 /* FirebaseAnalytics */,
 				B4E8B58B2F15701A009E54E9 /* FirebaseMessaging */,
+				B469A7262F2A9FE30011E43A /* GoogleSignIn */,
+				B469A7282F2A9FE30011E43A /* GoogleSignInSwift */,
 			);
 			productName = LaRocaPlay;
 			productReference = B4A75FB72E3D27D0005568C4 /* LaRocaPlay.app */;
@@ -192,6 +198,7 @@
 				B484D3C42EBEA99C00911E17 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				B4F0F7732F10A20E003E4A5C /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 				B4E8B5882F15701A009E54E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				B469A7252F2A9FE30011E43A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B4A75FB82E3D27D0005568C4 /* Products */;
@@ -455,6 +462,14 @@
 				minimumVersion = 1.5.2;
 			};
 		};
+		B469A7252F2A9FE30011E43A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.1.0;
+			};
+		};
 		B4747F412E4BA1B200F6ACE5 /* XCRemoteSwiftPackageReference "AppRouter" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Dimillian/AppRouter.git";
@@ -518,6 +533,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B44248D12E7325350061FA5E /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
+		};
+		B469A7262F2A9FE30011E43A /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B469A7252F2A9FE30011E43A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		B469A7282F2A9FE30011E43A /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B469A7252F2A9FE30011E43A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
 		};
 		B4747F422E4BA1B200F6ACE5 /* AppRouter */ = {
 			isa = XCSwiftPackageProductDependency;

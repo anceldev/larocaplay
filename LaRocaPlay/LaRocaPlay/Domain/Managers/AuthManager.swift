@@ -195,6 +195,61 @@ final class AuthManager {
     }
     
     @MainActor
+    func signInWithGoogle(idToken: String, accessToken: String) async throws {
+        self.isLoading = true
+        self.errorMessage = nil
+        defer { self.isLoading = false }
+        do {
+            let newSession = try await service.signInWithGoogle(idToken: idToken, accessToken: accessToken)
+            self.session = newSession
+            if let local = loadLocalProfile(id: newSession.user.id){
+                self.currentUserProfile = local
+            } else {
+                let dto = try await service.fetchProfile(id: newSession.user.id)
+                self.currentUserProfile = try syncProfileToLocal(dto: dto)
+            }
+            self.navigationState = .authorized
+            Task {
+                await withTaskGroup(of: Void.self) { group in
+                    group.addTask {
+                        do {
+                            try await self.syncWithThirdParties()
+                        } catch {
+                            await MainActor.run { self.serviceStatus = .storeMaintenance }
+                        }
+                    }
+                    group.addTask {
+                        do {
+                            let dto = try await self.service.fetchProfile(id: newSession.user.id)
+                            await MainActor.run {
+                                _ = try? self.syncProfileToLocal(dto: dto)
+                            }
+                        } catch {
+                            self.logger.warning("No se pudo refrescar el perfil tras el login")
+                        }
+                    }
+                    group.addTask {
+                        self.registerToken()
+                    }
+                    group.addTask {
+                        await NotificationManager.shared.fetchAndSyncSettings(userId: newSession.user.id, context: self.modelContext)
+                    }
+                }
+            }
+        } catch let error as Supabase.AuthError {
+            handleSignInError(error)
+            self.navigationState = .onboarding
+        } catch let error as URLError {
+            handleNetworkError(error, service: .supabase)
+            self.navigationState = .onboarding
+        } catch {
+            logger.error("Error en signin: \(error)")
+            handleError(.unknown("Credenciales incorrectass"))
+            self.navigationState = .onboarding
+        }
+    }
+    
+    @MainActor
     func signIn(email: String, password: String) async {
         self.isLoading = true
         defer { self.isLoading = false }
