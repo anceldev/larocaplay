@@ -20,7 +20,6 @@ struct PreachDetailView: View {
     @State private var isDescriptionExpanded = false
     @State private var showAuthForm = false
     
-//    let preach: Preach
     let item: CollectionItem
     
     let spanishDateFormatter: DateFormatter = {
@@ -42,7 +41,6 @@ struct PreachDetailView: View {
         VStack(spacing: 0) {
             if let preach = item.preach {
                 TopBarScreen(title: preach.title, true)
-//                ScrollView(.vertical) {
                     VStack(spacing: 16) {
                         ZStack(alignment: .center) {
                             if authManager.isSubscriptionActive {
@@ -71,20 +69,19 @@ struct PreachDetailView: View {
                                     Text(preach.title)
                                         .font(.system(size: 18, weight: .medium, design: .rounded))
                                         .multilineTextAlignment(.center)
+                                        .foregroundStyle(.appLabel.primary)
                                 }
                                 Text(spanishDateFormatter.string(from: preach.date))
                                     .font(.system(size: 12))
                                     .foregroundStyle(.gray.opacity(0.7))
                             }
                             .frame(maxWidth: .infinity)
-                            //                    .border(.red, width: 1)
                             if let description = preach.desc {
                                 VStack {
                                     Text(description)
                                         .foregroundStyle(.dirtyWhite)
                                         .font(.system(size: 14))
                                         .padding(.horizontal, 6)
-                                    //                                    .multilineTextAlignment(.center)
                                         .multilineTextAlignment(.leading)
                                         .lineLimit(isDescriptionExpanded ? nil : 3)
                                     Text(isDescriptionExpanded ? "Leer menos" : "Leer más...")
@@ -158,7 +155,7 @@ struct PreachDetailView: View {
         defer { isLoading = false }
         Task {
             do {
-                let url = try await libManager.getValidVideoUrl(for: preach)
+                let url = try await libManager.getVimeoVideoUrl(for: preach)
                 self.videoUrl = url
             } catch {
                 print("ERROR: Error cargando video \(error)")
@@ -192,7 +189,6 @@ struct SubscriptionCard: View {
                 if authManager.isAnonymous {
                     VStack {
                         Text("Necesitas registrarte en la app para poder suscribirte")
-//                            .padding(.horizontal, 32)
                             .font(.system(size: 14))
                             .foregroundStyle(.dirtyWhite)
                             .multilineTextAlignment(.center)
@@ -201,15 +197,10 @@ struct SubscriptionCard: View {
                         } label: {
                             Text("Registrarme")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
-//                                .foregroundStyle(.customRed.opacity(0.8))
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .underline()
-//                                .overlay {
-//                                    Capsule()
-//                                        .stroke(.customRed.opacity(0.8), lineWidth: 1)
-//                                }
                         }
                     }
                 } else {
@@ -217,7 +208,6 @@ struct SubscriptionCard: View {
                         showPaywall = true
                     } label: {
                         Text("Cambiar plan")
-                        //                        .underline()
                             .font(.system(size: 12, design: .rounded))
                             .foregroundStyle(.customRed.opacity(0.8))
                             .padding(.horizontal, 8)

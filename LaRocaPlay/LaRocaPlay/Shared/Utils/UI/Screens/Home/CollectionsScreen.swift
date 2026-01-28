@@ -58,6 +58,7 @@ struct CollectionsScreen: View {
                         }
                     } label: {
                         Text(filterView.rawValue)
+                            .font(.system(size: 12))
                             .fontWeight(.semibold)
                             .foregroundStyle(.white)
                     }
@@ -73,11 +74,19 @@ struct CollectionsScreen: View {
                                 router.navigateTo(.collection(id: serie.id))
                             } label: {
                                 CollectionCard(collection: serie)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: Theme.Radius.player)
+                                            .stroke(lineWidth: 8)
+                                            .foregroundStyle(.gray.opacity(0.3))
+                                    }
+                                    .padding(.horizontal, 18)
                             }
                         }
                     }
                 }
+                
                 .scrollIndicators(.hidden)
+                
             } else {
                 EmptyContent {
                     Text("No hay ninguna serie disponible.")
@@ -89,8 +98,7 @@ struct CollectionsScreen: View {
             Spacer()
         }
         .animation(.smooth, value: filterView)
-        .padding(.horizontal)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
     }
     

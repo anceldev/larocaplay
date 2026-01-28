@@ -36,9 +36,7 @@ struct HeaderView: View {
       .onAppear {
         loadImage()
       }
-
     }
-
     .enableInjection()
   }
   #if DEBUG

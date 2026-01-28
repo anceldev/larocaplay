@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+struct Card: Identifiable, Hashable {
+    var id: String = UUID().uuidString
+    var image: String
+}
+let cards: [Card] = [
+    .init(image: "Pic 1"),
+    .init(image: "Pic 2"),
+    .init(image: "Pic 3"),
+    .init(image: "Pic 4"),
+]
+
+
 struct OnboardingScreen: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(NetworkMonitor.self) private var network
@@ -125,7 +137,6 @@ struct OnboardingScreen: View {
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
     func updateActiveCard() {
         if let currentScrollOffset = scrollView?.contentOffset.x {
             let activeIndex = Int((currentScrollOffset / 220).rounded()) % cards.count
@@ -149,7 +160,6 @@ struct OnboardingScreen: View {
                         /// Only Showing active Card Image
                         .opacity(activeCard?.id == card.id ? 1 : 0)
                 }
-                
                 Rectangle()
                     .fill(.black.opacity(0.45))
                     .ignoresSafeArea()

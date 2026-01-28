@@ -17,18 +17,13 @@ struct TeachingCard: View {
         let role = self.teach.preacher?.role
         let name = self.teach.preacher?.name
         let dateString = teach.date.formatted(date: .numeric, time: .omitted)
-        
         let nameParts = [role, name]
             .compactMap { $0 }
             .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         let fullName = nameParts.joined(separator: " ")
-        
-        if fullName.isEmpty {
-            return dateString
-        }
+        if fullName.isEmpty { return dateString }
         return "\(fullName) - \(dateString)"
     }
-    
     
     var body: some View {
         VStack(spacing: 8) {
@@ -43,7 +38,6 @@ struct TeachingCard: View {
                             .frame(maxWidth: .infinity, alignment: listView.textAlignment)
                         Text(preacherAndDate)
                             .font(.system(size: listView.subtitleSize, weight: .medium, design: .rounded))
-//                            .foregroundStyle(.gray.opacity(0.7))
                             .foregroundStyle(.dirtyWhite)
                             .multilineTextAlignment(listView.tAlignment)
                             .lineLimit(listView == .grid ? 1 : nil)
@@ -75,7 +69,6 @@ struct TeachingCard: View {
                             )
                     )
                     .frame(maxWidth: .infinity, alignment: listView.textAlignment)
-//                    .border(.red, width: 1)
                 }
         }
         .enableInjection()

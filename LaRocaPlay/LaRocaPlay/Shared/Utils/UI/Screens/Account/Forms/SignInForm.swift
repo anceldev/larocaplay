@@ -36,15 +36,15 @@ struct SignInForm: View {
                 VStack(spacing: 12) {
                     Text("Bienvenido de nuevo")
                         .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.appLabel.primary)
                         .multilineTextAlignment(.center)
                     HStack(spacing: 4) {
                         Text("Inicia sesión")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.appLabel.primary)
                         Text("con tu cuenta.")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(.dirtyWhite)
+                            .font(.system(size: 18, weight: .regular))
+                            .foregroundStyle(.appLabel.secondary)
                     }
                 }
                 .padding(.top, 24)
@@ -53,7 +53,7 @@ struct SignInForm: View {
                         VStack(alignment: .leading) {
                             HStack(spacing: 0) {
                                 Text("Correo")
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.appLabel.primary)
                                 Text("*")
                                     .foregroundStyle(.customRed)
                             }
@@ -64,7 +64,7 @@ struct SignInForm: View {
                                 .keyboardType(.emailAddress)
                                 .customCapsule(focusedField == .email || !formModel.email.isEmpty)
                                 .focused($focusedField, equals: .email)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.appLabel.primary)
                                 .tint(.white)
                                 .submitLabel(.next)
                                 .onSubmit {
@@ -88,7 +88,7 @@ struct SignInForm: View {
                                 .autocorrectionDisabled()
                                 .customCapsule(focusedField == .password || !formModel.password.isEmpty)
                                 .focused($focusedField, equals: .password)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.appLabel.primary)
                                 .tint(.white)
                                 .submitLabel(.go)
                                 .animation(.easeInOut, value: focusedField)
@@ -103,7 +103,7 @@ struct SignInForm: View {
                             } label: {
                                 Text("He olvidad mi contraseña")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundStyle(.dirtyWhite)
+                                    .foregroundStyle(.appLabel.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .trailing)
                             
@@ -173,7 +173,7 @@ struct SignInForm: View {
                             .disabled(authManager.isLoading)
                         }
                         .font(.system(size: 14))
-                        .foregroundStyle(.dirtyWhite)
+                        .foregroundStyle(.appLabel.secondary)
                     }
                     VStack(spacing: 16) {
                         VStack {
@@ -193,15 +193,14 @@ struct SignInForm: View {
                             .disabled(authManager.isLoading)
                         }
                         .font(.system(size: 14))
-                        .foregroundStyle(.dirtyWhite)
+                        .foregroundStyle(.appLabel.secondary)
                     }
                 }
             }
             .scrollIndicators(.hidden)
         }
         .animation(.easeIn, value: authManager.errorMessage)
-//        .frame(maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .onChange(of: focusedField) { oldValue, newValue in
             switch oldValue {
             case .email: formModel.validateEmail()

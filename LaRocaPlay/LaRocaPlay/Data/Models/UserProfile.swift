@@ -29,5 +29,4 @@ final class UserProfile {
         self.locale = locale
         self.profileRole = profileRole
     }
-    
 }

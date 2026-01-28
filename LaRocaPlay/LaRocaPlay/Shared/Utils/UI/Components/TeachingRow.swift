@@ -21,10 +21,7 @@ struct TeachingRow: View {
       .compactMap { $0 }
       .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
     let fullName = nameParts.joined(separator: " ")
-
-    if fullName.isEmpty {
-      return dateString
-    }
+    if fullName.isEmpty { return dateString }
     return "\(fullName) - \(dateString)"
   }
 

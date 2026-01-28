@@ -29,7 +29,11 @@ struct SeriesCard: View {
         .frame(height: 100)
         .background(.brown)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
-
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.player)
+                .stroke(lineWidth: 8)
+                .foregroundStyle(.gray.opacity(0.3))
+        }
         .enableInjection()
     }
 #if DEBUG

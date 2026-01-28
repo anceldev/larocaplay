@@ -104,7 +104,6 @@ struct EditUserDetailsForm: View {
                 )                
         })
         .padding(Theme.Padding.normal)
-//        .background(.customBlack)
         .enableInjection()
     }
 #if DEBUG

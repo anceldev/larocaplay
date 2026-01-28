@@ -27,10 +27,11 @@ struct AccountCard: View {
                         .clipShape(.circle)
                     VStack(alignment: .center, spacing: 6) {
                         Text(user.displayName ?? "NO-NAME")
-                            .font(.system(size: 20))
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(.appLabel.primary)
                         Text(user.email ?? "email")
                             .font(.system(size: 17))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(.appLabel.secondary)
                     }
                     Text(authManager.isSubscriptionActive ? "Plan Premium" : "Plan Gratuito")
                         .padding(.horizontal, 16)
@@ -42,7 +43,7 @@ struct AccountCard: View {
                 }
                 .padding(Theme.Padding.normal)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .background(.black.opacity(0.45))
+                .background(.appBackground.secondary)
                 .mask(RoundedRectangle(cornerRadius: Theme.Radius.player))
             }
             if !authManager.isSubscriptionActive {
@@ -52,21 +53,20 @@ struct AccountCard: View {
                     VStack {
                         Text("¡Pásate a Premium!")
                             .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .foregroundStyle(.appLabel.primary)
                         Text("Disfruta de todo el contenido para tu crecimiento espiritual pasándote al plan premium. Podrás acceder a las predicaiones, series, capacitaciones y mucho más")
                             .multilineTextAlignment(.center)
                             .font(.system(size: 14, weight: .light, design: .rounded))
+                            .foregroundStyle(.appLabel.primary.opacity(0.8))
                     }
                     .padding(Theme.Padding.normal)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .background(.black.opacity(0.45))
+                    .background(.appBackground.secondary)
                     .mask(RoundedRectangle(cornerRadius: Theme.Radius.player))
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
-//        .padding(Theme.Padding.normal)
-//        .background(.black.opacity(0.45))
-//        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .enableInjection()
     }
     

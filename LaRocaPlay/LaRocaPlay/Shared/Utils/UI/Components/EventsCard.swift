@@ -33,6 +33,11 @@ struct EventsCard: View {
         .frame(minHeight: 200)
         .background(.indigo)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
+        .overlay {
+            RoundedRectangle(cornerRadius: Theme.Radius.player)
+                .stroke(lineWidth: 8)
+                .foregroundStyle(.gray.opacity(0.3))
+        }
         .enableInjection()
     }
     

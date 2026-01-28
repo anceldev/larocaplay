@@ -11,18 +11,15 @@ struct AnonymousView: View {
     @Binding var showAuthSheet: Bool
     var body: some View {
         VStack(spacing: 32) {
-//            Image(systemName: "person.fill")
             Image(.avatar)
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundStyle(.gray)
             VStack(spacing: 8) {
                 Text("Únete a nuestra comunidad")
-                //                .font(.headline)
                     .font(.system(size: 18, weight: .semibold))
                 
                 Text("Regístrate para proteger tu suscripción y acceder desde cualquier dispositivo.")
-                //                .font(.subheadline)
                     .font(.system(size: 14))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)

@@ -100,7 +100,7 @@ struct LaRocaPlayApp: App {
             ])
             logger.info("\(URL.documentsDirectory.path(percentEncoded: false), privacy: .public)")
             
-            let config = ModelConfiguration("db.v1.4.32", schema: schema, isStoredInMemoryOnly: false)
+            let config = ModelConfiguration("db.v1.4.33", schema: schema, isStoredInMemoryOnly: false)
             self.container = try ModelContainer(for: schema, configurations: config)
             
             let manager = AuthManager(service: AuthService())
@@ -143,7 +143,6 @@ struct LaRocaPlayApp: App {
                 .modelContainer(container)
             }
             .supportOfflineMode(isConnected: network.isConnected)
-            .preferredColorScheme(.dark)
             .task {
                 await authManager.initialize()
             }

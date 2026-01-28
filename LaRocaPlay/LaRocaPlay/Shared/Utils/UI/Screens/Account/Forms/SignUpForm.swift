@@ -41,17 +41,17 @@ struct SignUpForm: View {
                     VStack(spacing: 8) {
                         Text("Bienvenido a")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(.dirtyWhite)
+                            .foregroundStyle(.appLabel.secondary)
                             .multilineTextAlignment(.center)
                         Text("La Roca Play")
                             .font(.system(size: 32, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.appLabel.primary)
                             .multilineTextAlignment(.center)
                     }
                     HStack(spacing: 4) {
                         Text("Crea tu cuenta para empezar.")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(.dirtyWhite)
+                            .foregroundStyle(.appLabel.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
                     }
@@ -90,7 +90,7 @@ struct SignUpForm: View {
                         VStack(alignment: .leading) {
                             HStack(spacing: 0) {
                                 Text("Contraseña")
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.appLabel.primary)
                                 Text("*")
                                     .foregroundStyle(.customRed)
                             }
@@ -113,7 +113,7 @@ struct SignUpForm: View {
                         VStack(alignment: .leading) {
                             HStack(spacing: 0) {
                                 Text("Confirmar contraseña")
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.appLabel.primary)
                                 Text("*")
                                     .foregroundStyle(.customRed)
                             }
@@ -173,7 +173,7 @@ struct SignUpForm: View {
                             .disabled(authManager.isLoading)
                         }
                         .font(.system(size: 14))
-                        .foregroundStyle(.dirtyWhite)
+                        .foregroundStyle(.appLabel.secondary)
                     }
                 }
             }

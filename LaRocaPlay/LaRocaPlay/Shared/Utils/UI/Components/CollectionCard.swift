@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CollectionCard: View {
     @Environment(AppRouter.self) var router
-    
     var collection: Collection
     
     var body: some View {

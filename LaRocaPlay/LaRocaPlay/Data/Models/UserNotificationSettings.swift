@@ -50,18 +50,4 @@ final class UserNotificationSettings {
         self.youtubeLive = dto.youtubeLive
         self.updatedAt = dto.updatedAt
     }
-    
-//    func toDTO() -> UserNotificationSettingsDTO {
-//        
-////        .init(
-////            userId: self.userId,
-////            newMainCollectionItem: self.newMainCollectionItem,
-////            newPublicCollection: self.newPublicCollection,
-////            newPrivateCollection: self.newPrivateCollection,
-////            newPublicCollectionItem: self.newPublicCollectionItem,
-////            newPrivateCollectionItem: self.newPrivateCollectionItem,
-////            youtubeLive: self.youtubeLive
-////        )
-//    }
-    
 }

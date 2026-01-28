@@ -39,7 +39,7 @@ struct PreachContainerView: View {
         .padding(.horizontal, 18)
         .padding(.vertical, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .task {
             await loadCollectionItem()
         }
@@ -48,7 +48,6 @@ struct PreachContainerView: View {
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif
-    
 }
 
 extension PreachContainerView {

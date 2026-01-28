@@ -47,7 +47,6 @@ struct PreachDTO: PreachProtocol, Hashable {
     enum CodingKeys: String, CodingKey {
         case id, title, description, date
         case videoId = "video_id"
-//        case preacher = "preacher_id"
         case preacher = "preacher"
         case serie = "serie_id"
         case imageId = "image_id"

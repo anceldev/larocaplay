@@ -21,8 +21,6 @@ enum NotificationTopic: String, CaseIterable {
     
 }
 
-
-//@Observable
 final class NotificationManager: NSObject {
     static let shared = NotificationManager(service: NotificationService())
     
@@ -89,7 +87,6 @@ final class NotificationManager: NSObject {
         }
         do {
             try await service.deleteDevice(deviceId: deviceId)
-            //            await unsubscriptTopicsOnLogout()
             try await unsubscribeFromPublicTopics()
             
             UserDefaults.standard.removeObject(forKey: "lastTokenKey")
@@ -186,16 +183,14 @@ final class NotificationManager: NSObject {
             return
         }
         do {
-                for collection in collections {
-                    let topicName = "new_pci_colId_\(collection.id)"
-                    try await Messaging.messaging().unsubscribe(fromTopic: topicName)
-                    logger.info("Desuscritor de topic privado: \(topicName)")
-                }
-        
+            for collection in collections {
+                let topicName = "new_pci_colId_\(collection.id)"
+                try await Messaging.messaging().unsubscribe(fromTopic: topicName)
+                logger.info("Desuscritor de topic privado: \(topicName)")
+            }
         } catch {
             logger.error("No se ha desuscrito de coleccion: \(error)")
         }
-        
     }
     
     @MainActor
@@ -268,9 +263,6 @@ final class NotificationManager: NSObject {
     func saveSettingsToServer(_ settings: UserNotificationSettings) async {
         do {
             try await service.saveSettings(UserNotificationSettingsDTO(from: settings))
-            //            let topics = getCurrentNotificationTopics(settings: settings)
-            //            try await subscribeToTopics(topics: topics)
-            //            try await unsuscribeFromTopics(topics: topics)
         } catch {
             logger.error("No se guardaron los ajustes; \(error)")
         }
@@ -285,9 +277,3 @@ final class NotificationManager: NSObject {
         return topics
     }
 }
-
-/**
- "¡Contraseña actualizada! Por seguridad, hemos cerrado las sesiones en tus otros dispositivos. Ya puedes disfrutar de La Roca Play."
- 
- Para proteger tu cuenta, cerraremos todas las sesiones activas al solicitar el cambio
- */

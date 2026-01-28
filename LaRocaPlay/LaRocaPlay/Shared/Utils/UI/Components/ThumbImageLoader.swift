@@ -32,7 +32,7 @@ struct ThumbImageLoader: View {
     
     var body: some View {
         ZStack {
-            Color.gray
+            Color.gray.opacity(0.4)
                 .aspectRatio(aspect, contentMode: .fit)
             if let image {
                 if #available(iOS 26.0, *) {

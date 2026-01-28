@@ -11,13 +11,11 @@ import Supabase
 enum SupabaseTable: String {
     case collection
     case collectionItem = "collection_item"
+    case preacher
 }
-
-
 
 final class LibraryService {
     private let supabaseClient = SupabaseClientInstance.shared.publicClient
-    
     
     func fetchShortData<T:Decodable>(for table: SupabaseTable) async throws -> [T] {
         try await supabaseClient
@@ -30,17 +28,7 @@ final class LibraryService {
     func fetchCollections() async throws -> [CollectionDTO] {
         try await supabaseClient
             .from("collection")
-            .select("""
-                id,
-                title,
-                description,
-                image_id,
-                collection_type_id(id, name),
-                is_public,
-                is_home_screen,
-                created_at,
-                updated_at
-                """)
+            .select(Queries.collection.rawValue)
             .order("created_at", ascending: true)
             .execute()
             .value
@@ -49,18 +37,7 @@ final class LibraryService {
     func fetchCollections(with ids: [Int]) async throws -> [CollectionDTO] {
         try await supabaseClient
             .from("collection")
-            .select("""
-                id,
-                title,
-                description,
-                image_id,
-                collection_type_id(id, name),
-                is_public,
-                is_home_screen,
-                created_at,
-                updated_at
-                """)
-//            .eq("id", value: ids)
+            .select(Queries.collection.rawValue)
             .in("id", values: ids)
             .order("created_at", ascending: true)
             .execute()
@@ -69,17 +46,7 @@ final class LibraryService {
     func fetchCollection(id: Int) async throws -> CollectionDTO {
         try await supabaseClient
             .from("collection")
-            .select("""
-                id,
-                title,
-                description,
-                image_id,
-                collection_type_id(id, name),
-                is_public,
-                is_home_screen,
-                created_at,
-                updated_at
-                """)
+            .select(Queries.collection.rawValue)
             .eq("id", value: id)
             .single()
             .execute()
@@ -90,30 +57,7 @@ final class LibraryService {
     func fetchTeachings(collectionId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                    id,
-                    title,
-                    description,
-                    date,
-                    image_id,
-                    video_id,
-                    created_at,
-                    updated_at,
-                    preacher: preacher_id (
-                        id,
-                        name,
-                        preacher_role_id(id, name),
-                        image_id,
-                        created_at,
-                        updated_at
-                        )
-                ),
-                position,
-                id,
-                created_at,
-                updated_at
-                """)
+            .select(Queries.collectionItem.rawValue)
             .eq("collection_id", value: collectionId)
             .order("preach(date)", ascending: false)
 //            .limit(limit)
@@ -127,14 +71,7 @@ final class LibraryService {
     func fetchShortTeachings(colId: Int, limit: Int, offset: Int) async throws -> [ShortCollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                id,
-                date
-                ),
-                id,
-                updated_at
-                """)
+            .select(Queries.shortCollectionItem.rawValue)
             .eq("collection_id", value: colId)
             .order("preach(date)", ascending: false)
             .range(from: 0, to: limit)
@@ -144,78 +81,17 @@ final class LibraryService {
     func fetchShortTeachingsWithoutLimit(collectionId: Int) async throws -> [ShortCollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                    id,
-                    date
-                ),
-                id,
-                updated_at
-                """)
+            .select(Queries.shortCollectionItem.rawValue)
             .eq("collection_id", value: collectionId)
             .order("preach(date)", ascending: false)
             .execute()
             .value
-        
     }
-    
-//    func fetchTeachings(colId: Int, limit: Int, offset: Int) async throws -> [CollectionItemResponseDTO] {
-//        try await supabaseClient
-//            .from("collection_item")
-//            .select("""
-//                preach: preach_id (
-//                    id,
-//                    title,
-//                    description,
-//                    date,
-//                    image_id,
-//                    video_id,
-//                    created_at,
-//                    updated_at,
-//                    preacher: preacher_id (
-//                        id,
-//                        name,
-//                        preacher_role_id(id, name),
-//                        image_id,
-//                        created_at,
-//                        updated_at
-//                        )
-//                ),
-//                position,
-//                id,
-//                created_at,
-//                updated_at
-//                """)
-//            .eq("collection_id", value: colId)
-//    }
     
     func fetchTeachingsWithoutLimit(collectionId: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                    id,
-                    title,
-                    description,
-                    date,
-                    image_id,
-                    video_id,
-                    created_at,
-                    updated_at,
-                    preacher: preacher_id (
-                        id,
-                        name,
-                        preacher_role_id(id, name),
-                        image_id,
-                        created_at,
-                        updated_at
-                        )
-                ),
-                position,
-                id,
-                created_at,
-                updated_at
-                """)
+            .select(Queries.collectionItem.rawValue)
             .eq("collection_id", value: collectionId)
             .execute()
             .value
@@ -224,31 +100,7 @@ final class LibraryService {
     func fetchCollecitonItemsWithIds(for ids: [Int]) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                    id,
-                    title,
-                    description,
-                    date,
-                    image_id,
-                    video_id,
-                    created_at,
-                    updated_at,
-                    preacher: preacher_id (
-                        id,
-                        name,
-                        preacher_role_id(id, name),
-                        image_id,
-                        created_at,
-                        updated_at
-                        )
-                ),
-                position,
-                id,
-                created_at,
-                updated_at
-                """)
-//            .eq("id", value: ids)
+            .select(Queries.collectionItem.rawValue)
             .in("id", values: ids)
             .execute()
             .value
@@ -258,30 +110,7 @@ final class LibraryService {
     func fetchTeachingsWithLimit(collectionId: Int, from: Int, to: Int) async throws -> [CollectionItemResponseDTO] {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                    id,
-                    title,
-                    description,
-                    date,
-                    image_id,
-                    video_id,
-                    created_at,
-                    updated_at,
-                    preacher: preacher_id (
-                        id,
-                        name,
-                        preacher_role_id(id, name),
-                        image_id,
-                        created_at,
-                        updated_at
-                        )
-                ),
-                position,
-                id,
-                created_at,
-                updated_at
-                """) // El string con preach(...), preacher(...), etc.
+            .select(Queries.collectionItem.rawValue)
             .eq("collection_id", value: collectionId)
             .order("updated_at", ascending: false) // <--- CRUCIAL: Lo último tocado sale primero
             .range(from: from, to: to)
@@ -292,24 +121,26 @@ final class LibraryService {
     func fetchAllPreachers() async throws -> [PreacherDTO] {
         try await supabaseClient
             .from("preacher")
-            .select("""
-                id,
-                name,
-                preacher_role_id(id, name),
-                image_id,
-                updated_at
-                """)
+            .select(Queries.preacher.rawValue)
             .execute()
             .value
     }
+    
+    func fetchPreachersWithIds(ids: [Int]) async throws -> [PreacherDTO] {
+        try await supabaseClient
+            .from("preacher")
+            .select(Queries.preacher.rawValue)
+            .in("id", values: ids)
+            .execute()
+            .value
+    }
+    
     func fetchCollectionTypes() async throws -> [CollectionTypeResponseDTO] {
-        let data: [CollectionTypeResponseDTO] = try await supabaseClient
+        try await supabaseClient
             .from("collection_type")
             .select("*")
             .execute()
             .value
-        print(data)
-        return data
     }
     
     func fetchSignedLink(for videoId: String) async throws -> VideoLinkResponseDTO {
@@ -318,9 +149,9 @@ final class LibraryService {
             options: FunctionInvokeOptions(
                 method: .post,
                 body: ["videoId": videoId]
-                //                body: ["videoId": "1234"]
             ))
     }
+    
     func fetchSongs() async throws -> [SongDTO] {
         try await supabaseClient
             .from("song")
@@ -339,29 +170,7 @@ final class LibraryService {
     func fetchCollectionItem(id: Int) async throws -> CollectionItemResponseDTO {
         try await supabaseClient
             .from("collection_item")
-            .select("""
-                preach: preach_id (
-                id,
-                title,
-                description,
-                date,
-                image_id,
-                video_id,
-                created_at,
-                updated_at,
-                preacher: preacher_id (
-                    id,
-                    name,
-                    preacher_role_id(id, name),
-                    image_id,
-                    updated_at
-                    )
-                ),
-                position,
-                id,
-                created_at,
-                updated_at
-                """)
+            .select(Queries.collectionItem.rawValue)
             .eq("id", value: id)
             .single()
             .execute()

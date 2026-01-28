@@ -19,11 +19,6 @@ final class NotificationService {
         
     }
     
-//    func updateDeviceToken(token: String) async throws {
-//        try await supabase
-//            .from("user_devices")
-//
-//    }
     func getCurrentSession() async throws -> Session {
         return try await supabase.auth.session
     }

@@ -48,6 +48,7 @@ struct CollectionDetailView: View {
                         Text(collection.title)
                             .font(.system(size: 24, weight: .bold, design: .default))
                             .multilineTextAlignment(.center)
+                            .foregroundStyle(.appLabel.primary)
                         if let description = collection.desc {
                             ExpandableDescription(descriptionText: description)
                         }
@@ -63,11 +64,12 @@ struct CollectionDetailView: View {
                             .font(.system(size: 18, weight: .regular, design: .rounded))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 16)
+                            .foregroundStyle(.appLabel.secondary)
                     }
                 }
             }
         }
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
     }
     

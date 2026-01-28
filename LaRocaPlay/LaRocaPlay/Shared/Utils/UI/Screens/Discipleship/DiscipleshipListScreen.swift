@@ -46,7 +46,7 @@ struct DiscipleshipListScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .onAppear(perform: {
             getCollections()
         })

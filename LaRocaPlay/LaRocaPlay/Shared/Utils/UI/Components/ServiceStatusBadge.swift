@@ -36,7 +36,7 @@ struct ServiceStatusBadge: View {
             .shadow(color: .yellow.opacity(0.8), radius: 4)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
     }
 }
 

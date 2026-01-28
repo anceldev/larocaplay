@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class CollectionItem {
+final class CollectionItem: Hashable {
     @Attribute(.unique) var id: Int
     var position: Int
     var collection: Collection?
@@ -28,7 +28,6 @@ final class CollectionItem {
     
     func update(from dto: CollectionItemResponseDTO) {
         self.position = dto.position ?? 0
-//        self.preach = from.preach.toModel()
         self.createdAt = dto.createdAt
         self.updatedAt = dto.updatedAt
         guard let existingPreach = self.preach,

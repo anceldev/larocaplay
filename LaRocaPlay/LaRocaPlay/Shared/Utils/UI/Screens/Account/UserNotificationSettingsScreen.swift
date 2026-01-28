@@ -110,7 +110,7 @@ struct UserNotificationSettingsScreen: View {
         
         .padding(18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
         .onDisappear {
             if context.hasChanges {

@@ -26,7 +26,6 @@ struct CollectionItemsView: View {
         }
     }
     
-    
     var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: 8) {
@@ -49,7 +48,7 @@ struct CollectionItemsView: View {
                 )
             }
         }
-        .background(.customBlack)
+                .background(.appBackground.primary)
         .enableInjection()
         .onChange(of: searchQuery, { oldValue, newValue in
             print(newValue)
@@ -57,11 +56,6 @@ struct CollectionItemsView: View {
                 print(item.preach?.title ?? "NO-TITLE")
             }
         })
-//        .onAppear {
-//            items.forEach { item in
-//                print(item.preach?.title ?? "NO-TITLE")
-//            }
-//        }
     }
     
 #if DEBUG

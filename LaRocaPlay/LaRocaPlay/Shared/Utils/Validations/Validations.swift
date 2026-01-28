@@ -31,7 +31,6 @@ enum RegexExpression: String {
 enum ValidationRule {
     case required(String)
     case regularExpression(RegexExpression, String)
-//    case matches(() -> String, String)
 }
 
 @propertyWrapper

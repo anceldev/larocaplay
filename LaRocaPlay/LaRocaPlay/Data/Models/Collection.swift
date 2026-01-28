@@ -24,9 +24,7 @@ final class Collection {
     var endedAt: Date?
     var needItemsSync: Bool = true
     
-//    @Relationship(inverse: \Preach.collections) var preaches: [Preach] = []
     @Relationship(deleteRule: .cascade, inverse: \CollectionItem.collection) var items: [CollectionItem] = []
-
     
     init(id: Int, title: String, desc: String? = nil, imageId: String? = nil, isPublic: Bool, isHomeScreen: Bool, typeName: String, createdAt: Date, updatedAt: Date, endedAt: Date? = nil, needItemsSync: Bool = true) {
         self.id = id

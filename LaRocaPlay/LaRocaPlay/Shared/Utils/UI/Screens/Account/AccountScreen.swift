@@ -12,16 +12,13 @@ import SwiftData
 
 struct AccountScreen: View {
     @Environment(AppRouter.self) private var router
-    
     @Environment(AuthManager.self) private var authManager
     @Environment(LibraryManager.self) private var libManager
     @Environment(\.modelContext) private var context
     
     @State private var errorMessage: String? = nil
     @State private var showPaywall = false
-    
     @State private var showAuthSheet = false
-    
     @State private var showCustomerCenter = false
     @State private var showDeleteAccountDialog = false
     
@@ -34,7 +31,7 @@ struct AccountScreen: View {
         }
         return "Versión \(version)"
     }
-
+    
     var body: some View {
         VStack {
             TopBarScreen(title: "Mi Cuenta", true)
@@ -44,7 +41,6 @@ struct AccountScreen: View {
                 ScrollView(.vertical) {
                     VStack {
                         VStack(spacing: 24) {
-                            
                             if let user = authManager.currentUserProfile {
                                 AccountCard(user: user, showPaywall: $showPaywall)
                             }
@@ -72,9 +68,10 @@ struct AccountScreen: View {
                                     .disabled(authManager.isLoading)
                                 }
                                 .padding()
-                                .background(.black.opacity(0.45))
+                                .background(.appBackground.secondary)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
+                            .foregroundStyle(.appLabel.secondary)
                             VStack(spacing: 10) {
                                 Text("Preferencias")
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -95,9 +92,10 @@ struct AccountScreen: View {
                                     .disabled(authManager.isLoading)
                                 }
                                 .padding()
-                                .background(.black.opacity(0.45))
+                                .background(.appBackground.secondary)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
+                            .foregroundStyle(.appLabel.secondary)
                             VStack(spacing: 10) {
                                 Text("Soporte")
                                     .padding(.leading, 6)
@@ -117,10 +115,10 @@ struct AccountScreen: View {
                                     .disabled(authManager.isLoading)
                                 }
                                 .padding()
-                                .background(.black.opacity(0.45))
+                                .background(.appBackground.secondary)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
-
+                            .foregroundStyle(.appLabel.secondary)
                             VStack(spacing: 10) {
                                 Text("Información")
                                     .padding(.leading, 6)
@@ -153,9 +151,10 @@ struct AccountScreen: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                                 .padding()
-                                .background(.black.opacity(0.45))
+                                .background(.appBackground.secondary)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
+                            .foregroundStyle(.appLabel.secondary)
                             VStack(spacing: 10) {
                                 Text("Sesión")
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -163,7 +162,6 @@ struct AccountScreen: View {
                                     .fontWeight(.semibold)
                                     .padding(.leading, 6)
                                 VStack(spacing: 16) {
-                                    
                                     Button {
                                         withAnimation(.easeOut) {
                                             signout()
@@ -187,9 +185,10 @@ struct AccountScreen: View {
                                     .disabled(authManager.isLoading)
                                 }
                                 .padding()
-                                .background(.black.opacity(0.45))
+                                .background(.appBackground.secondary)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                             }
+                            .foregroundStyle(.appLabel.secondary)
                         }
                         if let error = errorMessage {
                             Text(error)
@@ -197,15 +196,12 @@ struct AccountScreen: View {
                         }
                         Spacer()
                     }
-                    
                     .foregroundStyle(.dirtyWhite)
-                    
                     .sheet(isPresented: $showPaywall) {
                         PaywallView()
                             .onPurchaseCompleted { customerInfo in
                                 authManager.customerInfo = customerInfo
                             }
-                        
                     }
                     .presentCustomerCenter(isPresented: $showCustomerCenter, onDismiss: {
                         print("Dismissed view")
@@ -218,21 +214,20 @@ struct AccountScreen: View {
             AuthenticationView()
         })
         .padding()
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
     
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
     private func signout() {
         Task {
             await NotificationManager.shared.unsuscribeFromPrivateCollections(context: context)
             await authManager.signOut()
         }
     }
-
+    
     private func deleteAccount() async {
         await authManager.deleteAccount()
     }
@@ -240,10 +235,8 @@ struct AccountScreen: View {
         let email = "soporte@larocaplay.com"
         let subject = "Ayuda"
         let body = "Hola, mi correo es \(authManager.currentUserProfile?.email ?? "") y mi id de usuario \(authManager.currentUserProfile?.userId.uuidString, default: "").\nNecesito ayuda con la app."
-        
         let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        
         let urlString = "mailto:\(email)?subject=\(encodedSubject)&body=\(encodedBody)"
         
         if let url = URL(string: urlString) {

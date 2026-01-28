@@ -18,7 +18,6 @@ enum AppTab: String, TabType, CaseIterable {
         case .home: return "house-2"
         case .preaches: return "heart"
         case .karaoke: return "microphone"
-//        case .store: return "cart-shopping"
         case .training: return "book-open"
         }
     }
@@ -28,7 +27,6 @@ enum AppTab: String, TabType, CaseIterable {
         case .preaches: return "Predicaciones"
         case .training: return "Capacitaciones"
         case .karaoke: return "Karoke"
-//        case .store: return "Tienda"
         }
     }
 }

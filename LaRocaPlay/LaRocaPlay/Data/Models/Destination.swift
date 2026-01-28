@@ -22,9 +22,6 @@ enum Destination: DestinationType {
     
     static func from(path: String, fullPath: [String], parameters: [String:String]) -> Destination? {
         guard let currentIndex = fullPath.firstIndex(of: path) else { return nil }
-            
-            // El ID ahora es simplemente el siguiente elemento en el path
-            // Ejemplo: si el path es "collection", el ID está en currentIndex + 1
             var idValue: Int {
                 let idIndex = currentIndex + 1
                 if idIndex < fullPath.count {
@@ -50,5 +47,4 @@ enum Sheet: SheetType {
     case compose
     case auth
     var id: Int { hashValue }
-    
 }

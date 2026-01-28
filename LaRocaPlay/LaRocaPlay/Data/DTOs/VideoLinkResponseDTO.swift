@@ -28,9 +28,7 @@ struct VideoLinkResponseDTO: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.videoId = try container.decode(String.self, forKey: .videoId)
         self.videoUrl = try container.decode(String.self, forKey: .videoUrl)
-//        self.linkExpirationTime = try container.decode(Date.self, forKey: .linkExpirationTime)
         let expirationString = try container.decode(String.self, forKey: .linkExpirationTime)
-
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         guard let date = formatter.date(from: expirationString) else {

@@ -45,7 +45,7 @@ struct MusicScreen: View {
         })
         .padding(.horizontal, 18)
         .padding(.bottom, 16)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
         .onAppear {
             Task {

@@ -54,7 +54,7 @@ struct MainScreen: View {
                 sheetView(for: sheet)
             }
         }
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .environment(router)
         .onAppear {
             if let pendingUrl = authManager.pendingDeepLink {

@@ -16,12 +16,12 @@ extension View {
             .scaleEffect(show ? 1 : 0.9)
     }
     
-    @ViewBuilder
-    func `if`<Content: View>(_ condition: @autoclosure () -> Bool, transform: (Self) -> Content) -> some View {
-        if condition() {
-            transform(self)
-        } else {
-            self
-        }
-    }
+//    @ViewBuilder
+//    func `if`<Content: View>(_ condition: @autoclosure () -> Bool, transform: (Self) -> Content) -> some View {
+//        if condition() {
+//            transform(self)
+//        } else {
+//            self
+//        }
+//    }
 }

@@ -84,9 +84,8 @@ struct AuthenticationView: View {
             Spacer()
         }
         .frame(maxHeight: .infinity)
-//        .frame(maxHeight: .infinity)
         .padding(18)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
     }
     private func startAsGuest() {
@@ -101,6 +100,5 @@ struct AuthenticationView: View {
 
 #Preview {
     AuthenticationView()
-//        .environment(AuthService())
-        .background(.customBlack)
+        .background(.appBackground.primary)
 }

@@ -34,7 +34,6 @@ struct CustomToggle: View {
         }
         .padding(2)
         .frame(width: 44, height: 26)
-        
         .onTapGesture {
             withAnimation(.linear(duration: 0.25)) {
                 isOn.toggle()

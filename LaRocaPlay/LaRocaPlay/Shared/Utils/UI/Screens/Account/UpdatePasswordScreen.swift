@@ -15,7 +15,7 @@ struct UpdatePasswordScreen: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(18)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
     }
 #if DEBUG

@@ -38,39 +38,28 @@ final class LibraryManager {
         self.isFetching = true
         defer { self.isFetching = false }
         do {
-            let preachersDTOs = try await service.fetchAllPreachers()
-            try await syncPreachers(dtos: preachersDTOs)
+            let preachersDTOs: [ShortResponseDTO] = try await service.fetchShortData(for: .preacher)
+            try await syncAllPreachers(dtos: preachersDTOs)
             
             let collectionTypesDTOS = try await service.fetchCollectionTypes()
             collectionTypesDTOS.forEach { context.insert($0.toModel()) }
             
-//            let collectionDTOs = try await service.fetchCollections()
-//            try await syncCollections(dtos: collectionDTOs)
-            
             let shortCollectionsDTOs: [ShortResponseDTO] = try await service.fetchShortData(for: .collection)
             try await syncCollections(dtos: shortCollectionsDTOs)
-            
-            // Fetch de el último item de main collection
-//            let preachesDTOs = try await service.fetchTeachings(collectionId: Constants.mainCollectionId, limit: 1, offset: 0)
-//            _ = try syncPreaches(dtos: preachesDTOs, into: Constants.mainCollectionId)
 
-            let shortCollectionItemDTOs: [ShortCollectionItemResponseDTO] = try await service.fetchShortTeachings(colId: Constants.mainCollectionId, limit: 1, offset: 0)
+//            let shortCollectionItemDTOs: [ShortCollectionItemResponseDTO] = try await service.fetchShortTeachings(colId: Constants.mainCollectionId, limit: 1, offset: 0)
+            let shortCollectionItemDTOs: [ShortCollectionItemResponseDTO] = try await service.fetchShortTeachings(colId: Constants.mainCollectionId, limit: 1, offset: 4)
             _ = try await syncCollectionItems2(dtos: shortCollectionItemDTOs, into: Constants.mainCollectionId)
             
         } catch let error as PostgrestError {
-            //            print("ERROR: Error de postgrest: \(error.localizedDescription)")
             logger.error("ERROR: Error de postgrest: \(error)")
         } catch {
-            //            print(error)
-            //            print("ERROR: Error en carga inicial \(error.localizedDescription)")
             logger.error("ERROR: Error de postgrest: \(error)")
             
             let nsError = error as NSError
             if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
-                //                print("DEBUG: La petición fue cancelada intencionadamente.")
                 logger.debug("DEBUG: La petición fue cancelada intencionadamente")
             } else {
-                //                print("ERROR real: \(error)")
                 logger.error("ERROR real: \(error)")
             }
             
@@ -80,10 +69,11 @@ final class LibraryManager {
     @MainActor
     func refreshInitialSync() async {
         do {
-            let collectionDTOs = try await service.fetchCollections()
-            try await syncCollections(dtos: collectionDTOs)
-            let preachesDTOs = try await service.fetchTeachings(collectionId: Constants.mainCollectionId, limit: 1, offset: 0)
-            _ = try syncPreaches(dtos: preachesDTOs, into: Constants.mainCollectionId)
+            let shortCollectionsDTOs: [ShortResponseDTO] = try await service.fetchShortData(for: .collection)
+            try await syncCollections(dtos: shortCollectionsDTOs)
+
+            let shortCollectionItemDTOs: [ShortCollectionItemResponseDTO] = try await service.fetchShortTeachings(colId: Constants.mainCollectionId, limit: 1, offset: 0)
+            _ = try await syncCollectionItems2(dtos: shortCollectionItemDTOs, into: Constants.mainCollectionId)
         } catch let error as PostgrestError {
             logger.error("ERROR: Error de postgrest: \(error)")
         } catch {
@@ -99,25 +89,40 @@ final class LibraryManager {
     }
     
     @MainActor
-    func syncPreachers(dtos: [PreacherDTO]) async throws {
+    func syncAllPreachers(dtos: [ShortResponseDTO]) async throws {
         guard NetworkMonitor.shared.isConnected else {
             logger.info("No hay conexión de internet")
             return
         }
         let localPreachers = try context.fetch(FetchDescriptor<Preacher>())
         
-        let preachersDictionary: [Int: Preacher] = Dictionary(uniqueKeysWithValues: localPreachers.map({ ($0.id, $0 )}))
+        let preachersDictionary = Dictionary(uniqueKeysWithValues: localPreachers.map({ ($0.id, $0) }))
+        var preachersToFetch = Set<Int>()
+        
         for dto in dtos {
             if let existing = preachersDictionary[dto.id] {
                 if dto.updatedAt > existing.updatedAt {
-                    existing.update(from: dto)
+                    preachersToFetch.insert(dto.id)
                 }
             } else {
-                let newPreacher = dto.toModel()
-                context.insert(newPreacher)
+                preachersToFetch.insert(dto.id)
             }
         }
-        if context.hasChanges{ try context.save() }
+        
+        if !preachersToFetch.isEmpty {
+            let updatedDTOs = try await service.fetchPreachersWithIds(ids: Array(preachersToFetch))
+            for dto in updatedDTOs {
+                if let existing = preachersDictionary[dto.id] {
+                    if existing.updatedAt < dto.updatedAt {
+                        existing.update(from: dto)
+                    }
+                } else {
+                    let new = dto.toModel()
+                    context.insert(new)
+                }
+            }
+        }
+        if context.hasChanges { try context.save()}
     }
     
     @MainActor
@@ -219,7 +224,6 @@ final class LibraryManager {
         }
         let localItems = try context.fetch(FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.collection?.id == collectionId }))
         
-//        let incomingLinkIds = dtos.map { $0.id }
         let serverLinkIds = Set(dtos.map { $0.id }) // Set de ids del servidor
         var activeLinksDict: [Int : CollectionItem] = [:] // Diccionario de links activos.
 
@@ -299,80 +303,7 @@ final class LibraryManager {
     }
     
     @MainActor
-    private func syncPreaches(dtos: [CollectionItemResponseDTO], into collectionId: Int) throws {
-        if dtos.isEmpty { return }
-        let preacherDescriptor = FetchDescriptor<Preacher>()
-        let allPreachers = try context.fetch(preacherDescriptor)
-        let preachersDict = Dictionary(uniqueKeysWithValues: allPreachers.map({ ($0.id, $0) })) // Obtengo los preachers
-        
-        var collectionDescriptor = FetchDescriptor<Collection>(predicate: #Predicate<Collection>{ $0.id == collectionId })
-        collectionDescriptor.fetchLimit = 1
-        let collection = try context.fetch(collectionDescriptor).first // Obtengo la colección
-        
-        guard let collection, !preachersDict.isEmpty else {
-            print("DEBUG: No hay preachers o colección todavia")
-            return
-        }
-        
-        let incomingPreachIds = dtos.map { $0.preach.id }
-        let incomingLinkIds = dtos.map { $0.id }
-        let serverLinkIds = Set(incomingLinkIds)
-        
-        let existingPreaches = try context.fetch(
-            FetchDescriptor<Preach>(
-                predicate: #Predicate<Preach>{ incomingPreachIds.contains($0.id)
-                },
-                sortBy: [SortDescriptor(\.date, order: .reverse )])
-        )
-        
-        let preachesDict = Dictionary(uniqueKeysWithValues: existingPreaches.map({ ($0.id, $0) })) // Existing preaches
-        
-        var activeLinksDict: [Int : CollectionItem] = [:] // Diccionario de links activos.
-        
-        // Elimino links que ya no están en db
-        for localItem in collection.items {
-            if !serverLinkIds.contains(localItem.id) {
-                context.delete(localItem)
-            } else {
-                activeLinksDict[localItem.id] = localItem
-            }
-        }
-        
-        for dto in dtos {
-            let targetPreach: Preach
-            if let localPreach = preachesDict[dto.preach.id] { // Si hay preach en local compruebo el updated at (y actualizo si hace falta). Si no inserto el nuevo preach
-                if dto.preach.updatedAt > localPreach.updatedAt {
-                    localPreach.update(from: dto.preach)
-                }
-                targetPreach = localPreach
-            } else {
-                targetPreach = dto.preach.toModel()
-                context.insert(targetPreach)
-            }
-            
-            targetPreach.preacher = preachersDict[dto.preach.preacher.id] // Actualizo el preacher de la preach que acabo de comprobar/añadir
-            
-            // MAnejo de links. Si sigue activo actualizo posición y preach
-            if let link = activeLinksDict[dto.id] {
-                link.position = dto.position ?? 0
-                link.preach = targetPreach
-            } else { // Si es nuevo lo añado
-                let newLink = CollectionItem(
-                    id: dto.id,
-                    position: dto.position ?? 0,
-                    createdAt: dto.createdAt,
-                    updatedAt: dto.updatedAt
-                )
-                newLink.collection = collection
-                newLink.preach = targetPreach
-                context.insert(newLink)
-            }
-        }
-        if context.hasChanges { try context.save() }
-    }
-    
-    @MainActor
-    func getValidVideoUrl(for preach: Preach) async throws -> URL {
+    func getVimeoVideoUrl(for preach: Preach) async throws -> URL {
         if preach.videoId.count > 1, preach.hasValidUrl, let url = preach.videoUrl {
             logger.info("DEBUG: Usando URL local")
             return URL(string: url)!
@@ -386,6 +317,7 @@ final class LibraryManager {
             )
             try context.save()
             return URL(string: response.videoUrl)!
+            
         } catch let error as Supabase.FunctionsError {
             logger.error("Error en Vimeo Edge Function \(error)")
             try handleVimeoEdgeError(error)
@@ -403,50 +335,10 @@ final class LibraryManager {
     func syncCollectionItems(for collection: Collection) async throws {
         guard collection.needItemsSync else { return }
         let targetID = collection.id
-//        let itemDTOs = try await service.fetchTeachingsWithoutLimit(collectionId: targetID)
-//        try syncPreaches(dtos: itemDTOs, into: targetID)
         let itemDTOs = try await service.fetchShortTeachingsWithoutLimit(collectionId: collection.id)
         try await syncCollectionItems2(dtos: itemDTOs, into: collection.id)
-        //        let itemsDescriptos = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{ $0.collection?.id == targetID})
         collection.needItemsSync = false
         try context.save()
-    }
-    
-    @MainActor
-    func syncCollectionItemsHybrid(for collection: Collection, loadMore: Bool = false) async throws {
-        // 1. Definimos el rango: si es loadMore empezamos desde el total local, si no desde 0.
-        let batchSize = 30
-        let start = loadMore ? (collection.items.count) : 0
-        let end = start + batchSize - 1
-        
-        // 2. Fetch de Supabase
-        let itemDTOs = try await service.fetchTeachingsWithLimit(
-            collectionId: collection.id,
-            from: start,
-            to: end
-        )
-        
-        guard !itemDTOs.isEmpty else { return }
-        
-        // 3. Tu función syncPreaches ya hace el trabajo de Upsert.
-        // Solo la llamamos con los nuevos DTOs.
-        try syncPreaches(dtos: itemDTOs, into: collection.id)
-        
-        // 4. Marcamos la colección como sincronizada si fue la carga inicial
-        if !loadMore {
-            collection.needItemsSync = false
-        }
-        
-        if context.hasChanges {
-            try context.save()
-        }
-    }
-    
-    
-    @MainActor
-    func syncMainCollectionItems(for mainCollection: Collection) async throws {
-        let collectionId = 1
-        let itemDTOs = try await service.fetchTeachings(collectionId: collectionId, limit: 5, offset: 0)
     }
     
     @MainActor
@@ -457,21 +349,28 @@ final class LibraryManager {
             let dtos = try await service.fetchSongs()
             try await syncSongs(dtos: dtos)
         } catch {
-            print(error.localizedDescription)
+            logger.error("Error leyendo canciones: \(error)")
         }
     }
     
     @MainActor
     func syncSongs(dtos: [SongDTO]) async throws {
+        let localSongs = try context.fetch(FetchDescriptor<Song>())
+        let songsDictionary = Dictionary(uniqueKeysWithValues: localSongs.map({ ($0.id, $0) }))
         for dto in dtos {
-            let song = dto.toModel()
-            context.insert(song)
+            if let existing = songsDictionary[dto.id] {
+                if existing.updatedAt < dto.updatedAt {
+                    existing.update(from: dto)
+                }
+            } else {
+                let song = dto.toModel()
+                context.insert(song)
+            }
         }
-        try context.save()
+        if context.hasChanges { try context.save() }
     }
     
     @MainActor
-    //    func getCollectionItem(id: Int, isDeepLink: Bool) async throws -> Preach {
     func getCollectionItem(itemId: Int, isDeepLink: Bool) async throws -> CollectionItem {
         let targetID = itemId
         if isDeepLink {
@@ -513,7 +412,6 @@ final class LibraryManager {
         return item
     }
     
-    
     private func fetchAndSyncCollectionItem(itemId: Int) async throws -> CollectionItem {
         let dto = try await service.fetchCollectionItem(id: itemId)
         let descriptor = FetchDescriptor<CollectionItem>(predicate: #Predicate<CollectionItem>{$0.id == itemId })
@@ -536,7 +434,6 @@ final class LibraryManager {
     @MainActor
     func getCollection(id: Int, isDeepLink: Bool) async throws -> Collection {
         let targetID = id
-        
         // Si viene por una notificacion o un enlace compartido.
         if isDeepLink {
             let collection = try await fetchAndSyncColllectionFromSupabase(collectionId: targetID)
@@ -589,7 +486,6 @@ final class LibraryManager {
             throw error
         }
     }
-    
 }
 
 extension LibraryManager {

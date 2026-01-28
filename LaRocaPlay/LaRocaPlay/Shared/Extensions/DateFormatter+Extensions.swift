@@ -39,7 +39,6 @@ extension DateFormatter {
             return date
         }
         isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-//        return isoFormatter.date(from: dateString)
         return isoFormatter.date(from: dateString)
     }
 }

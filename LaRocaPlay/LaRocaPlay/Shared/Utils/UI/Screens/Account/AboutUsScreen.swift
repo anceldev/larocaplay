@@ -20,7 +20,6 @@ struct AboutUsScreen: View {
                         Text("Somos una iglesia con una visión pastoral, relacional que vivimos la misión en fe, esperanza y amor a las naciones, para que todos sean pastoreados y que ninguno se pierda. Siendo, haciendo, equipando y plantando discipulos a través de las relaciones en células de amistad. Esta es nuestra visión y propósito.")
                             .foregroundStyle(.dirtyWhite)
                             .font(.system(size: 18))
-                        //                        .lineHeight(.variable)
                     }
                     VStack(spacing: 8) {
                         Text("Puedes encontrarnos en")
@@ -34,7 +33,7 @@ struct AboutUsScreen: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
     }
 #if DEBUG

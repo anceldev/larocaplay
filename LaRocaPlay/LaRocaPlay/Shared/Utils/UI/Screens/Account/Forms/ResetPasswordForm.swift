@@ -12,7 +12,6 @@ import SwiftUI
 struct ResetPasswordForm: View {
     @Environment(AuthManager.self) var authManager
     @Environment(\.modelContext) private var context
-//    @Environment(ToastManager.self) var toasts
     @Environment(\.dismiss) var dismiss
     
     @State private var showPopover = false
@@ -33,18 +32,18 @@ struct ResetPasswordForm: View {
                 VStack(spacing: 8) {
                     Text("¿Has olvidado tu contraseña o quieres cambiarla?")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(.dirtyWhite)
+                        .foregroundStyle(.appLabel.secondary)
                         .multilineTextAlignment(.center)
                     Text("Restablecer contraseña")
                         .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.appLabel.primary)
                         .multilineTextAlignment(.center)
                 }
             }
             VStack(alignment: .leading) {
                 HStack(spacing: 0) {
                     Text("Correo")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.appLabel.primary)
                     Text("*")
                         .foregroundStyle(.customRed)
                 }
@@ -54,7 +53,7 @@ struct ResetPasswordForm: View {
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .keyboardType(.emailAddress)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.appLabel.primary)
                     .tint(.white)
                     .submitLabel(.send)
                     .customCapsule(!formModel.email.isEmpty)

@@ -116,7 +116,7 @@ struct UserDetailsScreen: View {
         }
         .padding(Theme.Padding.normal)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .popView(
             isPresented: $showDeleteAccountDialog,
             content: {
@@ -143,9 +143,6 @@ struct UserDetailsScreen: View {
     private func deleteAccount() async {
         await NotificationManager.shared.unsuscribeFromPrivateCollections(context: context)
         await authManager.deleteAccount()
-    }
-    private func sendResetLink() {
-        // TODO: Enviar el link de reseteo. avisar anets al usuario de que se cerrarán sus sesiones, por seguridad. que el pueda confirmar o cancelar.
     }
     private func saveNewDisplayName() {
         print("Guardar nombre")

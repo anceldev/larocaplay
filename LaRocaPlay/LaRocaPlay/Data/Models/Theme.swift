@@ -43,7 +43,6 @@ enum ListView {
     var subtitleSize: CGFloat {
         switch self {
         case .single:   14
-//        case .grid:     12
         case .grid:     10
         case .list:     12
         }

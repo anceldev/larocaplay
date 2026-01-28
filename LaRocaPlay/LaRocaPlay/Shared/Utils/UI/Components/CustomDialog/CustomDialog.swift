@@ -51,7 +51,6 @@ struct CustomDialog: View {
     @Binding var show: Bool
 
     let dialogType: DialogType
-//    var onAccept: () async -> Void
     var onAccept: (() async -> Void)? = nil
     var onCancel: (() -> Void)? = nil
     
@@ -142,7 +141,7 @@ struct CustomDialog: View {
         }
         .padding(24)
         .frame(maxWidth: 300)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.player))
         .overlay {
             RoundedRectangle(cornerRadius: Theme.Radius.player)

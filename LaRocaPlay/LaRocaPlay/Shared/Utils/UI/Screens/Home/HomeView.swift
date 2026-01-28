@@ -25,6 +25,36 @@ struct HomeView: View {
     var mainCollection: Collection? {
         collections.first { $0.id == 1 }
     }
+    var carrouselCollectionItems: [CollectionItem] {
+        guard let mainCollection else { return [] }
+        return (mainCollection.items.count > 4)
+        ? Array(mainCollection.itemsSortedByDate[0..<4])
+        : mainCollection.itemsSortedByDate
+    }
+    
+    var carrouselCollections: [Collection] {
+        guard homeCollections.count > 0 else { return [] }
+        return (homeCollections.count > 4)
+        ? Array(homeCollections[0..<4])
+        : homeCollections
+    }
+    
+    var carrouselSeries: [Collection] {
+        let series = collections.filter { $0.typeName == "Serie" }
+        guard series.count > 0 else { return []}
+        return series.count > 4
+        ? Array(series[0..<4])
+        : series
+//        guard collections.count > 0 else { return [] }
+        
+    }
+    var carrouselCongresses: [Collection] {
+        let congresos = collections.filter { $0.typeName == "Congreso" && $0.isHomeScreen == true}
+        guard congresos.count > 0 else { return []}
+        return congresos.count > 4
+        ? Array(congresos[0..<4])
+        : congresos
+    }
     
     
     var body: some View {
@@ -33,66 +63,96 @@ struct HomeView: View {
             VStack {
                 ScrollView(.vertical) {
                     VStack(spacing: 24) {
-                        if let streamingUrl {
-                            if #available(iOS 26.0, *) {
-                                StreamingCard(streamingUrl: streamingUrl)
-                                    .glassEffect(in: RoundedRectangle(cornerRadius: 20))
-                            } else {
-                                StreamingCard(streamingUrl: streamingUrl)
+                        VStack {
+                            if let streamingUrl {
+                                if #available(iOS 26.0, *) {
+                                    StreamingCard(streamingUrl: streamingUrl)
+                                        .glassEffect(in: RoundedRectangle(cornerRadius: 20))
+                                } else {
+                                    StreamingCard(streamingUrl: streamingUrl)
+                                }
                             }
                         }
+                        .padding(.top, 10)
+                        .padding(.horizontal, 18)
                         VStack(spacing: 24) {
-                            if let mainCollection, !mainCollection.items.isEmpty {
+//                            if let mainCollection, !mainCollection.items.isEmpty {
+                            if carrouselCollectionItems.count > 0 {
                                 VStack {
-                                    VStack {
-                                        Text("Última celebración")
+                                    VStack(spacing: 4) {
+                                        Text("Últimas celebraciones")
                                             .font(.system(size: 14, weight: .semibold))
-                                        Text("Descubre las últimas predicaciones")
-                                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                                            .foregroundStyle(.dirtyWhite)
+//                                        HorizontalCarrouselView(items: mainCollection.itemsSortedByDate)
+                                        HorizontalCarrouselView(items: carrouselCollectionItems)
                                     }
                                     Button {
-                                        router.navigateTo(.preachDetail(id: mainCollection.itemsSortedByDate[0].id, isDeepLink: false))
+                                        withAnimation(.easeIn) {
+                                            router.selectedTab = .preaches
+                                        }
                                     } label: {
-                                        PreachGridItem(item: mainCollection.itemsSortedByDate[0], aspect: 1, titleAlignment: .center)
+                                        Text("Ver más predicaciones")
+                                            .foregroundStyle(.appLabel.primary)
+                                            .font(.system(size: 16, weight: .semibold, design: .rounded))
                                     }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.horizontal, 18)
                                 }
                             }
-                            HStack {
-                                Button {
-                                    withAnimation(.easeIn) {
-                                        router.selectedTab = .preaches
-                                    }
-                                } label: {
-                                    Text("Ver más predicaciones")
-                                        .foregroundStyle(.customBlack)
-                                        .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                }
-                            }
-                            .padding(8)
-                            .frame(maxWidth: .infinity)
-                            .background(.dirtyWhite)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         
-                        if homeCollections.count > 0 {
-                            VStack {
-                                ForEach(homeCollections.sorted(by: { $0.createdAt > $1.createdAt })) { homeCollection in
-                                    Button {
-                                        router.navigateTo(.collection(id: homeCollection.id))
-                                    } label: {
-                                        ThumbImageLoader(title: homeCollection.title,storageCollection: .collections(homeCollection.imageId))
+                        VStack(spacing: 24) {
+                            if carrouselSeries.count > 0 {
+                                VStack {
+                                    VStack(spacing: 4) {
+                                        Text("Series")
+                                            .font(.system(size: 14, weight: .semibold))
+                                        HorizontalSeriesCarrouselView(items: carrouselSeries)
                                     }
+                                    Button {
+                                        withAnimation(.easeIn) {
+                                            router.navigateTo(.collections("Serie", "Series"))
+                                        }
+                                    } label: {
+                                        Text("Ver todas las series")
+                                            .foregroundStyle(.appLabel.primary)
+                                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.horizontal, 18)
                                 }
                             }
                         }
+
+                        if homeCollections.count > 0 {
+                            VStack(spacing: 4) {
+                                    Text("Retiros")
+                                        .font(.system(size: 14, weight: .semibold))
+                                VStack(spacing: 24) {
+                                    ForEach(homeCollections.sorted(by: { $0.createdAt > $1.createdAt })) { homeCollection in
+                                        Button {
+                                            router.navigateTo(.collection(id: homeCollection.id))
+                                        } label: {
+                                            ThumbImageLoader(title: homeCollection.title,storageCollection: .collections(homeCollection.imageId))
+                                                .overlay {
+                                                    RoundedRectangle(cornerRadius: Theme.Radius.player)
+                                                        .stroke(lineWidth: 8)
+                                                        .foregroundStyle(.gray.opacity(0.3))
+                                                }
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 18)
+                        }
                         VStack(spacing: 24) {
-                            SeriesCard()
+//                            SeriesCard()
                             // TODO: Enlace a congresos que se han realizado (Aquí se puede añadir varios videos a un congreso específico, como el fin de semana de la visión por ejemplo).
                             EventsCard()
                         }
+                        .padding(.horizontal, 18)
                         .background(.customBlack.opacity(0.5))
                     }
+                    
                 }
                 .scrollIndicators(.hidden)
                 .refreshable {
@@ -100,8 +160,7 @@ struct HomeView: View {
                 }
             }
         }
-        .padding()
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .enableInjection()
     }

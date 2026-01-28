@@ -21,7 +21,6 @@ final class PushNotificationService {
     @MainActor
     func updateDeviceToken(fcmToken: String) async {
         guard let userId = try? await supabase.auth.session.user.id else {
-//            print("No hay usuario autenticado. No se guarda el token")
             logger.notice("No hay usuario autenticado. No se guarda el token")
             return
         }

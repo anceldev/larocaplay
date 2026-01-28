@@ -18,8 +18,6 @@ struct Subscription: Codable, Identifiable {
     var originalTransactionId: String?
     var lastEventAt: Date?
     
-
-    
     enum CodingKeys: String, CodingKey {
         case id, status
         case userId = "user_id"
@@ -82,7 +80,6 @@ struct RCSubscription: Codable, Identifiable {
         priceAmount = try values.decodeIfPresent(Double.self, forKey: .priceAmount)
         priceCurrency = try values.decode(String.self, forKey: .priceCurrency)
     }
-    
 }
 
 enum RCPeriodType: String, Codable{

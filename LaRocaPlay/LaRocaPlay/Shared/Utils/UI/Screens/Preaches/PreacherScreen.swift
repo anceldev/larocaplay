@@ -40,7 +40,6 @@ struct PreacherScreen: View {
         .padding()
         .enableInjection()
     }
-    
 #if DEBUG
     @ObserveInjection var forceRedraw
 #endif

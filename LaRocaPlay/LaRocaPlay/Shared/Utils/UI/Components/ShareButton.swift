@@ -23,7 +23,6 @@ struct ShareButton: View {
         let mensaje = "Mira esta enseñanza: \(titulo)"
         
         let activityVC = UIActivityViewController(activityItems: [mensaje, url], applicationActivities: nil)
-        
         // Presentar el controlador (necesita acceso al Root ViewController)
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             scene.windows.first?.rootViewController?.present(activityVC, animated: true)

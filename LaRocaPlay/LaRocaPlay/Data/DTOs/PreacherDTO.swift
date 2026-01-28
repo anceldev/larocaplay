@@ -29,19 +29,18 @@ struct PreacherDTO: Codable, Identifiable, Equatable, Hashable {
         self.name = try container.decode(String.self, forKey: .name)
         self.role = try container.decode(PreacherRole.self, forKey: .role)
         self.imageId = try container.decodeIfPresent(String.self, forKey: .imageId)
-//        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-        
-//        let createdString = try container.decode(String.self, forKey: .createdAt)
-//        guard let decodedCreatedDate = DateFormatter.decodedSupabaseDate(createdString) else {
-//            throw DecodingError.dataCorruptedError(forKey: .updatedAt, in: container, debugDescription: "Wrong updated_at string format")
-//        }
-//        self.createdAt = decodedCreatedDate
-        
         let updatedString = try container.decode(String.self, forKey: .updatedAt)
-        guard let decodedUpdatedDate = DateFormatter.decodedSupabaseDate(updatedString) else {
-            throw DecodingError.dataCorruptedError(forKey: .updatedAt, in: container, debugDescription: "Wrong updated_at string format")
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: updatedString) {
+            self.updatedAt = date
+        } else {
+            formatter.formatOptions = [.withInternetDateTime]
+            guard let updatedDate = formatter.date(from: updatedString) else {
+                throw DecodingError.dataCorruptedError(forKey: .updatedAt, in: container, debugDescription: "Fecha inválida")
+            }
+            self.updatedAt = updatedDate
         }
-        self.updatedAt = decodedUpdatedDate
     }
     
     func toModel() -> Preacher {

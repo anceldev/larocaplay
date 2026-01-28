@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct ValidationModifier: ViewModifier {
-    
     let errorMessage: String?
-    
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             content
@@ -19,7 +17,6 @@ struct ValidationModifier: ViewModifier {
                     .font(.caption)       // Smaller text for error message
                     .foregroundColor(.red)
                     .frame(height: 20)    // Keep consistent height
-//                    .opacity(errorMessage == nil ? 0 : 1)  // Hide when no error
                     .animation(.easeInOut(duration: 0.2), value: errorMessage) // Smooth transition
             }
         }

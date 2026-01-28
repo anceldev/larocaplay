@@ -8,35 +8,35 @@
 import SwiftUI
 
 struct CustomTextFieldStyle: TextFieldStyle {
-
-  let height: CGFloat
-
-  init(_ height: CGFloat = 56) {
-    self.height = height
-  }
-
-  func _body(configuration: TextField<Self._Label>) -> some View {
-    configuration
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.leading, 20)
-      .frame(height: height)
-      .textInputAutocapitalization(.never)
-      .autocorrectionDisabled()
-      .tint(.white)
-      .clipShape(Capsule())
-      .overlay {
-        Capsule()
-          .strokeBorder(.white, lineWidth: 1)
-      }
-      .textFieldStyle(.plain)
-  }
+    
+    let height: CGFloat
+    
+    init(_ height: CGFloat = 56) {
+        self.height = height
+    }
+    
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 20)
+            .frame(height: height)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .tint(.white)
+            .clipShape(Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(.white, lineWidth: 1)
+            }
+            .textFieldStyle(.plain)
+    }
 }
 
 extension TextFieldStyle where Self == CustomTextFieldStyle {
-  static var customTextFieldStyle: Self {
-    CustomTextFieldStyle()
-  }
-  static func customTextFieldStyle(_ height: CGFloat) -> CustomTextFieldStyle {
-    CustomTextFieldStyle(height)
-  }
+    static var customTextFieldStyle: Self {
+        CustomTextFieldStyle()
+    }
+    static func customTextFieldStyle(_ height: CGFloat) -> CustomTextFieldStyle {
+        CustomTextFieldStyle(height)
+    }
 }

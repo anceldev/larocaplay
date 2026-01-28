@@ -20,10 +20,8 @@ final class Preach {
     
     var videoUrl: String?
     var videoUrlExpiration: Date?
-    
-    
     var preacher: Preacher?
-//    var collections: [Collection] = []
+
     @Relationship(deleteRule: .cascade, inverse: \CollectionItem.preach) var collectionLinks: [CollectionItem] = []
     
     var hasValidUrl: Bool {
@@ -35,7 +33,6 @@ final class Preach {
         return expiration > Date().addingTimeInterval(safetyMargin)
     }
     
-    
     init(id: Int, title: String, desc: String? = nil, date: Date, videoId: String, imageId: String? = nil, preacher: Preacher? = nil, updatedAt: Date) {
         self.id = id
         self.title = title
@@ -45,7 +42,6 @@ final class Preach {
         self.imageId = imageId
         self.preacher = preacher
         self.updatedAt = updatedAt
-//        self.collections = collections
     }
     
     func update(from dto: PreachDTO) {

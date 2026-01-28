@@ -29,7 +29,6 @@ struct CollectionItemsList: View {
         VStack {
             LazyVGrid(columns: columns, spacing: listView.colSpacing) {
                 ForEach(items) { item in
-//                    if let preach = item.preach {
                     if item.preach != nil, item.collection != nil {
                         Button {
                             router.navigateTo(.preachDetail(id: item.id))

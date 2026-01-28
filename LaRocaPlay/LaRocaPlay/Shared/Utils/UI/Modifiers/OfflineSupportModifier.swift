@@ -22,9 +22,7 @@ struct BlurView: UIViewRepresentable {
 
 
 struct OfflineSupportModifier: ViewModifier {
-    
     var isConnected: Bool
-    
     func body(content: Content) -> some View {
         ZStack {
             content

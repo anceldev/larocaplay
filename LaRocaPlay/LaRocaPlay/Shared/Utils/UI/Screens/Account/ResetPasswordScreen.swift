@@ -33,7 +33,7 @@ struct ResetPasswordScreen: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.customBlack)
+        .background(.appBackground.primary)
         .enableInjection()
         
     }
